@@ -22,13 +22,13 @@ vs 全部仓库）无法用 API 验证** —— 需要项目所有者自行在�
 | 明确记录为"不修改"的发现 | ✅ 见 §4 |
 | 项目测试 + 针对性回归测试 | ✅ 通过（23 + 14 项，含变异测试） |
 | Sourcery App 产生 PR Review | ✅ 已验证（PR #1 有 `sourcery-ai` 检查与中文评论） |
-| App 安装范围＝仅本仓库 | ⚠️ **无法验证**：GitHub API 不暴露该信息，需人工在设置页确认 |
+| App 安装范围＝仅本仓库 | ⚠️ **未验证**：GitHub API 不暴露该信息，需人工在设置页确认（**不能假定已正确**） |
 | Sourcery PR Review（中文） | ✅ 已完成：PR #1，**五轮** Review，共 **12 条**行内评论，全部属实并已整改 |
 | Sourcery re-review（整改后） | ✅ 已完成：最终一轮 **0 条新评论**，**12/12 线程已解决**（`unresolved=0`） |
-| Security Scan（全仓库基线扫描） | ⛔ **未运行**（需网页启用；Open Source 为受限预览） |
+| Security Scan（全仓库基线扫描） | ⛔ **未运行**（需网页启用；**是否可用/配额未知**，不得假定为“已禁用”） |
 | IDE「Review current file」（审现有核心文件） | ⛔ **未执行**（无浏览器/桌面自动化，需人工） |
-| 网页 Review Settings / Rules R1–R10 | ⛔ **未填写**（需人工粘贴） |
-| 固定流程已跑通到 re-review | ✅ `branch → PR → Sourcery → 修复 → re-review` 已在 PR #1 上实际执行 |
+| 网页 Review Settings / Rules R1–R10 | ⛔ **未填写/未验证**（需人工粘贴；当前生效状态未知） |
+| 固定流程已跑通到 re-review | ✅ `branch → PR → Sourcery → 修复 → re-review` 已在 PR #1 上实际执行 5 轮 |
 | 流程走到 merge | ⛔ **未合并**：PR #1 保持 open，等待人工确认后再 merge |
 
 **因此整体状态是：本地整改与 PR Review 闭环已完成；Sourcery 的网页侧能力
@@ -211,7 +211,18 @@ live-intent 改为**结构化检查极性**；分类改为**按相对路径为�
 | # | 缺陷 | 复现结果（修复前） |
 |---|---|---|
 | S9 | 已存在但**无法解析**的 manifest 被当成 `{}` 后**直接覆盖**，丢掉非派生的 `tests`/`redactions` —— 重新制造了 D3 那个数据丢失缺陷 | 覆盖成功，`tests` 归 0 |
-| S10 | `artifact_count` **从不**与 `artifacts` 数组长度校验，可声明 16 实际 15，而 `validation` 仍为 ok | 不一致且未报错 |
+| S10 | `artifact_count` **从不**与 `artifacts` 数组长度校验 | **未在本仓库实际发生**；见下方“核实结果” |
+
+**S10 的核实结果（重要 —— 不要当作已发生的历史缺陷）**：我逐 commit 检查了所有改过
+`docs/evidence/P2/20260919T154319Z/manifest.json` 的 11 个提交（`1925b68` 到 `824cdda`），
+`artifact_count` 与 `len(artifacts)` **始终一致**（10/10、12/12、13/13、16/16…）。
+Sourcery 提到的“声明 16 实际 15”**未能在任何被审阅的提交中复现**。
+因此这条应记为**潜在风险 + 防御性加固**，而不是“已发生的缺陷”。（我在早期用 `git grep` 得到
+“不一致”的印象，那是一次**假阴性/误读**，不得引用。）
+
+**仍做了加固**：`artifact_count` 改为**派生**，并在 `--extra` 与继承块之后再做一次一致性门禁
+（派生值获胜，篡改记入 `validation.problems` 且 `validation.ok=false`）。理由：`--extra` 是
+**唯一仍能让矛盾值进入**的路径，未来可能被误用；现在它会被拒绝。
 
 **S10 不是假设性的**：本工作中我自己的一次手工编辑就出现过这个不一致（改了 `artifacts` 没改
 `artifact_count`），当时**没有被发现**。
@@ -304,7 +315,7 @@ live-intent 改为**结构化检查极性**；分类改为**按相对路径为�
 
 | 发现 | 判断 | 理由 |
 |---|---|---|
-| `tools/*.py` 中 33 处 `except Exception` | **不修改** | 逐处检查后，绝大多数是"诊断探针不得因日志/清理失败而改变命令结果"，且都把失败原因写回返回值或 stderr（例如 `safe_process.terminate_owned` 在 `wait()` 失败时明确返回 False 并保留所有权，而不是报成功）。仅"批量替换为更窄异常"会降低健壮性且无收益。**已新增 R5 规则**约束未来新增的静默吞噬。 |
+| 宽泛 `except Exception` 静默吞噬 | **部分不修改，部分已记录为真实问题** | 先前的表述（“逐处核对后均已正确上报”）**证据不足，现更正为实测数据**：带类型的 except 处理器共 **79** 处，其中**只 `pass`/`continue`（静默）共 11 处**（`safe_process.py` 7、`bounded_worker.py` 1、`com_read_worker.py` 1、`dap-probe.py` 1、`redact-evidence.py` 1），其余 68 处会返回值/日志/重新抛出。判断：① 静默的多在清理路径（如 `CoUninitialize()`），抛出会掩盖原始错误；② 但“静默”确实丢失信息。**因此不批量改写**（会降低清理健壮性且无收益），而是**如实记录为已知限度**，并用 **R5 规则**约束未来新增代码。若要求提升可观测性，应在这些点改为“记录到日志/证据但不改变控制流”。 |
 | `run-accoreconsole-test.sh` 未调用 `require_safety_review_passed` | **不修改（但记录）** | 它启动的是 `accoreconsole.exe`（无 GUI、无用户文档/配置），不是用户正在使用的 `acad.exe`；其注释中"绝不触碰用户会话"的说法**仅对不传 `--dwg` 时成立**。因此：① 保留其可用性（P1 的证据正是靠它产出，且不启动真机 GUI 会话）；② 在报告中明确该限度，**不**把"headless 所以绝对安全"当作已证明的命题。 |
 | `_ps()` 使用 60s 超时的 PowerShell 枚举 | **不修改** | 超时返回 rc=1，调用方按 `EnumerationError` 处理并 **fail-closed**（拒绝终止），行为正确。 |
 | `dap-session.py` 中 `time.sleep(1.5)` 等固定等待 | **不修改** | 属于探针的启发式等待，非产品代码；改为事件驱动需要真实的 DAP 行为数据，而真机运行当前被安全闸阻塞。记录为待 P2 处理。 |
@@ -348,7 +359,8 @@ live-intent 改为**结构化检查极性**；分类改为**按相对路径为�
 | 包内无 Autodesk DLL | `find src/*/bin -name "ac*.dll"` | 无（符合 `Private=false`） |
 | 静态检查 | `python -m pyflakes tools/*.py` | 干净 |
 | 凭据 / 标识符扫描 | 对全部已提交 blob（按编码） | `HEAD` 无命中；`main` 仍有 2 处（见 §7.6） |
-| 证据哈希 | blob 级 SHA-256 对照 manifest | 全部一致（仅 2 个有意排除） |
+| 证据哈希 | blob 级 SHA-256 对照 manifest | **193/193** 一致（2 个有意排除） |
+| 仓库外备份完整性 | 对照 `MANIFEST.sha256`（路径按单次 `./` 前缀剥离解析） | **258/258** 一致，0 损坏 0 缺失（构建产物 bin/obj 已排除） |
 
 ---
 
@@ -371,10 +383,16 @@ live-intent 改为**结构化检查极性**；分类改为**按相对路径为�
 8. **真机行为未验证**：本次**未**运行任何 CAD。D4 的修复只在纯逻辑层面验证。
 9. **`run-accoreconsole-test.sh` 的限度已记录但未消除**：它接受 `--dwg`，"headless 所以安全"
    不是已证明的命题。它被列为**有理由的例外**而非"已通过闸门"。
-10. **静态检查的固有限度**：`check-live-gates.py` 是**静态**检查，证明"已审阅源码在已识别的
-    路径上声明了闸门"，**不**证明运行时授权，看不穿任意动态构造，也不是沙箱。真正的保护仍
-    是 `safe_process.py` 的闸门 + 进程归属层。
-11. **P1 阶段本身仍为 INCOMPLETE**（G01/G02 NOT_RUN），与本次审计无关但状态未变。
+10. **静态检查的固有限度（不要夸大）**：`check-live-gates.py` 是**静态回归检查器**，它证明的
+    是“已审阅源码在已识别的路径上声明了闸门调用”。它**不证明运行时授权**，看不穿任意动态构造，
+    也不是沙箱。真正的保护仍是 `safe_process.py` 的闸门 + 进程归属层。
+11. **夹具不等于真实证据**：编码/脱敏/原子写入等测试用的是**生成的夹具**，它们验证的是**代码
+    行为**，**不是**对真实捕获证据的验证。不得把夹具测试说成“对真实证据的测试”。
+12. **本次未完成原任务的“用 Sourcery 审现有旧代码”部分**：Security Scan（全仓库基线）与
+    IDE「Review current file」（逐个现有核心文件）**都没有执行**。D1–D5 是**人工分析 + 本地
+    工具**发现的，**不是** Sourcery 发现的；`sourcery-cli` 是 Python 专用工具，**不能**当作
+    Sourcery 基线审查的替代品。这是本任务**最主要的未完成项**。
+13. **P1 阶段本身仍为 INCOMPLETE**（G01/G02 NOT_RUN），与本次审计无关但状态未变。
 
 ---
 
@@ -395,10 +413,58 @@ feature branch → commit → PR → Sourcery Review → 修复
 
 ## 9. 需要项目所有者操作的一步
 
-GitHub App 已安装。剩下的是网页配置：
+> 当前整体状态：**部分完成，等待人工网页/IDE 操作**。以下每项都是本会话**无法**代替完成的。
 
-1. <https://app.sourcery.ai/dashboard/review-settings> → Review profile 选 **Verbose**、
-   语言选 **中文**、在 **Review rules** 标签页粘贴 `DASHBOARD-SETTINGS.md` §4 的 R1–R10。
-2. <https://app.sourcery.ai/dashboard/security/repositories> → 为 `CadBridge` 启用
-   **Scanning enabled**（Open Source 计划无按需触发按钮，为每周两次）。
-3. 配置完成后回填 `DASHBOARD-SETTINGS.md` §7 的「配置回执」表。
+### 9.1 GitHub — 确认 App 授权范围
+
+打开 <https://github.com/settings/installations> → 找到 **Sourcery** → **Configure**
+→ 确认 **Repository access = Only select repositories** 且仅勾选 **`CadBridge`**。
+（本会话无法用 API 验证该项，故**不能假定已正确**。）
+
+### 9.2 Sourcery — 确认语言/档位并应用规则
+
+打开 <https://app.sourcery.ai/dashboard/review-settings>：
+- **General** 标签页：确认语言为**中文**（Review 已输出中文，但设置项未显式确认）。
+- **Review profile**：基线期设为 **Verbose**（日常再改回 Balanced）。
+- **Review rules** 标签页：粘贴 `docs/sourcery/DASHBOARD-SETTINGS.md` §4 的 **R1–R10**。
+
+### 9.3 Sourcery — 启用全仓库 Security Scan（本任务的核心未完成项）
+
+打开 <https://app.sourcery.ai/dashboard/security/repositories> → 为 `CadBridge` 启用
+**Scanning enabled**；若计划支持按需扫描则点 **Start Scan**。
+
+需要回填的证据：① **被扫描的 commit SHA**；② 结果导出或截图；③ **仪表盘可见发现数是否
+被计划上限（10 条）截断**。**不要**为此开通付费计划或试用。
+
+### 9.4 IDE — 用 Sourcery 审现有核心文件（本任务的另一核心未完成项）
+
+在 VS Code / JetBrains 中打开本仓库，对以下文件逐个执行 Sourcery 面板的
+**Review current file**，并导出发现（附**文件路径 + commit**）：
+
+| 文件 | 为何优先 |
+|---|---|
+| `tools/safe_process.py` | 进程归属与安全闸，最高风险 |
+| `tools/dap-probe.py`、`tools/dap-session.py` | DAP 分帧、超时、重同步 |
+| `tools/make-manifest.py` | 证据持久化（本次发现过 D3） |
+| `tools/t01-5-repl-plugin-read.py` | 真机编排与就绪判定 |
+| `tools/bounded_worker.py` | 有界子进程/超时 |
+| `src/Plugin.Shared/DiagnosticsCommands.cs` | 交互输入边界（本次发现过 D4） |
+| `src/Plugin.Shared/RadiusPromptPolicy.cs` | D4 的修复逻辑 |
+| `src/Plugin.Shared/LiveReadLispFunction.cs` | 并发/重入 |
+| `src/Plugin.Shared/ExecutionContextBaseline.cs` | 上下文基线与状态持久化 |
+| `src/Plugin.Shared/RuntimeInfo.cs` | 防止常量冒充测量值 |
+
+> 提醒：`Sourcery review` 检查**不会阻塞合并**，绿勾 ≠ 评论已处理。
+
+### 9.5 需要你决定：是否重写 `main` 历史以清除标识符
+
+`main`（= tag `baseline/pre-sourcery-audit`）的 2 个 UTF-16 `.raw` 证据文件仍含本机账号名
+（共 2 处，详见 `docs/evidence/PUBLICATION.md` §2.5b）。**本会话未自行重写**，因为重写会移动
+该 tag —— 而它正是本审计的**回退目标**。
+
+请二选一：
+- **A（保留现状）**：接受这 2 处存在，文档已披露；tag 不动。
+- **B（重写历史）**：由你明确授权后，重写 `main` 并**重建** tag（回退点将改为新 SHA），
+  同时接受旧对象可能短期内仍可按 SHA 访问。
+
+在得到答复前，**不得声称公开历史已清理干净**。
