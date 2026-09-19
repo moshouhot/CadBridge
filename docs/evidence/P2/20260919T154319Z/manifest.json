@@ -1,19 +1,24 @@
 {
   "phase": "P2",
   "run_id": "20260919T154319Z",
-  "generated_at_utc": "2026-09-19T15:56:27Z",
+  "generated_at_utc": "2026-09-19T16:04:52Z",
   "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T154319Z",
-  "artifact_count": 13,
+  "artifact_count": 16,
   "artifacts": [
     {
       "path": "build-legacy.txt",
       "bytes": 555,
-      "sha256": "848e7b9d9c7747bfe04c5996cc1920ad8f2b96d42d77c49d8b55e3f073ef87a8"
+      "sha256": "8b78dd1d0661019dab9a35c3221f51e5625ac96ab09a6cf04c79e28a694b221a"
     },
     {
       "path": "build-modern.txt",
-      "bytes": 28752,
-      "sha256": "5995c8fedc08ad3d625785f35aafb1f1a19c75480c8a6fb84c06aec1bdb4f0f3"
+      "bytes": 28416,
+      "sha256": "7f5b0c09d60825c88d5c69981f227315ccca3d261607ae8430e1b60605a89c6e"
+    },
+    {
+      "path": "build-modern.txt.redaction.txt",
+      "bytes": 423,
+      "sha256": "f5ce5a58000a51bbb058bf98f9ce1fd8c96e47d7bc9b4aa5909256606609fcc9"
     },
     {
       "path": "check-live-gates.txt",
@@ -36,6 +41,11 @@
       "sha256": "77efa0aa1095a617b2e45d0926accfddf5f39b57d5380a8e2841a132773065dc"
     },
     {
+      "path": "privacy-guard-negative-test.txt",
+      "bytes": 921,
+      "sha256": "76dcc99cf4d6b4c76cbe8a9440e88fbd85acdcaa1cd0d96195380795ed1e397d"
+    },
+    {
       "path": "pyflakes.txt",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -46,9 +56,14 @@
       "sha256": "634dbb63dc230e53a63e3ed742ebb4a37313a8f6749aeae6c0dcfaad7e8186eb"
     },
     {
+      "path": "redact-build-log.txt",
+      "bytes": 114,
+      "sha256": "760971b179028dcca5a0c5cb7fc8132da1ef189190b5eb13f8b39207c3ff3e3a"
+    },
+    {
       "path": "selftest.txt",
-      "bytes": 1656,
-      "sha256": "94cd0fbb3428378eabf6e42a5e382cec73f2d4c1ce851fdfd71b4637ca043532"
+      "bytes": 1709,
+      "sha256": "4a86fd68d87785d651361ef103f25b20b7858b295eb52887ff08bc24f0f18583"
     },
     {
       "path": "sourcery-finding1-shadowed-gate-detected.txt",
@@ -67,8 +82,8 @@
     },
     {
       "path": "status.json",
-      "bytes": 4992,
-      "sha256": "d20d54ae0e2d8df5d73483f4d062ec1aef9d266325676c2b6f67257115423328",
+      "bytes": 5799,
+      "sha256": "37b7121f3d665ede6f56af8a196bad17b1e873b17d651f0cd8dce25f7af65c0c",
       "json_parses": true
     }
   ],
@@ -202,6 +217,18 @@
       "evidence": [
         "sourcery-pr-review-evidence.md"
       ]
+    },
+    {
+      "id": "P2-14",
+      "name": "Privacy guard: local machine identifier must not appear in tracked files",
+      "expected": "guard fails when the identifier is reintroduced; suite exits 1",
+      "actual": "negative test performed: injecting the identifier into a tracked file made the guard and the suite fail (25 passed, 1 failed, exit 1); after restoring, 26 passed, 0 failed. Without CB_REDACT_IDENTIFIER the check reports SKIP, not PASS.",
+      "status": "PASS",
+      "evidence": [
+        "privacy-guard-negative-test.txt",
+        "redact-build-log.txt",
+        "selftest.txt"
+      ]
     }
   ],
   "validation": {
@@ -212,6 +239,22 @@
     "sha256 covers the stored artifact bytes, not the upstream source it describes.",
     "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
     "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
-    "A process exit code of 0 is not evidence of success; the parsed CAD output is."
-  ]
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is.",
+    "REDACTION: preserved from the previous manifest; some artifact hashes cover bytes that differ from the originally captured ones."
+  ],
+  "redactions": {
+    "applied_at_utc": "2026-09-19T00:00:00Z",
+    "reason": "Remove local machine/username path from artifacts before public release.",
+    "scope": "Only the account name inside machine-local paths was replaced. No build warning, error count or conclusion was altered.",
+    "replacement": "local account name -> <REDACTED-USER>",
+    "artifacts": [
+      {
+        "path": "build-modern.txt",
+        "original_sha256": "65419424d146218c6c196de29b5cd955602a59e548ff8209f04fc24457e9fb94",
+        "stored_sha256": "7f5b0c09d60825c88d5c69981f227315ccca3d261607ae8430e1b60605a89c6e",
+        "occurrences": 24,
+        "replacement": "local account name -> <REDACTED-USER>"
+      }
+    ]
+  }
 }

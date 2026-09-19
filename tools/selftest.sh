@@ -304,6 +304,18 @@ mutation_caught "gate replaced by a same-named method on an unrelated object" \
 mutation_caught "new ungated live harness with an unlisted filename" \
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"dap-live-newprobe.py").write_text("import subprocess\nsubprocess.Popen([r\"D:/acad.exe\"])\n", encoding="utf-8")'
 
+# Privacy guard: the local account/machine identifier must never appear in a tracked file.
+# It leaked TWICE during this audit -- once in the P0/P1 artifacts, and again in the P2 build
+# log produced while fixing the first leak -- so it is now a checked invariant, not a
+# one-off cleanup. The identifier comes from the environment and is never written into this
+# repo (doing so would re-publish the string the check exists to remove).
+if [ -n "${CB_REDACT_IDENTIFIER:-}" ]; then
+  check "no local machine identifier in tracked files" \
+    python "$TOOLS/redact-evidence.py" --check
+else
+  echo "  SKIP  identifier check (CB_REDACT_IDENTIFIER not set in this environment)"
+fi
+
 # The gate must actually refuse by default (negative test: no CAD is launched).
 if python "$TOOLS/safe_process.py" --self-test >/dev/null 2>&1; then
   if python - <<'PYEOF'

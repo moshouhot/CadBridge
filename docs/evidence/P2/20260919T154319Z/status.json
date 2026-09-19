@@ -129,6 +129,18 @@
       "evidence": [
         "sourcery-pr-review-evidence.md"
       ]
+    },
+    {
+      "id": "P2-14",
+      "name": "Privacy guard: local machine identifier must not appear in tracked files",
+      "expected": "guard fails when the identifier is reintroduced; suite exits 1",
+      "actual": "negative test performed: injecting the identifier into a tracked file made the guard and the suite fail (25 passed, 1 failed, exit 1); after restoring, 26 passed, 0 failed. Without CB_REDACT_IDENTIFIER the check reports SKIP, not PASS.",
+      "status": "PASS",
+      "evidence": [
+        "privacy-guard-negative-test.txt",
+        "redact-build-log.txt",
+        "selftest.txt"
+      ]
     }
   ],
   "notes": [
@@ -136,6 +148,7 @@
     "The Sourcery GitHub App is NOT installed; no Sourcery review or security scan has run. This audit was performed manually with local tooling.",
     "sourcery-cli is Python-only and cannot substitute for Sourcery App/IDE review of this C# repository.",
     "P2-11/P2-12 are regressions for the two defects Sourcery found in the first version of tools/check-live-gates.py on PR #1. Both attacks were reproduced against that version before the fix.",
-    "Sourcery App is installed on this repository only. Dashboard Review Rules, Review profile and Security Scan are still unset by the owner."
+    "Sourcery App is installed on this repository only. Dashboard Review Rules, Review profile and Security Scan are still unset by the owner.",
+    "The local identifier leaked THREE times during this audit (P0/P1 artifacts, P1 .raw files, P2 build log). It is now a checked invariant in selftest.sh, not a manual cleanup."
   ]
 }

@@ -33,6 +33,7 @@
   PASS  mutation detected: retired GUI harness gate removed
   PASS  mutation detected: gate replaced by a same-named method on an unrelated object
   PASS  mutation detected: new ungated live harness with an unlisted filename
+  PASS  no local machine identifier in tracked files
   PASS  safety gate refuses live harnesses by default
 
-self-tests: 25 passed, 0 failed
+self-tests: 26 passed, 0 failed
