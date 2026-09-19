@@ -2,9 +2,12 @@
 
 **审计分支**：`audit/sourcery-baseline`
 **审计前基线**：`main` @ `592c6ff`，tag `baseline/pre-sourcery-audit`
-**Sourcery 接入状态**：✅ GitHub App 已安装（仅授权本仓库）；⛔ 网页 Review Settings 与
-Security Scan 尚未启用（需项目所有者填写，见 `docs/sourcery/DASHBOARD-SETTINGS.md`）
-**Sourcery PR Review**：✅ 已在 PR #1 上运行，**中文**输出，提出 2 条行内评论，两条均**属实**并已整改
+**Sourcery App 状态**：已在**本仓库**产生 PR Review（这是事实）。但**安装范围（仅本仓库
+vs 全部仓库）无法用 API 验证** —— 需要项目所有者自行在设置页确认。
+**Sourcery PR Review**：✅ PR #1 已运行，**中文**输出，提出 2 条行内评论，两条均**属实**并已整改
+**Sourcery Security Scan**：⛔ **未运行**（需在网页启用，且只扫默认分支）
+**Sourcery IDE「Review current file」**：⛔ **未执行**（无浏览器/桌面自动化能力，需人工）
+**网页 Review Settings / Rules R1–R10**：⛔ **未填写**（需人工粘贴，文本已备好）
 **真机状态**：本次工作**未启动**任何 AutoCAD / CoreConsole 会话
 
 ---
@@ -18,15 +21,18 @@ Security Scan 尚未启用（需项目所有者填写，见 `docs/sourcery/DASHB
 | 发现并整改的真实缺陷 | ✅ 4 个（含 2 个高严重度） |
 | 明确记录为"不修改"的发现 | ✅ 见 §4 |
 | 项目测试 + 针对性回归测试 | ✅ 通过（23 + 14 项，含变异测试） |
-| Sourcery GitHub App 接入 | ✅ **已完成**（仅授权 `moshouhot/CadBridge`） |
-| Sourcery PR Review（中文） | ✅ **已完成**：PR #1，2 条行内评论，均已整改 |
-| Sourcery re-review（整改后） | ⏳ 见 §3.5 |
-| Security Scan | ⛔ 未启用（需在仪表盘开启；Open Source 计划为受限预览） |
-| 网页 Review Settings / Rules R1–R10 | ⛔ 未填写（需人工粘贴，文本已备好） |
-| 固定流程 `branch → PR → Sourcery → 修复 → re-review → merge` | ✅ 已建立并在 PR #1 上实际跑通 |
+| Sourcery App 产生 PR Review | ✅ 已验证（PR #1 有 `sourcery-ai` 检查与中文评论） |
+| App 安装范围＝仅本仓库 | ⚠️ **无法验证**：GitHub API 不暴露该信息，需人工在设置页确认 |
+| Sourcery PR Review（中文） | ✅ 已完成：PR #1，2 条行内评论，均已整改 |
+| Sourcery re-review（整改后） | ✅ 已完成：0 条新评论，2 条线程均已解决 |
+| Security Scan（全仓库基线扫描） | ⛔ **未运行**（需网页启用；Open Source 为受限预览） |
+| IDE「Review current file」（审现有核心文件） | ⛔ **未执行**（无浏览器/桌面自动化，需人工） |
+| 网页 Review Settings / Rules R1–R10 | ⛔ **未填写**（需人工粘贴） |
+| 固定流程已跑通到 re-review | ✅ `branch → PR → Sourcery → 修复 → re-review` 已在 PR #1 上实际执行 |
+| 流程走到 merge | ⛔ **未合并**：PR #1 保持 open，等待人工确认后再 merge |
 
-**因此当前整体状态是：基线整改已完成并通过 Sourcery Review；网页侧配置（Review Rules、
-Security Scan）仍待人工填写，故“完全接入”尚未达成。**
+**因此整体状态是：本地整改与 PR Review 闭环已完成；Sourcery 的网页侧能力
+（Security Scan、IDE 文件审查、Review Rules）与最终 merge 尚未完成，属于人工阻塞项。**
 
 ---
 
@@ -241,18 +247,27 @@ PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条�
 
 ## 7. 剩余风险与未完成项
 
-1. **网页侧配置未完成**：Review Rules（R1–R10）、Review profile（基线期 Verbose）、
-   Review language（中文）、Security Scan 开关均需人工在 Sourcery 仪表盘填写。文本已备在
-   `docs/sourcery/DASHBOARD-SETTINGS.md`。
-2. **Security Scan 未运行**：它只扫默认分支，且 Open Source 计划为受限预览（最多 3 仓库、
-   每周两次、仪表盘最多 10 条）。**可见发现数受计划限制**必须如实记录，不得把"只看到 10 条"
-   当作"只有 10 个问题"。
-3. **本地 Sourcery CLI 不等于 IDE/App Review**：`sourcery-cli` 是 **Python 专用**重构工具，
+1. **Sourcery Security Scan 未运行**：全仓库基线扫描尚未执行。它只扫默认分支，且 Open Source
+   计划为受限预览（最多 3 仓库、每周两次、仪表盘最多 10 条）。**可见发现数受计划限制**，
+   不得把"只看到 10 条"当作"只有 10 个问题"。需人工在网页启用。
+2. **Sourcery IDE「Review current file」未执行**：本次**没有**用 Sourcery 审查过任何现有核心
+   文件。上面的 D1–D5 是**人工 + 本地工具**发现的，不是 Sourcery 发现的。本会话无浏览器/
+   桌面自动化能力，无法代替完成。
+3. **App 安装范围未验证**：只能确认 App 在本仓库产生了 Review；"仅授权本仓库"需要人工确认。
+4. **网页 Review Rules（R1–R10）/ Review profile 未生效**：因此它们**没有**参与本次任何 Review。
+5. **PR #1 未合并**：流程已跑到 re-review，但**未**走到 merge，需人工确认后合并。
+6. **历史提交仍含标识符（详见 `PUBLICATION.md` §2.6）**：`main`（= tag
+   `baseline/pre-sourcery-audit`）的 2 个 UTF-16 `.raw` 文件、以及审计分支的 3 个提交仍含该标识符。
+   **`git grep -I` 会跳过二进制/UTF-16 文件，因此早前用它的检查是假阴性。**
+7. **本地 Sourcery CLI 不等于 IDE/App Review**：`sourcery-cli` 是 **Python 专用**重构工具，
    且对未登录场景要求 token。本仓库主体是 C#，CLI **无法**替代 App Review。
-4. **真机行为未验证**：本次**未**运行任何 CAD。D4 的修复只在纯逻辑层面验证。
-5. **`run-accoreconsole-test.sh` 的限度已记录但未消除**：它接受 `--dwg`，"headless 所以安全"
+8. **真机行为未验证**：本次**未**运行任何 CAD。D4 的修复只在纯逻辑层面验证。
+9. **`run-accoreconsole-test.sh` 的限度已记录但未消除**：它接受 `--dwg`，"headless 所以安全"
    不是已证明的命题。它被列为**有理由的例外**而非"已通过闸门"。
-6. **P1 阶段本身仍为 INCOMPLETE**（G01/G02 NOT_RUN），与本次审计无关但状态未变。
+10. **静态检查的固有限度**：`check-live-gates.py` 是**静态**检查，证明"已审阅源码在已识别的
+    路径上声明了闸门"，**不**证明运行时授权，看不穿任意动态构造，也不是沙箱。真正的保护仍
+    是 `safe_process.py` 的闸门 + 进程归属层。
+11. **P1 阶段本身仍为 INCOMPLETE**（G01/G02 NOT_RUN），与本次审计无关但状态未变。
 
 ---
 

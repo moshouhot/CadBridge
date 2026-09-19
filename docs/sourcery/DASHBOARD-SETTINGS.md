@@ -4,18 +4,32 @@
 Review Rules。仓库里的 `.sourcery.yaml` **不配置** GitHub App —— 它只配置本地 `sourcery`
 CLI（Python 专用重构工具），两者互不影响。
 
-> 状态：**待安装/待填写**。本文件记录"应该怎么配"，不等于"已经配好"。实际配置完成后，
-> 在下方「配置回执」表格里补上证据（截图文件名或日期）。
+> 状态：**部分完成**。GitHub App 已在本仓库产生 PR Review（PR #1，中文）；但 Review profile、
+> Review language、Review rules R1–R10、Security Scan 开关、IDE 文件审查**均尚未完成**，
+> 需项目所有者手工填写。本文件记录"应该怎么配"，不等于"已经配好"。
+> 完成情况以 §7「配置回执」为准。
 
 ---
 
-## 1. 安装 GitHub App（需要项目所有者操作）
+## 1. 安装 GitHub App（✅ 已完成，范围待人工确认）
+
+**已完成**：App 已在本仓库运行（PR #1 上有 `sourcery-ai` 的 `Sourcery review` 检查与中文评论）。
+
+**待人工确认**：安装范围是否为"仅本仓库"。GitHub API 不向普通用户 token 暴露该信息
+（`GET /repos/{owner}/{repo}/installation` 需 App JWT），因此**本会话无法验证**。
+请到 <https://github.com/settings/installations> → Sourcery → 确认
+**Repository access = Only select repositories** 且仅勾选 `CadBridge`。
+
+<details>
+<summary>原始安装步骤（供重新安装或核对时参考）</summary>
 
 1. 打开 <https://github.com/apps/sourcery-ai/installations/new>
 2. 用 **moshouhot** 账号登录。
 3. **Repository access** 选择 **Only select repositories** → 只勾选 **`moshouhot/CadBridge`**。
    不要选 All repositories：本项目是公开仓库，最小授权即可。
 4. 检查权限列表，确认后点 **Install**。
+
+</details>
 
 安装后回到 <https://app.sourcery.ai/dashboard/repo-settings> 选中 `CadBridge`。
 
@@ -221,14 +235,41 @@ feature branch → commit → PR → Sourcery Review → 修复
 
 ## 7. 配置回执（配置完成后填写）
 
+> **重要**：下表是**待办清单**，不是完成记录。截至本文件最后更新，除第一行外**均未完成**。
+> 在全部完成之前，Sourcery 接入状态是 **部分完成**，不得声称已完全接入。
+
 | 项目 | 状态 | 证据 / 日期 |
 |---|---|---|
-| GitHub App 安装（仅 CadBridge） | ☐ 待完成 | |
+| GitHub App 已产生本仓库 PR Review | ✅ 已完成 | PR #1 有 `sourcery-ai` 检查与中文评论 |
+| App 安装范围＝仅 `moshouhot/CadBridge` | ⚠️ **无法用 API 验证**，需人工在设置页确认 | |
 | Review profile = Verbose（基线期） | ☐ 待完成 | |
-| Review language = 中文 | ☐ 待完成 / ☐ 下拉框无中文 | |
+| Review language = 中文（显式设置） | ☐ 待完成（Review 已输出中文，但设置项未显式确认） | |
 | Review rules R1–R10 已粘贴 | ☐ 待完成 | |
 | Security Scan 已启用 | ☐ 待完成 | |
-| 首次 Security Scan 结果已记录 | ☐ 待完成 | |
-| 基线整改 PR 的 Sourcery Review 已跑 | ☐ 待完成 | |
+| 首次 Security Scan 结果已记录（含扫描 SHA） | ☐ 待完成 | |
+| IDE「Review current file」已对核心文件执行 | ☐ 待完成 | |
+| 基线整改 PR 已 merge 到 main | ☐ 待完成（PR #1 保持 open） | |
 
-> 在全部完成之前，Sourcery 接入状态是 **未完成**，不得声称已接入。
+### 7.1 需要项目所有者执行的具体操作
+
+1. **确认 App 安装范围**：<https://github.com/settings/installations> → Sourcery → 确认
+   Repository access 为 **Only select repositories** 且仅勾选 `CadBridge`。
+2. **Review Settings**：<https://app.sourcery.ai/dashboard/review-settings> → Review profile
+   选 **Verbose**；**General** 标签页确认语言为中文；**Review rules** 标签页粘贴本文档 §4 的
+   R1–R10。
+3. **Security Scan**：<https://app.sourcery.ai/dashboard/security/repositories> → 为
+   `CadBridge` 启用 **Scanning enabled**。若计划支持按需扫描则点 **Start Scan**，并记录
+   被扫描的 commit SHA；若为 Open Source 计划（无按需按钮，每周两次），需等待或记录
+   “尚未运行”。**同时记录仪表盘可见发现数是否被计划上限（10 条）截断。**
+4. **IDE 审查现有核心文件**：在 VS Code / JetBrains 中打开本仓库，对下列文件逐个执行
+   Sourcery 面板的 **Review current file**，并导出/截图发现：
+   - `tools/safe_process.py`（进程归属与安全闸，最高风险）
+   - `tools/dap-probe.py`、`tools/dap-session.py`（DAP 分帧与超时）
+   - `tools/make-manifest.py`（证据持久化）
+   - `tools/t01-5-repl-plugin-read.py`（真机编排）
+   - `src/Plugin.Shared/DiagnosticsCommands.cs`、`src/Plugin.Shared/RadiusPromptPolicy.cs`
+   - `src/Plugin.Shared/LiveReadLispFunction.cs`（并发/重入）
+   - `src/Plugin.Shared/RuntimeInfo.cs`（防止常量冒充测量值）
+5. **决定是否重写 `main` 历史**：`main` 仍含 2 处标识符（UTF-16 `.raw`，见
+   `docs/evidence/PUBLICATION.md` §2.5b）。重写会移动 tag `baseline/pre-sourcery-audit`
+   （审计回退目标），因此需项目所有者决定，本会话未自作主张执行。
