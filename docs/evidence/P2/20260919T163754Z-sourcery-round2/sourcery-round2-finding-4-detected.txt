@@ -1,0 +1,2 @@
+live-gate check FAILED with 1 problem(s)
+  FAIL  cad-launcher: UNCLASSIFIED executable script (detected by shebang). Every script must be declared in GATED, LIVE_EXCEPTIONS, GATE_MECHANISM, RETIRED_HARNESSES or NON_LIVE, so a new live harness cannot slip in unexamined.

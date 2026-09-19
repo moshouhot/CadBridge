@@ -206,16 +206,26 @@ def main() -> int:
                 verb = "would redact" if args.dry_run else "redacted"
                 print(f"  {verb} {n:3d} occurrence(s)  {p}")
 
+    # Files that are not decodable text (binaries, .dll, .pdb) are excluded from the scan by
+    # design, and that exclusion must be EXPLICIT rather than an accident of decoding failure.
+    # Anything else that fails to decode is an UNVERIFIED file: reporting PASS for it would be
+    # a false clean, so --check fails instead. This was a real defect -- an undecodable tracked
+    # file produced "PASS no local machine identifier" while never having been scanned.
+    unexpected = [u for u in undecodable
+                  if pathlib.Path(u.split(":", 1)[0]).suffix.lower() not in SKIP_SUFFIXES]
+
     if undecodable:
-        print(f"  WARN  {len(undecodable)} file(s) could not be decoded and were NOT scanned:")
+        print(f"  WARN  {len(undecodable)} file(s) not scanned:")
         for u in undecodable[:20]:
             print(f"          {u}")
-        # Files that are not text at all are expected (binaries, .raw captures). Report them
-        # so the coverage gap is visible, but do not fail the check on them.
-        print("        (non-text files are expected to be listed here; they are out of scope "
-              "for text scrubbing but must not be mistaken for verified-clean)")
 
     if args.check:
+        if unexpected:
+            print(f"  FAIL  {len(unexpected)} file(s) could not be decoded and were therefore "
+                  f"NOT scanned for the identifier. Reporting a clean result would be a false "
+                  f"clean. Decode them, add the suffix to SKIP_SUFFIXES with a reason, or scan "
+                  f"them at the byte level.", file=sys.stderr)
+            return 1
         if total:
             print(f"  FAIL  local identifier found in {len(hit_files)} tracked file(s), "
                   f"{total} occurrence(s):")

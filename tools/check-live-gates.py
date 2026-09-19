@@ -171,14 +171,71 @@ def _all_registries() -> dict[str, str]:
     return merged
 
 
-def _gate_binding_is_safe(tree: ast.AST) -> tuple[set[str], list[str]]:
-    """Names safely bound to safe_process, and reasons a binding was rejected.
+def _rebindings(tree: ast.AST, names: set[str]) -> dict[str, list[str]]:
+    """Every way `names` is rebound or shadowed anywhere in the file.
 
-    A name is safe only if it is bound by `import safe_process [as X]` and is NEVER rebound
-    elsewhere in the file (assignment, for-target, with-target, parameter, del) and never
-    shadowed by a function parameter. Otherwise a later `X.require_safety_review_passed()`
-    may call something else entirely, so the binding is rejected.
+    A name bound by an import is only safe to trust if nothing later rebinds it. This is the
+    single analysis used for BOTH the module alias (`import safe_process as sp`) and the
+    directly imported gate function (`from safe_process import require_safety_review_passed
+    as gate`). Applying it to only one of them was a real defect: a harness could import the
+    gate function directly, reassign it to a no-op lambda, and still be reported as gated.
     """
+    rebinds: dict[str, list[str]] = {}
+
+    def note(name: str, why: str) -> None:
+        rebinds.setdefault(name, []).append(why)
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for tgt in node.targets:
+                for sub in ast.walk(tgt):
+                    if isinstance(sub, ast.Name) and sub.id in names:
+                        note(sub.id, f"assigned at line {node.lineno}")
+        elif isinstance(node, (ast.AugAssign, ast.AnnAssign)):
+            for sub in ast.walk(node.target):
+                if isinstance(sub, ast.Name) and sub.id in names:
+                    note(sub.id, f"rebound at line {node.lineno}")
+        elif isinstance(node, (ast.For, ast.AsyncFor)):
+            for sub in ast.walk(node.target):
+                if isinstance(sub, ast.Name) and sub.id in names:
+                    note(sub.id, f"for-target at line {node.lineno}")
+        elif isinstance(node, (ast.With, ast.AsyncWith)):
+            for item in node.items:
+                if item.optional_vars:
+                    for sub in ast.walk(item.optional_vars):
+                        if isinstance(sub, ast.Name) and sub.id in names:
+                            note(sub.id, f"with-target at line {node.lineno}")
+        elif isinstance(node, ast.Delete):
+            for tgt in node.targets:
+                for sub in ast.walk(tgt):
+                    if isinstance(sub, ast.Name) and sub.id in names:
+                        note(sub.id, f"deleted at line {node.lineno}")
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+            a = node.args
+            params = list(a.posonlyargs) + list(a.args) + list(a.kwonlyargs)
+            if a.vararg:
+                params.append(a.vararg)
+            if a.kwarg:
+                params.append(a.kwarg)
+            label = getattr(node, "name", "lambda")
+            for prm in params:
+                if prm.arg in names:
+                    note(prm.arg, f"shadowed by parameter of {label}() at line {node.lineno}")
+        elif isinstance(node, (ast.Global, ast.Nonlocal)):
+            for n in node.names:
+                if n in names:
+                    note(n, f"declared {type(node).__name__} at line {node.lineno}")
+        elif isinstance(node, ast.ImportFrom):
+            # A later re-import from a different module rebinds the name.
+            for a in node.names:
+                local = a.asname or a.name
+                if local in names and node.module != GATE_MODULE:
+                    note(local, f"re-imported from {node.module!r} at line {node.lineno}")
+    return rebinds
+
+
+def _gate_binding_is_safe(tree: ast.AST) -> tuple[set[str], list[str]]:
+    """Names safely bound to safe_process, and reasons a binding was rejected."""
     imported: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -189,65 +246,37 @@ def _gate_binding_is_safe(tree: ast.AST) -> tuple[set[str], list[str]]:
     if not imported:
         return set(), []
 
-    rebinds: dict[str, list[str]] = {}
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Assign):
-            for tgt in node.targets:
-                for sub in ast.walk(tgt):
-                    if isinstance(sub, ast.Name) and sub.id in imported:
-                        rebinds.setdefault(sub.id, []).append(f"assigned at line {node.lineno}")
-        elif isinstance(node, (ast.AugAssign, ast.AnnAssign)):
-            tgt = node.target
-            if isinstance(tgt, ast.Name) and tgt.id in imported:
-                rebinds.setdefault(tgt.id, []).append(f"rebound at line {node.lineno}")
-        elif isinstance(node, (ast.For, ast.AsyncFor)):
-            for sub in ast.walk(node.target):
-                if isinstance(sub, ast.Name) and sub.id in imported:
-                    rebinds.setdefault(sub.id, []).append(f"for-target at line {node.lineno}")
-        elif isinstance(node, ast.Delete):
-            for sub in node.targets:
-                for s in ast.walk(sub):
-                    if isinstance(s, ast.Name) and s.id in imported:
-                        rebinds.setdefault(s.id, []).append(f"deleted at line {node.lineno}")
-        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
-            a = node.args
-            params = list(a.posonlyargs) + list(a.args) + list(a.kwonlyargs)
-            if a.vararg:
-                params.append(a.vararg)
-            if a.kwarg:
-                params.append(a.kwarg)
-            for p in params:
-                if p.arg in imported:
-                    rebinds.setdefault(p.arg, []).append(
-                        f"shadowed by parameter of {getattr(node, 'name', 'lambda')} "
-                        f"at line {node.lineno}")
-        elif isinstance(node, ast.Global) or isinstance(node, ast.Nonlocal):
-            for n in node.names:
-                if n in imported:
-                    rebinds.setdefault(n, []).append(f"declared {type(node).__name__} at line {node.lineno}")
-
-    reasons: list[str] = []
-    for name in sorted(rebinds):
-        reasons.append(f"binding '{name}' from `import {GATE_MODULE}` is not safe: "
-                       + "; ".join(sorted(set(rebinds[name]))))
+    rebinds = _rebindings(tree, imported)
+    reasons = [f"binding '{n}' from `import {GATE_MODULE}` is not safe: " + "; ".join(sorted(set(v)))
+               for n, v in sorted(rebinds.items())]
     return imported - set(rebinds), reasons
 
 
-def _direct_gate_imports(tree: ast.AST) -> set[str]:
-    """Names imported directly from safe_process (`from safe_process import <gate> as X`)."""
+def _direct_gate_imports(tree: ast.AST) -> tuple[set[str], list[str]]:
+    """Names imported directly from safe_process, with the SAME rebinding analysis.
+
+    `from safe_process import require_safety_review_passed as gate` binds the gate function
+    itself, so a later `gate = lambda *a: None` defeats the gate. Trusting the import without
+    checking for reassignment was a real defect; this now reuses _rebindings.
+    """
     names: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom) and node.module == GATE_MODULE:
             for a in node.names:
                 if a.name == GATE_FUNC:
                     names.add(a.asname or a.name)
-    return names
+    if not names:
+        return set(), []
+    rebinds = _rebindings(tree, names)
+    reasons = [f"direct import '{n}' of {GATE_FUNC} is not safe: " + "; ".join(sorted(set(v)))
+               for n, v in sorted(rebinds.items())]
+    return names - set(rebinds), reasons
 
 
 def _resolved_gate_calls(tree: ast.AST) -> tuple[list[ast.Call], list[str]]:
     """Calls that provably resolve to safe_process.require_safety_review_passed."""
     safe_names, unsafe_reasons = _gate_binding_is_safe(tree)
-    direct = _direct_gate_imports(tree)
+    direct, direct_reasons = _direct_gate_imports(tree)
     out: list[ast.Call] = []
     suspicious: list[str] = []
     for node in ast.walk(tree):
@@ -260,29 +289,58 @@ def _resolved_gate_calls(tree: ast.AST) -> tuple[list[ast.Call], list[str]]:
                 if recv.id in safe_names:
                     out.append(node)
                 else:
-                    # Mentions the gate by name but on an unverified receiver.
                     suspicious.append(
                         f"line {node.lineno}: calls {recv.id}.{GATE_FUNC}() but '{recv.id}' is "
                         f"not a safely-bound {GATE_MODULE} import"
                     )
         elif isinstance(fn, ast.Name) and fn.id in direct:
             out.append(node)
-    return out, unsafe_reasons + suspicious
+    return out, unsafe_reasons + direct_reasons + suspicious
 
 
-def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> bool:
+def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> tuple[bool, str]:
+    """Does a resolved gate call sit inside a branch taken WHEN LIVE INTENT IS TRUE?
+
+    Polarity matters. Searching the rendered condition for the text 'live' accepted
+    `if not live_intent:` -- where the gate runs only on the OFFLINE path and is skipped for a
+    real CAD run, the exact opposite of what is wanted. The condition is therefore inspected
+    structurally: the gate must be reachable when the live-intent expression is truthy.
+    """
     call_lines = {c.lineno for c in calls}
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.If):
-            continue
-        cond = ast.unparse(node.test)
-        if "live_intent" not in cond and "live" not in cond.lower():
-            continue
-        for stmt in node.body:
+
+    def contains_gate(body: list[ast.stmt]) -> bool:
+        for stmt in body:
             for sub in ast.walk(stmt):
                 if isinstance(sub, ast.Call) and sub.lineno in call_lines:
                     return True
-    return False
+        return False
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.If):
+            continue
+        test = node.test
+        # Only conditions that actually reference live intent are considered.
+        names = {n.id for n in ast.walk(test) if isinstance(n, ast.Name)}
+        attrs = {n.attr for n in ast.walk(test) if isinstance(n, ast.Attribute)}
+        rendered = ast.unparse(test)
+        if not ("live_intent" in names or "live_intent" in attrs or "live_intent" in rendered):
+            continue
+
+        if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
+            # `if not live_intent:` -- the body is the OFFLINE path. A gate there is wrong.
+            if contains_gate(node.body):
+                return False, (f"line {node.lineno}: gate runs when live intent is FALSE "
+                               f"(`if not live_intent:`), so a live CAD run skips it")
+            # An `else` branch of a negated test IS the live path.
+            if node.orelse and contains_gate(node.orelse):
+                return True, ""
+            continue
+
+        # Positive condition: the body is the live path.
+        if contains_gate(node.body):
+            return True, ""
+
+    return False, "no gate call is reachable on the live-intent path"
 
 
 def _shell_invokes_gate(path: pathlib.Path) -> bool:
@@ -296,31 +354,97 @@ def _shell_invokes_gate(path: pathlib.Path) -> bool:
 
 
 def _env_reads(path: pathlib.Path) -> list[str]:
+    """Environment variables actually READ, including via aliases and direct imports.
+
+    Recognising only `os.environ[...]` and a couple of attribute forms was a real defect: a
+    harness could do `from os import environ` or `env = os.environ` and then read
+    `environ.get("CBRIDGE_ACK_...")` / `env[...]` without the checker noticing.
+    """
     names: list[str] = []
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
     except SyntaxError:
         return names
+
+    # Aliases that resolve to the process environment mapping.
+    env_aliases: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module == "os":
+            for a in node.names:
+                if a.name == "environ":
+                    env_aliases.add(a.asname or a.name)
+        elif isinstance(node, ast.Assign):
+            # `env = os.environ` / `env = os.environ.copy()`
+            src = node.value
+            if isinstance(src, ast.Attribute) and src.attr == "environ":
+                for tgt in node.targets:
+                    if isinstance(tgt, ast.Name):
+                        env_aliases.add(tgt.id)
+            elif isinstance(src, ast.Call) and isinstance(src.func, ast.Attribute) \
+                    and src.func.attr in ("copy", "copy_env") \
+                    and isinstance(src.func.value, ast.Attribute) \
+                    and src.func.value.attr == "environ":
+                for tgt in node.targets:
+                    if isinstance(tgt, ast.Name):
+                        env_aliases.add(tgt.id)
+
+    def is_env_mapping(node: ast.AST) -> bool:
+        if isinstance(node, ast.Attribute) and node.attr == "environ":
+            return True
+        if isinstance(node, ast.Name) and node.id in env_aliases:
+            return True
+        # os.environ.copy()
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
+                and node.func.attr == "copy" and is_env_mapping(node.func.value):
+            return True
+        return False
+
     for node in ast.walk(tree):
         if isinstance(node, ast.Subscript):
-            base = node.value
-            if isinstance(base, ast.Attribute) and base.attr == "environ":
+            if is_env_mapping(node.value):
                 key = node.slice
                 if isinstance(key, ast.Constant) and isinstance(key.value, str):
                     names.append(key.value)
         elif isinstance(node, ast.Call):
             fn = node.func
             fname = fn.attr if isinstance(fn, ast.Attribute) else (fn.id if isinstance(fn, ast.Name) else None)
+            if fname not in ("get", "getenv", "pop", "setdefault") or not node.args:
+                continue
+            is_env = (
+                (fname == "getenv" and isinstance(fn, ast.Attribute))
+                or (isinstance(fn, ast.Attribute) and is_env_mapping(fn.value))
+                or (isinstance(fn, ast.Name) and fn.id in env_aliases)
+            )
+            if is_env:
+                a0 = node.args[0]
+                if isinstance(a0, ast.Constant) and isinstance(a0.value, str):
+                    names.append(a0.value)
+
+    # Broad safety net for the case where the variable name is built dynamically (f-strings,
+    # concatenation, a constant table). Only expressions that FEED an environment access are
+    # considered, so documentation that merely describes the removed bypass is not flagged --
+    # an earlier version scanned every string literal and produced false positives on
+    # docstrings.
+    env_call_sources: list[ast.AST] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Subscript) and is_env_mapping(node.value):
+            env_call_sources.append(node.slice)
+        elif isinstance(node, ast.Call):
+            fn = node.func
+            fname = fn.attr if isinstance(fn, ast.Attribute) else (fn.id if isinstance(fn, ast.Name) else None)
             if fname in ("get", "getenv", "pop", "setdefault") and node.args:
-                is_environ = (
-                    (isinstance(fn, ast.Attribute) and fn.attr == "getenv")
-                    or (isinstance(fn, ast.Attribute) and isinstance(fn.value, ast.Attribute)
-                        and fn.value.attr == "environ")
+                is_env = (
+                    (fname == "getenv" and isinstance(fn, ast.Attribute))
+                    or (isinstance(fn, ast.Attribute) and is_env_mapping(fn.value))
+                    or (isinstance(fn, ast.Name) and fn.id in env_aliases)
                 )
-                if is_environ:
-                    a0 = node.args[0]
-                    if isinstance(a0, ast.Constant) and isinstance(a0.value, str):
-                        names.append(a0.value)
+                if is_env:
+                    env_call_sources.append(node.args[0])
+    for src in env_call_sources:
+        for sub in ast.walk(src):
+            if isinstance(sub, ast.Constant) and isinstance(sub.value, str) \
+                    and "CBRIDGE_ACK" in sub.value:
+                names.append(sub.value)
     return names
 
 
@@ -396,31 +520,75 @@ def _ps_live_signal(path: pathlib.Path) -> tuple[bool, str]:
     return False, ""
 
 
+def _is_executable_script(p: pathlib.Path) -> tuple[bool, str]:
+    """Is this file an executable script, by suffix OR by shebang?
+
+    Suffix-only detection missed an extensionless executable with a shebang, which is a real
+    bypass: adding `tools/cad-launcher` (a shebang script) produced no unclassified-script
+    error and no gate check. Shebang-bearing files are therefore in scope regardless of name.
+    """
+    if p.suffix.lower() in SCRIPT_SUFFIXES:
+        return True, "suffix"
+    try:
+        with p.open("rb") as fh:
+            head = fh.read(256)
+    except OSError:
+        return False, ""
+    if head.startswith(b"#!"):
+        return True, "shebang"
+    return False, ""
+
+
 def check(tools: pathlib.Path) -> list[str]:
     problems: list[str] = []
     registries = _all_registries()
 
     # --- coverage: every executable script at any depth must be classified -----------
-    found: list[pathlib.Path] = []
+    #
+    # Classification is keyed by the path RELATIVE to tools/, not by basename. Keying by
+    # basename let `subdir/safe_process.py` inherit the GATE_MECHANISM entry for
+    # `safe_process.py`, so a live harness could pick a colliding name and be neither gated
+    # nor rejected. Basename collisions across different directories are also rejected, so a
+    # registry entry can never silently cover two files.
+    found: list[tuple[pathlib.Path, str]] = []
     for p in sorted(tools.rglob("*")):
-        if p.is_file() and p.suffix.lower() in SCRIPT_SUFFIXES:
-            found.append(p)
-    found_names = {p.name for p in found}
-    for p in found:
-        if p.name not in registries:
+        if not p.is_file():
+            continue
+        ok, why = _is_executable_script(p)
+        if ok:
+            found.append((p, why))
+
+    by_rel = {p.relative_to(tools).as_posix(): (p, why) for p, why in found}
+    by_name: dict[str, list[str]] = {}
+    for rel in by_rel:
+        by_name.setdefault(pathlib.PurePosixPath(rel).name, []).append(rel)
+
+    for rel, (p, why) in sorted(by_rel.items()):
+        if rel not in registries:
             problems.append(
-                f"{p.relative_to(tools)}: UNCLASSIFIED executable script. Every script must be "
-                f"declared in GATED, LIVE_EXCEPTIONS, GATE_MECHANISM, RETIRED_HARNESSES or "
-                f"NON_LIVE, so that a new live harness cannot slip in unexamined."
+                f"{rel}: UNCLASSIFIED executable script (detected by {why}). Every script must "
+                f"be declared in GATED, LIVE_EXCEPTIONS, GATE_MECHANISM, RETIRED_HARNESSES or "
+                f"NON_LIVE, so a new live harness cannot slip in unexamined."
             )
+
     for name in sorted(registries):
-        if name not in found_names:
+        if name not in by_rel:
             problems.append(f"{name}: classified but no such script exists (stale registry entry)")
 
+    # Reject basename collisions: two different paths sharing a name would make a basename-keyed
+    # registry ambiguous, and a nested file could inherit another file's classification.
+    for base, rels in sorted(by_name.items()):
+        if len(rels) > 1 and base in registries:
+            problems.append(
+                f"basename collision for {base!r}: {rels}. The registry is keyed by basename, so "
+                f"a nested file would inherit another file's classification. Rename one, or key "
+                f"the registry by path."
+            )
+
     # --- per-file checks -------------------------------------------------------------
-    for p in found:
-        name = p.name
-        if name not in registries:
+    for rel, (p, why_detected) in sorted(by_rel.items()):
+        name = pathlib.PurePosixPath(rel).name
+        if rel not in registries:
             continue
         suffix = p.suffix.lower()
         if suffix == ".py":
@@ -432,59 +600,68 @@ def check(tools: pathlib.Path) -> list[str]:
         else:
             live, why = False, ""
 
-        classified_non_live = name in NON_LIVE
-        if live and classified_non_live:
+        if live and rel in NON_LIVE:
             problems.append(
-                f"{name}: classified non-live ({NON_LIVE[name]}) but behavioural discovery says "
+                f"{rel}: classified non-live ({NON_LIVE[rel]}) but behavioural discovery says "
                 f"it is live ({why}); the classification is wrong"
             )
             continue
 
-        if name in GATED:
+        if rel in GATED:
             if suffix == ".py":
                 try:
                     tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
                 except SyntaxError as e:
-                    problems.append(f"{name}: cannot parse: {e}")
+                    problems.append(f"{rel}: cannot parse: {e}")
                     continue
                 calls, suspicious = _resolved_gate_calls(tree)
                 if not calls:
                     detail = ("; ".join(suspicious) if suspicious
                               else "no call to the gate at all")
                     problems.append(
-                        f"{name}: live entrypoint with no call resolving to a safely-bound "
+                        f"{rel}: live entrypoint with no call resolving to a safely-bound "
                         f"{GATE_MODULE}.{GATE_FUNC}() ({detail})"
                     )
                     continue
                 if suspicious:
-                    problems.append(f"{name}: {suspicious[0]}")
-                if GATED[name] == "conditional":
-                    if not _guard_mentions_live_intent(tree, calls):
+                    problems.append(f"{rel}: {suspicious[0]}")
+                if GATED[rel] == "conditional":
+                    ok_guard, reason = _guard_mentions_live_intent(tree, calls)
+                    if not ok_guard:
                         problems.append(
-                            f"{name}: gate call is not guarded by a live-intent condition, so it "
-                            f"cannot distinguish offline probing from a live CAD run"
+                            f"{rel}: gate is not on the live-intent path, so a real CAD run "
+                            f"could skip it ({reason})"
                         )
             elif suffix in (".sh", ".bash"):
                 if not _shell_invokes_gate(p):
                     problems.append(
-                        f"{name}: gated entrypoint with no non-comment line invoking "
+                        f"{rel}: gated entrypoint with no non-comment line invoking "
                         f"safe_process.py --gate"
                     )
+            else:
+                # A gated entrypoint that is neither Python nor shell (e.g. a shebang script
+                # with no suffix) cannot be verified, so refuse rather than assume.
+                problems.append(
+                    f"{rel}: classified as GATED but its type ({suffix or 'no suffix'}) cannot "
+                    f"be verified for a gate call; use Python/shell or move it to LIVE_EXCEPTIONS "
+                    f"with a reason"
+                )
 
-        if name in RETIRED_HARNESSES and suffix in (".sh", ".bash"):
+        if rel in RETIRED_HARNESSES and suffix in (".sh", ".bash"):
             if not _shell_invokes_gate(p):
                 problems.append(
-                    f"{name}: retired harness no longer routes through safe_process.py --gate, so "
+                    f"{rel}: retired harness no longer routes through safe_process.py --gate, so "
                     f"an old command would fail silently instead of loudly"
                 )
 
     # --- no environment-variable bypass ----------------------------------------------
     for f in sorted(tools.rglob("*.py")):
-        for name in _env_reads(f):
-            if "CBRIDGE_ACK" in name:
+        for envname in _env_reads(f):
+            if "CBRIDGE_ACK" in envname:
                 problems.append(
-                    f"{f.name}: reads environment variable {name!r}; an environment variable must "
-                    f"never bypass the live-run gate"
+                    f"{f.relative_to(tools)}: reads environment variable {envname!r} (directly, "
+                    f"via an alias, or as a literal); an environment variable must never bypass "
+                    f"the live-run gate"
                 )
 
     if not problems:

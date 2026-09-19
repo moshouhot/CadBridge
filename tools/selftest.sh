@@ -358,6 +358,19 @@ mutation_caught "new live harness with a computed exe path (invisible to discove
 mutation_caught "PowerShell script that really starts a CAD host" \
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"launch-cad.ps1").write_text("Start-Process -FilePath chr(34)+" + chr(39) + "acad.exe" + chr(39) + "\n", encoding="utf-8")'
 
+# Regressions for the six defects Sourcery found in the SECOND full review of this PR. Every
+# one was reproduced against the checker as it stood before being fixed.
+mutation_caught "gate function imported directly then reassigned" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import safe_process as sp\nfrom safe_process import require_safety_review_passed as gate"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py live mode\")", "        gate = lambda *a, **k: None\n        gate(\"dap-probe.py live mode\")"); p.write_text(t, encoding="utf-8")'
+mutation_caught "live-intent guard polarity inverted" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    if live_intent:", "    if not live_intent:"); p.write_text(t, encoding="utf-8")'
+mutation_caught "nested script reusing a registry basename" \
+  'import pathlib as _pl; d = _pl.Path(sys.argv[1])/"subdir"; d.mkdir(exist_ok=True); (d/"safe_process.py").write_text("import subprocess\nsubprocess.Popen([chr(39)+chr(97)+chr(99)+chr(97)+chr(100)+chr(46)+chr(101)+chr(120)+chr(101)+chr(39)])\n", encoding="utf-8")'
+mutation_caught "extensionless executable with a shebang" \
+  'import pathlib as _pl; (_pl.Path(sys.argv[1])/"cad-launcher").write_text("#!/usr/bin/env python3\nimport subprocess\nsubprocess.Popen([chr(39)+chr(97)+chr(99)+chr(97)+chr(100)+chr(46)+chr(101)+chr(120)+chr(101)+chr(39)])\n", encoding="utf-8")'
+mutation_caught "environment read through an aliased environ mapping" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import os as _os\nimport safe_process as sp\nenv = _os.environ"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py live mode\")", "        if env.get(\"CBRIDGE_ACK_UNREVIEWED_LIVE\"):\n            pass\n        sp.require_safety_review_passed(\"dap-probe.py live mode\")"); p.write_text(t, encoding="utf-8")'
+
 # Privacy guard: the local account/machine identifier must never appear in a tracked file.
 # It leaked THREE times during this audit -- the P0/P1 artifacts, the P1 .raw evidence files,
 # and the P2 build log produced while fixing the first leak -- so it is now a checked
@@ -391,6 +404,25 @@ PYEOF
       pass=$((pass+1))
     fi
   done
+
+  # An undecodable tracked file must NOT be reported as a clean result: that would be a false
+  # clean for a file that was never scanned. Reproduced against the previous version, which
+  # printed PASS while warning that the file was skipped.
+  BIN_DIR="$TMP/undecodable"
+  mkdir -p "$BIN_DIR"
+  python - "$BIN_DIR" <<'PYEOF'
+import pathlib, sys
+d = pathlib.Path(sys.argv[1])
+d.joinpath("opaque.bin").write_bytes(bytes(range(256)) * 4)
+PYEOF
+  if CB_REDACT_IDENTIFIER="$CB_REDACT_IDENTIFIER" python "$TOOLS/redact-evidence.py" \
+       --check "$BIN_DIR" >/dev/null 2>&1; then
+    echo "  FAIL  an unscannable file was reported as a clean result (false clean)"
+    fail=$((fail+1))
+  else
+    echo "  PASS  an unscannable file fails --check instead of reporting a false clean"
+    pass=$((pass+1))
+  fi
 else
   echo "  SKIP  identifier check (CB_REDACT_IDENTIFIER not set in this environment)"
 fi

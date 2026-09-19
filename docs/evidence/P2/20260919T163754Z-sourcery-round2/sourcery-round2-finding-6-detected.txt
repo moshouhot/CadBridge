@@ -1,0 +1,3 @@
+live-gate check FAILED with 2 problem(s)
+  FAIL  dap-probe.py: reads environment variable 'CBRIDGE_ACK_UNREVIEWED_LIVE' (directly, via an alias, or as a literal); an environment variable must never bypass the live-run gate
+  FAIL  dap-probe.py: reads environment variable 'CBRIDGE_ACK_UNREVIEWED_LIVE' (directly, via an alias, or as a literal); an environment variable must never bypass the live-run gate

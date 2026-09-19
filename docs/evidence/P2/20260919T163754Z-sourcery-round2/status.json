@@ -1,0 +1,15 @@
+{"tests":[
+ {"id":"R2-1","name":"selftest suite incl. 15 gate mutations, privacy guard, encoding + false-clean fixtures","expected":"all pass, exit 0","actual":"41 passed, 0 failed, exit 0","status":"PASS","evidence":["selftest.txt"]},
+ {"id":"R2-2","name":"Sourcery round-2 finding 1: direct gate import reassigned","expected":"detected","actual":"exit 1","status":"PASS","evidence":["sourcery-round2-finding-1-detected.txt"]},
+ {"id":"R2-3","name":"Sourcery round-2 finding 2: live-intent guard polarity inverted","expected":"detected","actual":"exit 1; gate is not on the live path","status":"PASS","evidence":["sourcery-round2-finding-2-detected.txt"]},
+ {"id":"R2-4","name":"Sourcery round-2 finding 3: nested script reusing a registry basename","expected":"detected","actual":"exit 1; basename collision + unclassified path","status":"PASS","evidence":["sourcery-round2-finding-3-detected.txt"]},
+ {"id":"R2-5","name":"Sourcery round-2 finding 4: extensionless executable with a shebang","expected":"detected","actual":"exit 1; shebang detection puts it in scope","status":"PASS","evidence":["sourcery-round2-finding-4-detected.txt"]},
+ {"id":"R2-6","name":"Sourcery round-2 finding 5: undecodable file reported as a false clean","expected":"--check fails","actual":"exit 1; unscanned files no longer yield PASS","status":"PASS","evidence":["sourcery-round2-finding-5-detected.txt"]},
+ {"id":"R2-7","name":"Sourcery round-2 finding 6: environment read via an aliased environ mapping","expected":"detected","actual":"exit 1","status":"PASS","evidence":["sourcery-round2-finding-6-detected.txt"]},
+ {"id":"R2-8","name":"Live AutoCAD behaviour re-verified","expected":"n/a","actual":"NOT RUN: no CAD session started","status":"N/A","evidence":[]}
+],"notes":[
+ "All six findings from Sourcery's second full review (requested via @sourcery-ai review after the automatic re-review limit was reached) were reproduced against the previous checker before being fixed.",
+ "Each is now a permanent mutation test in selftest.sh.",
+ "No AutoCAD, CoreConsole or debug adapter process was started.",
+ "Sourcery Security Scan and the IDE 'Review current file' workflow remain unrun: both need the web UI."
+]}
