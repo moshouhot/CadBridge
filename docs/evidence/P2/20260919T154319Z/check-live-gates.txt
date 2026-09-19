@@ -1,0 +1,1 @@
+  PASS  all live CAD entrypoints are gated (tools)

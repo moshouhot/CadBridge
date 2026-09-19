@@ -26,7 +26,9 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
 
 SKIP_DIRS = {".git", "bin", "obj", "node_modules"}
@@ -101,6 +103,37 @@ def validate_tests(tests: list[dict], root: Path) -> list[str]:
     return problems
 
 
+def write_manifest_atomically(out: Path, manifest: dict) -> None:
+    """Write the manifest via a temp file + atomic replace.
+
+    WHY: the manifest is the artifact that makes the rest of the evidence checkable. A direct
+    write_text() truncates the destination first, so an interruption (disk full, Ctrl-C, a
+    crash) leaves a PARTIAL manifest in place. A truncated manifest is worse than no manifest
+    at all: it still parses as JSON in many cases and still looks like evidence, while the
+    hashes it should guarantee are silently wrong or absent.
+
+    os.replace() is atomic on the same filesystem, so a reader sees either the previous
+    complete manifest or the new complete one, never a half-written file.
+    """
+    payload = json.dumps(manifest, indent=2, ensure_ascii=False)
+    # Keep the temp file in the same directory so the replace cannot cross a filesystem
+    # boundary (which would make it a copy + delete instead of an atomic rename).
+    fd, tmp_name = tempfile.mkstemp(dir=str(out.parent), prefix=MANIFEST_NAME + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="") as fh:
+            fh.write(payload)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(tmp_name, out)
+    except BaseException:
+        # Never leave a temp file behind, and never leave the previous manifest damaged.
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("run_dir")
@@ -118,6 +151,23 @@ def main() -> int:
 
     artifacts, problems = collect_artifacts(root)
 
+    out = root / MANIFEST_NAME
+    # PRESERVE NON-DERIVED CONTENT.
+    #
+    # WHY: this tool regenerates `artifacts` (hashes) and `validation` (fresh problems). But
+    # a manifest also carries blocks that are NOT derivable from the directory: the recorded
+    # test results, and the publication `redactions` provenance block. Re-running the tool
+    # without --status-file used to silently DROP them -- observed in practice: a regeneration
+    # reduced a 13-test manifest to 0 tests and erased the redaction provenance, while still
+    # printing "validation OK". That is exactly the class of quiet evidence loss this project
+    # forbids, so existing blocks are now carried forward unless explicitly replaced.
+    previous: dict = {}
+    if out.is_file():
+        try:
+            previous = json.loads(out.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            previous = {}
+
     tests: list[dict] = []
     if args.status_file:
         sf = Path(args.status_file)
@@ -126,6 +176,9 @@ def main() -> int:
                 tests = json.loads(sf.read_text(encoding="utf-8")).get("tests", [])
             except json.JSONDecodeError as e:
                 problems.append(f"status file is not valid JSON: {e}")
+    elif previous.get("tests"):
+        # No status file supplied: keep what was recorded rather than erasing it.
+        tests = previous["tests"]
 
     if not args.no_validate:
         problems += validate_tests(tests, root)
@@ -155,8 +208,19 @@ def main() -> int:
         if ep.is_file():
             manifest.update(json.loads(ep.read_text(encoding="utf-8")))
 
-    out = root / MANIFEST_NAME
-    out.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    # Carry forward provenance blocks that this tool cannot derive. `redactions` in
+    # particular documents that published bytes differ from the originally captured ones;
+    # losing it would make the published hashes look unexplained.
+    if "redactions" in previous and "redactions" not in manifest:
+        manifest["redactions"] = previous["redactions"]
+        manifest.setdefault("notes", [])
+        if not any("REDACTION" in n for n in manifest["notes"]):
+            manifest["notes"].append(
+                "REDACTION: preserved from the previous manifest; some artifact hashes cover "
+                "bytes that differ from the originally captured ones."
+            )
+
+    write_manifest_atomically(out, manifest)
     print(f"WROTE {out}  ({len(artifacts)} artifacts, {len(tests)} tests)")
 
     if problems:

@@ -1,0 +1,36 @@
+== pathconv ==
+  PASS  to-win converts /f/a/b
+  PASS  to-msys converts F:\a\b
+  PASS  to-win-slash converts /f/a/b
+  PASS  unknown mode fails
+== decoder ==
+  PASS  decodes UTF-16LE
+  PASS  decodes UTF-8
+  PASS  missing input fails
+== accoreconsole harness: argument validation ==
+  PASS  missing --plugin rejected
+  PASS  missing accoreconsole rejected
+  PASS  missing plugin rejected
+== script generation: last line must be newline-terminated ==
+  PASS  script has 4 newline-terminated lines
+== manifest validation ==
+  PASS  valid manifest accepted
+  PASS  non-vocabulary status rejected
+  PASS  missing evidence path rejected
+  PASS  empty JSON artifact rejected
+  PASS  regeneration preserves tests and redaction provenance
+  PASS  failed manifest write preserves the previous manifest (atomic)
+== safety: no unverified process termination in tooling ==
+  PASS  no unverified termination or COM Dispatch fallback in tooling
+  PASS  safe_process self-test passes
+  PASS  repl probe offline tests pass (fakes, no CAD)
+  PASS  no unguarded SystemExit inside finally blocks
+  PASS  no directory-scan PID adoption in tooling
+  PASS  no caller-built ownership records
+  PASS  every live CAD entrypoint is gated (AST-checked)
+  PASS  mutation detected: dap-probe gate call deleted
+  PASS  mutation detected: t01-5 harness gate replaced by comment
+  PASS  mutation detected: retired GUI harness gate removed
+  PASS  safety gate refuses live harnesses by default
+
+self-tests: 23 passed, 0 failed

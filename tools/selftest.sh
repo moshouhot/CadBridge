@@ -54,20 +54,16 @@ FAKE_ACAD="$TMP/fakeacad"; mkdir -p "$FAKE_ACAD"
 cat > "$FAKE_ACAD/accoreconsole.exe" <<'EOF'
 #!/usr/bin/env bash
 # Emit the script path as our "raw output" so the caller can inspect it.
+#
+# NOTE: this fake exists ONLY to exercise argument validation and script generation in
+# run-accoreconsole-test.sh. Safety-gate assertions used to live here and were worthless:
+# the heredoc is quoted, so $TOOLS never expanded, and $TOOLS is not exported either. The
+# child therefore grepped a non-existent path, and its failure branch incremented
+# GATE_VIOLATIONS inside a subshell where the parent could never observe it. Gate checks now
+# live in the parent (below) and are enforced by tools/check-live-gates.py.
 for ((i=1;i<=$#;i++)); do
   if [ "${!i}" = "/s" ]; then j=$((i+1)); cp "${!j}" "${!j%.scr}.raw"; fi
 done
-# Generic dap-probe is allowed to probe the adapter offline, but any attach/program/acad.exe
-# mode must route through the safety gate.
-if ! grep -q 'live_intent' "$TOOLS/dap-probe.py" || ! grep -q 'require_safety_review_passed' "$TOOLS/dap-probe.py"; then
-  echo "  FAIL  dap-probe live mode is not safety-gated"
-  GATE_VIOLATIONS=$((GATE_VIOLATIONS+1))
-fi
-# The legacy full-GUI shell harness is also a live entrypoint and must be frozen.
-if ! grep -q 'safe_process.py.*--gate' "$TOOLS/run-acad-gui-test.sh"; then
-  echo "  FAIL  run-acad-gui-test.sh is not safety-gated"
-  GATE_VIOLATIONS=$((GATE_VIOLATIONS+1))
-fi
 exit 0
 EOF
 chmod +x "$FAKE_ACAD/accoreconsole.exe"
@@ -105,6 +101,65 @@ cat > "$TMP/ev/empty-status.json" <<'EOF'
 EOF
 expect_fail "empty JSON artifact rejected" python "$TOOLS/make-manifest.py" "$TMP/ev" --phase X --run-id R --status-file "$TMP/ev/empty-status.json"
 
+# REGRESSION: regenerating without --status-file must NOT erase recorded tests or the
+# publication `redactions` provenance block. An earlier version silently dropped both while
+# still printing "validation OK", which is quiet evidence loss.
+python - "$TMP/ev" <<'PYEOF'
+import json, pathlib, sys
+p = pathlib.Path(sys.argv[1]) / "manifest.json"
+d = json.loads(p.read_text(encoding="utf-8"))
+d["tests"] = [{"id": "KEEP-ME", "status": "PASS", "evidence": ["good.json"]}]
+d["redactions"] = {"applied_at_utc": "2026-01-01T00:00:00Z", "artifacts": []}
+p.write_text(json.dumps(d, indent=2), encoding="utf-8")
+PYEOF
+python "$TOOLS/make-manifest.py" "$TMP/ev" --phase X --run-id R >/dev/null 2>&1
+if python - "$TMP/ev" <<'PYEOF'
+import json, pathlib, sys
+d = json.loads((pathlib.Path(sys.argv[1]) / "manifest.json").read_text(encoding="utf-8"))
+assert any(t.get("id") == "KEEP-ME" for t in d.get("tests", [])), "tests block was erased"
+assert "redactions" in d, "redactions provenance was erased"
+sys.exit(0)
+PYEOF
+then
+  echo "  PASS  regeneration preserves tests and redaction provenance"; pass=$((pass+1))
+else
+  echo "  FAIL  regeneration erased non-derived manifest blocks"; fail=$((fail+1))
+fi
+
+# ATOMIC WRITE: an interrupted write must leave the PREVIOUS manifest intact, never a
+# truncated one. The failure is injected by making json.dumps raise, so the temp file is
+# created and then abandoned -- exactly the interruption this guards against.
+printf '{"phase":"ORIGINAL","tests":[]}' > "$TMP/ev/manifest.json"
+if python - "$TOOLS" "$TMP/ev" <<'PYEOF'
+import importlib.util, json, pathlib, sys
+tools, ev = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+spec = importlib.util.spec_from_file_location("mm", tools / "make-manifest.py")
+mm = importlib.util.module_from_spec(spec); spec.loader.exec_module(mm)
+real = mm.json.dumps
+def boom(*a, **k):
+    raise RuntimeError("injected serialization failure")
+mm.json.dumps = boom
+try:
+    mm.write_manifest_atomically(ev / "manifest.json", {"phase": "NEW"})
+except RuntimeError:
+    pass
+else:
+    print("  FAIL  injected failure did not propagate"); sys.exit(1)
+mm.json.dumps = real
+# The previous manifest must be byte-identical, and no temp file may be left behind.
+if (ev / "manifest.json").read_text(encoding="utf-8") != '{"phase":"ORIGINAL","tests":[]}':
+    print("  FAIL  previous manifest was damaged by a failed write"); sys.exit(1)
+leftovers = list(ev.glob("manifest.json.*.tmp"))
+if leftovers:
+    print(f"  FAIL  temp file left behind: {leftovers}"); sys.exit(1)
+sys.exit(0)
+PYEOF
+then
+  echo "  PASS  failed manifest write preserves the previous manifest (atomic)"; pass=$((pass+1))
+else
+  fail=$((fail+1))
+fi
+
 echo "== safety: no unverified process termination in tooling =="
 # An earlier round cleaned up leftover CAD with `Get-Process acad | Stop-Process -Force`,
 # which terminates EVERY process with that name and can close a user's CAD session. This
@@ -134,7 +189,6 @@ else
   fail=$((fail+SAFE_VIOLATIONS))
 fi
 check "safe_process self-test passes" python "$TOOLS/safe_process.py" --self-test
-check "repl probe offline tests pass (fakes, no CAD)" python "$TOOLS/test-repl-probe-offline.py"
 check "repl probe offline tests pass (fakes, no CAD)" python "$TOOLS/test-repl-probe-offline.py"
 
 # Raising SystemExit inside a `finally` replaces any in-flight exception with that exit
@@ -200,27 +254,48 @@ else
 fi
 
 # Live CAD harnesses must be gated while the safety review has not passed.
-# EVERY script that can cause a live CAD session must be gated, not only the COM ones: the
-# launch-topology harnesses make the adapter spawn AutoCAD, which is equally a live session.
-GATE_VIOLATIONS=0
-for f in "$TOOLS"/t01-5-*.py "$TOOLS"/dap-attach-*.py "$TOOLS"/dap-session.py "$TOOLS"/dap-a14-sequence.py; do
-  [ -f "$f" ] || continue
-  base="$(basename "$f")"
-  if ! grep -q 'require_safety_review_passed' "$f"; then
-    echo "  FAIL  live CAD harness not gated: $base"
-    GATE_VIOLATIONS=$((GATE_VIOLATIONS+1))
+#
+# The check is delegated to tools/check-live-gates.py, which parses the AST and requires a
+# REAL call to require_safety_review_passed() -- a comment or a string mentioning it does not
+# satisfy it. It also verifies that dap-probe.py's gate is conditional on live intent, that
+# the retired shell harness routes through safe_process.py --gate, and that no tooling reads
+# an environment variable that could bypass the gate.
+check "every live CAD entrypoint is gated (AST-checked)" \
+  python "$TOOLS/check-live-gates.py" "$TOOLS"
+
+# MUTATION TESTS: a gate check that cannot fail is not a check.
+# These run check-live-gates.py against deliberately DAMAGED COPIES of the tools tree, so
+# they prove the checker detects the exact defect class that previously slipped through
+# (gate call deleted, or replaced by a comment). No live harness is ever executed here: the
+# mutation only edits source text and the checker is static.
+MUT_DIR="$TMP/gate-mutations"
+mutation_caught() {
+  local name="$1" mutator="$2"
+  local d="$MUT_DIR/$(echo "$name" | tr ' /' '__')"
+  rm -rf "$d"; mkdir -p "$d"; cp -r "$TOOLS" "$d/tools"
+  if ! python - "$d/tools" <<PYEOF
+import pathlib, sys
+$mutator
+PYEOF
+  then
+    echo "  FAIL  mutation '$name' could not be applied"
+    fail=$((fail+1)); return
   fi
-done
-# No environment variable may bypass the gate.
-if grep -rn 'CBRIDGE_ACK' "$TOOLS"/*.py 2>/dev/null | grep -vE '^\s*#|let automation bypass' | grep -q .; then
-  echo "  FAIL  a gate override still exists in code"
-  GATE_VIOLATIONS=$((GATE_VIOLATIONS+1))
-fi
-if [ "$GATE_VIOLATIONS" -eq 0 ]; then
-  echo "  PASS  every live CAD harness is gated on the safety review"
-else
-  fail=$((fail+GATE_VIOLATIONS))
-fi
+  if python "$TOOLS/check-live-gates.py" "$d/tools" >/dev/null 2>&1; then
+    echo "  FAIL  mutation '$name' was NOT detected (gate check is ineffective)"
+    fail=$((fail+1))
+  else
+    echo "  PASS  mutation detected: $name"
+    pass=$((pass+1))
+  fi
+}
+
+mutation_caught "dap-probe gate call deleted" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("sp.require_safety_review_passed(\"dap-probe.py live mode\")", "pass"); p.write_text(t, encoding="utf-8")'
+mutation_caught "t01-5 harness gate replaced by comment" \
+  'p = pathlib.Path(sys.argv[1])/"t01-5-definitive.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"t01-5-definitive.py\")", "    # sp.require_safety_review_passed(\"t01-5-definitive.py\")"); p.write_text(t, encoding="utf-8")'
+mutation_caught "retired GUI harness gate removed" \
+  'p = pathlib.Path(sys.argv[1])/"run-acad-gui-test.sh"; t = p.read_text(encoding="utf-8"); t = t.replace("python \"$TOOLS_DIR/safe_process.py\" --gate \"run-acad-gui-test.sh\" || exit $?", "echo retired"); p.write_text(t, encoding="utf-8")'
 
 # The gate must actually refuse by default (negative test: no CAD is launched).
 if python "$TOOLS/safe_process.py" --self-test >/dev/null 2>&1; then

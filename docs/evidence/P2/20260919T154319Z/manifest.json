@@ -1,0 +1,172 @@
+{
+  "phase": "P2",
+  "run_id": "20260919T154319Z",
+  "generated_at_utc": "2026-09-19T15:43:38Z",
+  "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T154319Z",
+  "artifact_count": 10,
+  "artifacts": [
+    {
+      "path": "build-legacy.txt",
+      "bytes": 555,
+      "sha256": "848e7b9d9c7747bfe04c5996cc1920ad8f2b96d42d77c49d8b55e3f073ef87a8"
+    },
+    {
+      "path": "build-modern.txt",
+      "bytes": 28752,
+      "sha256": "5995c8fedc08ad3d625785f35aafb1f1a19c75480c8a6fb84c06aec1bdb4f0f3"
+    },
+    {
+      "path": "check-live-gates.txt",
+      "bytes": 52,
+      "sha256": "33cba58ffaadbc3304a3ea7c779c8b20b72407c50b7f7813e2812d33d7fdbedf"
+    },
+    {
+      "path": "evidence-blob-hash-verification.txt",
+      "bytes": 197,
+      "sha256": "1de494ad57c29e2bc18d8fec2a1f3d40f93dec6e37b2246a369a80eb66206b5f"
+    },
+    {
+      "path": "mutation-gate-comment.txt",
+      "bytes": 209,
+      "sha256": "dae1b77faf8914d1a12d73128515dc2e01d4893f9c710df87be3b4f315ee3bf4"
+    },
+    {
+      "path": "mutation-gate-removed.txt",
+      "bytes": 132,
+      "sha256": "77efa0aa1095a617b2e45d0926accfddf5f39b57d5380a8e2841a132773065dc"
+    },
+    {
+      "path": "pyflakes.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "radius-prompt-policy-tests.txt",
+      "bytes": 1073,
+      "sha256": "634dbb63dc230e53a63e3ed742ebb4a37313a8f6749aeae6c0dcfaad7e8186eb"
+    },
+    {
+      "path": "selftest.txt",
+      "bytes": 1491,
+      "sha256": "60961da6e6263cf522f87c7330c511d632e0b399dd583fa62155c3a7be62199b"
+    },
+    {
+      "path": "status.json",
+      "bytes": 2659,
+      "sha256": "72f3f6ac786b5d79f05bece9a6a7160a514483cf7532b86e9947bd45c22a10c5",
+      "json_parses": true
+    }
+  ],
+  "tests": [
+    {
+      "id": "P2-1",
+      "name": "selftest suite incl. gate mutation tests",
+      "expected": "all pass, exit 0",
+      "actual": "23 passed, 0 failed, exit 0",
+      "status": "PASS",
+      "evidence": [
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "P2-2",
+      "name": "RadiusPromptPolicy regression tests (real PromptStatus enum)",
+      "expected": "all pass, exit 0",
+      "actual": "14 passed, 0 failed, exit 0",
+      "status": "PASS",
+      "evidence": [
+        "radius-prompt-policy-tests.txt"
+      ]
+    },
+    {
+      "id": "P2-3",
+      "name": "Mutation: gate call deleted must be detected",
+      "expected": "non-zero exit",
+      "actual": "exit 1, reported 'no actual call to require_safety_review_passed()'",
+      "status": "PASS",
+      "evidence": [
+        "mutation-gate-removed.txt"
+      ]
+    },
+    {
+      "id": "P2-4",
+      "name": "Mutation: gate replaced by comment must be detected",
+      "expected": "non-zero exit",
+      "actual": "exit 1, comment does not satisfy the AST check",
+      "status": "PASS",
+      "evidence": [
+        "mutation-gate-comment.txt"
+      ]
+    },
+    {
+      "id": "P2-5",
+      "name": "Legacy (net48) plugin builds",
+      "expected": "0 errors",
+      "actual": "0 warnings, 0 errors",
+      "status": "PASS",
+      "evidence": [
+        "build-legacy.txt"
+      ]
+    },
+    {
+      "id": "P2-6",
+      "name": "Modern (net8.0-windows) plugin builds",
+      "expected": "0 errors",
+      "actual": "0 errors; 3 pre-existing documented MSB3277 warnings",
+      "status": "PASS",
+      "evidence": [
+        "build-modern.txt"
+      ]
+    },
+    {
+      "id": "P2-7",
+      "name": "Evidence SHA-256 matches committed blobs",
+      "expected": "all published artifacts match",
+      "actual": "145/145 match; 2 artifacts intentionally excluded from publication (documented in PUBLICATION.md 2.4)",
+      "status": "PASS",
+      "evidence": [
+        "evidence-blob-hash-verification.txt"
+      ]
+    },
+    {
+      "id": "P2-8",
+      "name": "Static check (pyflakes) clean",
+      "expected": "no findings",
+      "actual": "clean (empty output)",
+      "status": "PASS",
+      "evidence": [
+        "pyflakes.txt"
+      ]
+    },
+    {
+      "id": "P2-9",
+      "name": "Live-gate AST check on real tree",
+      "expected": "all entrypoints gated",
+      "actual": "PASS",
+      "status": "PASS",
+      "evidence": [
+        "check-live-gates.txt"
+      ]
+    },
+    {
+      "id": "P2-10",
+      "name": "Live AutoCAD / CoreConsole behaviour re-verified",
+      "expected": "n/a for this audit",
+      "actual": "NOT RUN: no CAD session was started. D4's cancellation fix is covered by pure-logic tests only; live cancellation remains unverified and is NOT claimed.",
+      "status": "N/A",
+      "evidence": [
+        "radius-prompt-policy-tests.txt"
+      ]
+    }
+  ],
+  "validation": {
+    "problems": [],
+    "ok": true
+  },
+  "notes": [
+    "sha256 covers the stored artifact bytes, not the upstream source it describes.",
+    "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
+    "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is."
+  ]
+}

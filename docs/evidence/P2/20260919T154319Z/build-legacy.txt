@@ -1,0 +1,11 @@
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+  CadBridge[net48] refs: dir=D:\CAD APPLOAD\ObjectARX\ObjectARX-2014\inc refset=core
+  CadBridge[net48] referenced: accoremgd=D:\CAD APPLOAD\ObjectARX\ObjectARX-2014\inc\accoremgd.dll;acdbmgd=D:\CAD APPLOAD\ObjectARX\ObjectARX-2014\inc\acdbmgd.dll
+  CadBridge.Plugin.Legacy -> F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll
+
+已成功生成。
+    0 个警告
+    0 个错误
+
+已用时间 00:00:00.92
