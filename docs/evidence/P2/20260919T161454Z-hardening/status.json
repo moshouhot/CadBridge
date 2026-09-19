@@ -1,0 +1,14 @@
+{"tests":[
+ {"id":"H1","name":"selftest suite incl. 10 gate mutations, privacy guard, 5 encoding fixtures","expected":"all pass, exit 0","actual":"35 passed, 0 failed, exit 0","status":"PASS","evidence":["selftest.txt"]},
+ {"id":"H2","name":"Every executable script classified; live entrypoints gated","expected":"PASS","actual":"35 scripts classified (13 gated, 2 exceptions, 1 mechanism, 1 retired, 18 non-live)","status":"PASS","evidence":["check-live-gates.txt"]},
+ {"id":"H3","name":"Gap: gate import alias reassigned to unrelated object","expected":"detected","actual":"exit 1; binding rejected as unsafe","status":"PASS","evidence":["gap-g1-detected.txt"]},
+ {"id":"H4","name":"Gap: new live harness with computed exe path (invisible to discovery)","expected":"detected","actual":"exit 1; caught by the classification-manifest requirement","status":"PASS","evidence":["gap-g2-detected.txt"]},
+ {"id":"H5","name":"Gap: PowerShell script that starts a CAD host","expected":"detected","actual":"exit 1; unclassified script","status":"PASS","evidence":["gap-g3-detected.txt"]},
+ {"id":"H6","name":"Identifier detected in UTF-8, UTF-16 LE/BE (incl. BOM-less), GB18030","expected":"all detected","actual":"5/5 encodings detected","status":"PASS","evidence":["encoding-coverage.txt"]},
+ {"id":"H7","name":"Atomic write fails loudly when temp-file cleanup regresses","expected":"leftover temp file detected","actual":"cleanup removal leaves a .tmp file, which the test detects","status":"PASS","evidence":["atomic-write-negative-test.txt"]},
+ {"id":"H8","name":"Live AutoCAD behaviour re-verified","expected":"n/a","actual":"NOT RUN: no CAD session started","status":"N/A","evidence":[]}
+],"notes":[
+ "This run covers the hardening batch prompted by advisor review: scope-aware gate binding, full-script classification coverage, real os.replace fault injection, and encoding-aware privacy scanning.",
+ "No AutoCAD, CoreConsole or debug adapter process was started.",
+ "Security Scan and the IDE 'Review current file' workflow have NOT been run: both require the Sourcery web UI."
+]}

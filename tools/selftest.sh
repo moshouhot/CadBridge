@@ -127,35 +127,76 @@ else
 fi
 
 # ATOMIC WRITE: an interrupted write must leave the PREVIOUS manifest intact, never a
-# truncated one. The failure is injected by making json.dumps raise, so the temp file is
-# created and then abandoned -- exactly the interruption this guards against.
-printf '{"phase":"ORIGINAL","tests":[]}' > "$TMP/ev/manifest.json"
-if python - "$TOOLS" "$TMP/ev" <<'PYEOF'
-import importlib.util, json, pathlib, sys
-tools, ev = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+# truncated one.
+#
+# The failure is injected at os.replace -- the ACTUAL commit step, AFTER the temp file has
+# been written and fsync'd. An earlier version injected the failure in json.dumps, which
+# happens BEFORE mkstemp, so it never exercised the write, the replace, or the temp-file
+# cleanup at all: it could not have caught a broken cleanup path. Injecting at replace does.
+#
+# Three things are asserted: the failure propagates (not swallowed), the previous manifest is
+# BYTE-identical (not merely parseable), and no temp file is left behind.
+ORIGINAL='{"phase":"ORIGINAL","tests":[]}'
+printf '%s' "$ORIGINAL" > "$TMP/ev/manifest.json"
+if python - "$TOOLS" "$TMP/ev" "$ORIGINAL" <<'PYEOF'
+import importlib.util, os, pathlib, sys
+tools, ev, original = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), sys.argv[3]
 spec = importlib.util.spec_from_file_location("mm", tools / "make-manifest.py")
 mm = importlib.util.module_from_spec(spec); spec.loader.exec_module(mm)
-real = mm.json.dumps
-def boom(*a, **k):
-    raise RuntimeError("injected serialization failure")
-mm.json.dumps = boom
+
+# Record whether the temp file was actually created before the injected failure.
+real_replace = os.replace
+real_mkstemp = mm.tempfile.mkstemp
+state = {"temp_created": False, "replace_attempted": False}
+
+def tracking_mkstemp(*a, **k):
+    fd, name = real_mkstemp(*a, **k)
+    state["temp_created"] = True
+    state["temp_name"] = name
+    return fd, name
+
+def failing_replace(src, dst):
+    # This is the real commit step. Fail here, after the temp file exists.
+    state["replace_attempted"] = True
+    raise OSError("injected replace failure")
+
+mm.tempfile.mkstemp = tracking_mkstemp
+mm.os.replace = failing_replace
 try:
-    mm.write_manifest_atomically(ev / "manifest.json", {"phase": "NEW"})
-except RuntimeError:
+    mm.write_manifest_atomically(ev / "manifest.json", {"phase": "NEW", "tests": [1, 2, 3]})
+except OSError:
     pass
 else:
-    print("  FAIL  injected failure did not propagate"); sys.exit(1)
-mm.json.dumps = real
-# The previous manifest must be byte-identical, and no temp file may be left behind.
-if (ev / "manifest.json").read_text(encoding="utf-8") != '{"phase":"ORIGINAL","tests":[]}':
-    print("  FAIL  previous manifest was damaged by a failed write"); sys.exit(1)
-leftovers = list(ev.glob("manifest.json.*.tmp"))
+    print("  FAIL  injected os.replace failure did not propagate"); sys.exit(1)
+finally:
+    mm.tempfile.mkstemp = real_mkstemp
+    mm.os.replace = real_replace
+
+if not state["temp_created"]:
+    print("  FAIL  test is invalid: the temp file was never created, so nothing was tested")
+    sys.exit(1)
+if not state["replace_attempted"]:
+    print("  FAIL  test is invalid: os.replace was never reached")
+    sys.exit(1)
+
+# The previous manifest must be BYTE-identical.
+after = (ev / "manifest.json").read_bytes()
+if after != original.encode("utf-8"):
+    print(f"  FAIL  previous manifest was modified by a failed write: {after!r}")
+    sys.exit(1)
+
+# No temp file may survive, including the one this test saw created.
+leftovers = sorted(p.name for p in ev.glob("manifest.json.*.tmp"))
 if leftovers:
-    print(f"  FAIL  temp file left behind: {leftovers}"); sys.exit(1)
+    print(f"  FAIL  temp file(s) left behind after failure: {leftovers}")
+    sys.exit(1)
+if not pathlib.Path(state["temp_name"]).exists() is False:
+    print("  FAIL  the tracked temp file still exists")
+    sys.exit(1)
 sys.exit(0)
 PYEOF
 then
-  echo "  PASS  failed manifest write preserves the previous manifest (atomic)"; pass=$((pass+1))
+  echo "  PASS  failed os.replace preserves the previous manifest byte-for-byte (atomic)"; pass=$((pass+1))
 else
   fail=$((fail+1))
 fi
@@ -304,14 +345,52 @@ mutation_caught "gate replaced by a same-named method on an unrelated object" \
 mutation_caught "new ungated live harness with an unlisted filename" \
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"dap-live-newprobe.py").write_text("import subprocess\nsubprocess.Popen([r\"D:/acad.exe\"])\n", encoding="utf-8")'
 
+# Regressions for the two checker gaps found while fixing the Sourcery findings. Both were
+# reproduced against the previous checker before being fixed.
+mutation_caught "gate import alias reassigned to an unrelated object" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("CONTENT_LENGTH = b\"Content-Length: \"", "class _Noop:\n    def require_safety_review_passed(self, *a):\n        return None\nsp = _Noop()\n\nCONTENT_LENGTH = b\"Content-Length: \""); p.write_text(t, encoding="utf-8")'
+mutation_caught "gate import shadowed by a function parameter" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("def main(", "def _shadow(sp):\n    return sp\n\ndef main(", 1); p.write_text(t, encoding="utf-8")'
+# Coverage mutation: a live path built from a COMPUTED executable name is invisible to
+# behavioural discovery, so only the classification-manifest requirement can catch it.
+mutation_caught "new live harness with a computed exe path (invisible to discovery)" \
+  'import pathlib as _pl; (_pl.Path(sys.argv[1])/"com-attach-harness.py").write_text("import os\nimport win32com.client\n\ndef main():\n    exe = os.environ[\"CADDIR\"] + chr(92) + \"acad\" + \".exe\"\n    app = win32com.client.GetActiveObject(\"AutoCAD.Application\")\n    return 0\n", encoding="utf-8")'
+mutation_caught "PowerShell script that really starts a CAD host" \
+  'import pathlib as _pl; (_pl.Path(sys.argv[1])/"launch-cad.ps1").write_text("Start-Process -FilePath chr(34)+" + chr(39) + "acad.exe" + chr(39) + "\n", encoding="utf-8")'
+
 # Privacy guard: the local account/machine identifier must never appear in a tracked file.
-# It leaked TWICE during this audit -- once in the P0/P1 artifacts, and again in the P2 build
-# log produced while fixing the first leak -- so it is now a checked invariant, not a
-# one-off cleanup. The identifier comes from the environment and is never written into this
-# repo (doing so would re-publish the string the check exists to remove).
+# It leaked THREE times during this audit -- the P0/P1 artifacts, the P1 .raw evidence files,
+# and the P2 build log produced while fixing the first leak -- so it is now a checked
+# invariant, not a one-off cleanup. The identifier comes from the environment and is never
+# written into this repo (doing so would re-publish the string the check exists to remove).
 if [ -n "${CB_REDACT_IDENTIFIER:-}" ]; then
   check "no local machine identifier in tracked files" \
     python "$TOOLS/redact-evidence.py" --check
+
+  # Encoding coverage: a UTF-8-only scan reports a false clean on the UTF-16 and GB18030
+  # evidence this repository actually contains (accoreconsole writes UTF-16LE when stdout is
+  # not a console; the host console is a Chinese Windows install). BOM-less UTF-16 cannot be
+  # found by trial decoding, so each encoding is asserted separately against a fixture.
+  ENC_DIR="$TMP/encodings"
+  mkdir -p "$ENC_DIR"
+  python - "$ENC_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import pathlib, sys
+d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+line = "p: " + chr(67) + ":" + chr(92) + "Users" + chr(92) + ident + chr(92) + "x" + chr(10)
+for enc, name in (("utf-16-le", "le-bomless.txt"), ("utf-16-be", "be-bomless.txt"),
+                  ("utf-16", "bom.txt"), ("utf-8", "utf8.txt"), ("gb18030", "gbk.txt")):
+    (d / name).write_bytes(line.encode(enc))
+PYEOF
+  for encfile in "$ENC_DIR"/*.txt; do
+    if CB_REDACT_IDENTIFIER="$CB_REDACT_IDENTIFIER" python "$TOOLS/redact-evidence.py" \
+         --check "$encfile" >/dev/null 2>&1; then
+      echo "  FAIL  identifier not detected in $(basename "$encfile")"
+      fail=$((fail+1))
+    else
+      echo "  PASS  identifier detected in $(basename "$encfile")"
+      pass=$((pass+1))
+    fi
+  done
 else
   echo "  SKIP  identifier check (CB_REDACT_IDENTIFIER not set in this environment)"
 fi

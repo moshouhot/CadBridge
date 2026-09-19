@@ -1,0 +1,12 @@
+Negative test: the atomic manifest write must fail loudly if temp-file cleanup regresses.
+
+The failure is injected at os.replace -- the real commit step, AFTER the temp file has been
+written and fsync'd. (An earlier version injected json.dumps failure, which happens BEFORE
+mkstemp and therefore never exercised the write, the replace, or the cleanup at all.)
+
+Assertions: the failure propagates; the previous manifest is BYTE-identical; no temp file
+remains; the test itself verifies that mkstemp ran and os.replace was reached, so it cannot
+pass vacuously.
+
+Proof the test can fail: removing the `os.unlink(tmp_name)` cleanup from make-manifest.py
+leaves 'manifest.json.7nsl9dld.tmp' behind, which the test detects.

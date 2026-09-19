@@ -1,0 +1,12 @@
+Identifier detection per encoding, against fixtures written to a temp dir (never committed).
+Each line is the encoding of a file containing the local identifier in a Windows path.
+
+  utf-16-le  le-bomless.txt   DETECTED
+  utf-16-be  be-bomless.txt   DETECTED
+  utf-16     bom.txt          DETECTED
+  utf-8      utf8.txt         DETECTED
+  gb18030    gbk.txt          DETECTED
+
+BOM-less UTF-16 is detected structurally (NUL density in odd/even byte positions), not by
+trial decoding: decoding arbitrary bytes as utf-16 rarely raises, so a naive loop would
+silently mis-decode and report a false clean.

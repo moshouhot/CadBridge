@@ -1,0 +1,31 @@
+== build ==
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+  RadiusPromptPolicyTests -> F:\Nextcloud\project\CadBridge\tests\RadiusPromptPolicyTests\bin\Release\net48\CadBridge.Tests.RadiusPromptPolicy.exe
+
+已成功生成。
+    0 个警告
+    0 个错误
+
+已用时间 00:00:00.91
+
+== run ==
+== RadiusPromptPolicy: real enum values ==
+  PASS  PromptStatus.OK == 5100
+  PASS  PromptStatus.None == 5000
+  PASS  PromptStatus.Cancel == -5002
+  PASS  PromptStatus.Error == -5001
+  PASS  PromptStatus.Keyword == -5005
+== RadiusPromptPolicy: decisions ==
+  PASS  OK uses the supplied value
+  PASS  None creates with the default radius
+  PASS  Cancel is refused (the original defect)
+  PASS  Error is refused
+  PASS  Keyword is refused
+  PASS  Modeless is refused
+  PASS  unknown status is refused (fail closed)
+  PASS  a refused decision reports radius 0, not the stale value
+  PASS  a typed negative value is passed through for CreateCircle to reject
+
+radius-prompt-policy tests: 14 passed, 0 failed
+exit_code=0
