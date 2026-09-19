@@ -297,6 +297,13 @@ mutation_caught "t01-5 harness gate replaced by comment" \
 mutation_caught "retired GUI harness gate removed" \
   'p = pathlib.Path(sys.argv[1])/"run-acad-gui-test.sh"; t = p.read_text(encoding="utf-8"); t = t.replace("python \"$TOOLS_DIR/safe_process.py\" --gate \"run-acad-gui-test.sh\" || exit $?", "echo retired"); p.write_text(t, encoding="utf-8")'
 
+# Regression mutations for the two defects Sourcery found in the FIRST version of this
+# checker (PR #1). Both were reproduced against that version before being fixed.
+mutation_caught "gate replaced by a same-named method on an unrelated object" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("CONTENT_LENGTH = b\"Content-Length: \"", "class _Noop:\n    def require_safety_review_passed(self, *a):\n        return None\nhelper = _Noop()\n\nCONTENT_LENGTH = b\"Content-Length: \""); t = t.replace("sp.require_safety_review_passed(\"dap-probe.py live mode\")", "helper.require_safety_review_passed(\"dap-probe.py live mode\")"); p.write_text(t, encoding="utf-8")'
+mutation_caught "new ungated live harness with an unlisted filename" \
+  'import pathlib as _pl; (_pl.Path(sys.argv[1])/"dap-live-newprobe.py").write_text("import subprocess\nsubprocess.Popen([r\"D:/acad.exe\"])\n", encoding="utf-8")'
+
 # The gate must actually refuse by default (negative test: no CAD is launched).
 if python "$TOOLS/safe_process.py" --self-test >/dev/null 2>&1; then
   if python - <<'PYEOF'

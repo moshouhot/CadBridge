@@ -1,9 +1,9 @@
 {
   "phase": "P2",
   "run_id": "20260919T154319Z",
-  "generated_at_utc": "2026-09-19T15:43:38Z",
+  "generated_at_utc": "2026-09-19T15:53:49Z",
   "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T154319Z",
-  "artifact_count": 10,
+  "artifact_count": 12,
   "artifacts": [
     {
       "path": "build-legacy.txt",
@@ -17,8 +17,8 @@
     },
     {
       "path": "check-live-gates.txt",
-      "bytes": 52,
-      "sha256": "33cba58ffaadbc3304a3ea7c779c8b20b72407c50b7f7813e2812d33d7fdbedf"
+      "bytes": 504,
+      "sha256": "326079e832937614767d9bcb76316ea602b6c7c5d5d6f39096420cd0bd7c867d"
     },
     {
       "path": "evidence-blob-hash-verification.txt",
@@ -47,13 +47,23 @@
     },
     {
       "path": "selftest.txt",
-      "bytes": 1491,
-      "sha256": "60961da6e6263cf522f87c7330c511d632e0b399dd583fa62155c3a7be62199b"
+      "bytes": 1656,
+      "sha256": "94cd0fbb3428378eabf6e42a5e382cec73f2d4c1ce851fdfd71b4637ca043532"
+    },
+    {
+      "path": "sourcery-finding1-shadowed-gate-detected.txt",
+      "bytes": 230,
+      "sha256": "d276954c24e617405fb5bc8e2a98fdc116740707490dc48d8a520d36aaeb8af2"
+    },
+    {
+      "path": "sourcery-finding2-new-ungated-harness-detected.txt",
+      "bytes": 238,
+      "sha256": "362d95b89ce375ccf660ad675c9f2bdb243338d6ae7cee9c5e357fba518ffbf1"
     },
     {
       "path": "status.json",
-      "bytes": 2659,
-      "sha256": "72f3f6ac786b5d79f05bece9a6a7160a514483cf7532b86e9947bd45c22a10c5",
+      "bytes": 4353,
+      "sha256": "292f62e3401e15f96dabe249dec3f97b0ec03f628a1d101f57eeee0d4e908dcc",
       "json_parses": true
     }
   ],
@@ -62,7 +72,7 @@
       "id": "P2-1",
       "name": "selftest suite incl. gate mutation tests",
       "expected": "all pass, exit 0",
-      "actual": "23 passed, 0 failed, exit 0",
+      "actual": "25 passed, 0 failed, exit 0 (5 gate mutation tests included)",
       "status": "PASS",
       "evidence": [
         "selftest.txt"
@@ -76,26 +86,6 @@
       "status": "PASS",
       "evidence": [
         "radius-prompt-policy-tests.txt"
-      ]
-    },
-    {
-      "id": "P2-3",
-      "name": "Mutation: gate call deleted must be detected",
-      "expected": "non-zero exit",
-      "actual": "exit 1, reported 'no actual call to require_safety_review_passed()'",
-      "status": "PASS",
-      "evidence": [
-        "mutation-gate-removed.txt"
-      ]
-    },
-    {
-      "id": "P2-4",
-      "name": "Mutation: gate replaced by comment must be detected",
-      "expected": "non-zero exit",
-      "actual": "exit 1, comment does not satisfy the AST check",
-      "status": "PASS",
-      "evidence": [
-        "mutation-gate-comment.txt"
       ]
     },
     {
@@ -156,6 +146,46 @@
       "status": "N/A",
       "evidence": [
         "radius-prompt-policy-tests.txt"
+      ]
+    },
+    {
+      "id": "P2-3",
+      "name": "Mutation: gate call deleted must be detected",
+      "expected": "non-zero exit",
+      "actual": "exit 1, reported no resolving call",
+      "status": "PASS",
+      "evidence": [
+        "mutation-gate-removed.txt"
+      ]
+    },
+    {
+      "id": "P2-4",
+      "name": "Mutation: gate replaced by comment must be detected",
+      "expected": "non-zero exit",
+      "actual": "exit 1, comment does not satisfy the AST check",
+      "status": "PASS",
+      "evidence": [
+        "mutation-gate-comment.txt"
+      ]
+    },
+    {
+      "id": "P2-11",
+      "name": "Sourcery finding 1: same-named method on an unrelated object must NOT count as the gate",
+      "expected": "non-zero exit (attack detected)",
+      "actual": "exit 1; receiver must resolve to the imported safe_process module",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-finding1-shadowed-gate-detected.txt"
+      ]
+    },
+    {
+      "id": "P2-12",
+      "name": "Sourcery finding 2: a new ungated live harness with an unlisted filename must be detected",
+      "expected": "non-zero exit (attack detected)",
+      "actual": "exit 1; entrypoints are discovered from live-CAD behaviour, not a filename list",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-finding2-new-ungated-harness-detected.txt"
       ]
     }
   ],

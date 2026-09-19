@@ -31,6 +31,8 @@
   PASS  mutation detected: dap-probe gate call deleted
   PASS  mutation detected: t01-5 harness gate replaced by comment
   PASS  mutation detected: retired GUI harness gate removed
+  PASS  mutation detected: gate replaced by a same-named method on an unrelated object
+  PASS  mutation detected: new ungated live harness with an unlisted filename
   PASS  safety gate refuses live harnesses by default
 
-self-tests: 23 passed, 0 failed
+self-tests: 25 passed, 0 failed

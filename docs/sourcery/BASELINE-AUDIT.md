@@ -2,7 +2,9 @@
 
 **审计分支**：`audit/sourcery-baseline`
 **审计前基线**：`main` @ `592c6ff`，tag `baseline/pre-sourcery-audit`
-**Sourcery 接入状态**：**未完成** —— GitHub App 尚未安装（需项目所有者在网页操作）
+**Sourcery 接入状态**：✅ GitHub App 已安装（仅授权本仓库）；⛔ 网页 Review Settings 与
+Security Scan 尚未启用（需项目所有者填写，见 `docs/sourcery/DASHBOARD-SETTINGS.md`）
+**Sourcery PR Review**：✅ 已在 PR #1 上运行，**中文**输出，提出 2 条行内评论，两条均**属实**并已整改
 **真机状态**：本次工作**未启动**任何 AutoCAD / CoreConsole 会话
 
 ---
@@ -16,11 +18,15 @@
 | 发现并整改的真实缺陷 | ✅ 4 个（含 2 个高严重度） |
 | 明确记录为"不修改"的发现 | ✅ 见 §4 |
 | 项目测试 + 针对性回归测试 | ✅ 通过（23 + 14 项，含变异测试） |
-| Sourcery GitHub App 接入 | ⛔ **未完成**（待人工授权） |
-| 基线整改的 Sourcery PR Review | ⛔ **未完成**（依赖上一项） |
-| 固定流程 `branch → PR → Sourcery → 修复 → re-review → merge` | ⚠️ 文档与规则已就绪，待 App 接入后生效 |
+| Sourcery GitHub App 接入 | ✅ **已完成**（仅授权 `moshouhot/CadBridge`） |
+| Sourcery PR Review（中文） | ✅ **已完成**：PR #1，2 条行内评论，均已整改 |
+| Sourcery re-review（整改后） | ⏳ 见 §3.5 |
+| Security Scan | ⛔ 未启用（需在仪表盘开启；Open Source 计划为受限预览） |
+| 网页 Review Settings / Rules R1–R10 | ⛔ 未填写（需人工粘贴，文本已备好） |
+| 固定流程 `branch → PR → Sourcery → 修复 → re-review → merge` | ✅ 已建立并在 PR #1 上实际跑通 |
 
-**因此当前整体状态是：未完成（blocked on Sourcery authorization）。**
+**因此当前整体状态是：基线整改已完成并通过 Sourcery Review；网页侧配置（Review Rules、
+Security Scan）仍待人工填写，故“完全接入”尚未达成。**
 
 ---
 
@@ -135,7 +141,46 @@ CreateCircle(100.0, 100.0, radius);   // 对所有状态都执行
 
 ---
 
-## 4. 记录为"不修改"的发现（含理由）
+## 4. Sourcery Review 发现的问题（均属实，已整改）
+
+PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条行内评论**。两条都指向我
+新增的 `tools/check-live-gates.py`，**两条都属实**，我先复现再修复。
+
+### S1（安全）— 闸门检查只比对方法名，未解析调用者
+
+**Sourcery 指出**：AST 检查把任何最终方法名为 `require_safety_review_passed` 的调用都当作
+安全闸门，不关心接收者是什么。
+
+**复现**：在 `dap-probe.py` 里加一个无关对象，其同名方法什么都不做，并把真实调用改成
+`helper.require_safety_review_passed(...)` —— 旧检查器输出 **PASS**（漏洞确认）。
+
+**整改**：检查器现在**解析导入绑定** —— 只有当接收者是 `import safe_process` 绑定的名字
+（或函数本身是从 `safe_process` 直接导入）时才计数。同名方法不再算数。
+
+**验证**：上述攻击现在被检出（exit 1）；已固化为变异测试。
+
+### S2（影响面）— 入口点靠硬编码文件名列表，新 harness 不会被检查
+
+**Sourcery 指出**：检查器只遍历写死的文件名，新增一个不同文件名的实时入口点不会被访问，
+“每个入口点都被闸门保护”的不变量会**静默失效**。
+
+**复现**：新建 `tools/dap-live-newprobe.py`，直接 `subprocess.Popen([...acad.exe])` 且无闸门
+—— 旧检查器输出 **PASS**（漏洞确认）。
+
+**整改**：入口点改为**按行为发现**（AST：调用 `launch_and_record`/`launch_job_and_record`/
+`DapClient`，或用 CAD 可执行文件作参数 spawn 子进程；shell：赋值 CAD 可执行路径或以其为首词
+执行）。硬编码清单退化为**记录已审阅例外**（`NON_LIVE_ALLOWLIST` / `LIVE_EXCEPTIONS` /
+`GATE_MECHANISM_FILES` / `RETIRED_HARNESSES`），而不再是检查范围的定义。清单与检测结果
+**矛盾时直接失败**（例如把实际会启动 CAD 的文件列为 non-live 会报错），清单条目指向不存在的
+文件也会报错。
+
+**验证**：当前发现 **14 个**实时入口点并逐个校验；上述攻击被检出；已固化为变异测试。
+
+> **注**：两条整改都同步加进了 `selftest.sh` 的变异测试集，因此这个缺陷类**不能**再悄悄回归。
+
+---
+
+## 5. 记录为"不修改"的发现（含理由）
 
 | 发现 | 判断 | 理由 |
 |---|---|---|
@@ -147,14 +192,17 @@ CreateCircle(100.0, 100.0, radius);   // 对所有状态都执行
 
 ---
 
-## 5. 测试与验证证据
+## 6. 测试与验证证据
 
 | 项目 | 命令 | 结果 |
 |---|---|---|
-| 工具自检（含变异测试） | `bash tools/selftest.sh` | **23 passed, 0 failed**，exit 0 |
+| 工具自检（含 **5** 个变异测试） | `bash tools/selftest.sh` | **25 passed, 0 failed**，exit 0 |
 | 半径策略回归测试 | `bash tests/run-radius-policy-tests.sh` | **14 passed, 0 failed**，exit 0 |
 | 变异：删 `dap-probe` 闸门 | `check-live-gates.py` 对损坏副本 | **检出**（exit 1） |
 | 变异：闸门改注释 | 同上 | **检出**（exit 1） |
+| 变异：退休 harness 去掉 `--gate` | 同上 | **检出**（exit 1） |
+| 变异：同名方法冒充闸门（S1） | 同上 | **检出**（exit 1） |
+| 变异：新增未设闸门的 harness（S2） | 同上 | **检出**（exit 1） |
 | 变异：`Cancel` 改回创建 | 半径测试对损坏源码 | **检出**（2 项失败，exit 1） |
 | Legacy 插件构建 | `dotnet build ...Legacy.csproj -c Release` | 0 警告 0 错误 |
 | Modern 插件构建 | `dotnet build ...Modern.csproj -c Release` | 0 错误（3 个已记录的 MSB3277 警告） |
@@ -165,28 +213,44 @@ CreateCircle(100.0, 100.0, radius);   // 对所有状态都执行
 
 ---
 
-## 6. 剩余风险与未完成项
+## 7. 剩余风险与未完成项
 
-1. **Sourcery 未接入**：GitHub App 需项目所有者在网页安装（见 §7）。在此之前，所有
-   "Sourcery 审计"结论都**不存在** —— 本次基线审计是**人工 + 工具**完成的，不是 Sourcery 做的。
-2. **本地 Sourcery CLI 不等于 IDE/App Review**：`sourcery-cli` 是 **Python 专用**重构工具，
-   且对非公开/未登录场景要求 token。本仓库主体是 C#，CLI **无法**替代 Sourcery App 的
-   AI Review。不得把 CLI 结果当作 App Review 证据。
-3. **Security Scan 未运行**：它只扫默认分支，且 Open Source 计划为受限预览（最多 3 仓库、
-   每周两次、仪表盘最多 10 条）。需接入后启用；**可见发现数受计划限制**必须如实记录。
+1. **网页侧配置未完成**：Review Rules（R1–R10）、Review profile（基线期 Verbose）、
+   Review language（中文）、Security Scan 开关均需人工在 Sourcery 仪表盘填写。文本已备在
+   `docs/sourcery/DASHBOARD-SETTINGS.md`。
+2. **Security Scan 未运行**：它只扫默认分支，且 Open Source 计划为受限预览（最多 3 仓库、
+   每周两次、仪表盘最多 10 条）。**可见发现数受计划限制**必须如实记录，不得把"只看到 10 条"
+   当作"只有 10 个问题"。
+3. **本地 Sourcery CLI 不等于 IDE/App Review**：`sourcery-cli` 是 **Python 专用**重构工具，
+   且对未登录场景要求 token。本仓库主体是 C#，CLI **无法**替代 App Review。
 4. **真机行为未验证**：本次**未**运行任何 CAD。D4 的修复只在纯逻辑层面验证。
-5. **P1 阶段本身仍为 INCOMPLETE**（G01/G02 NOT_RUN），与本次审计无关但状态未变。
+5. **`run-accoreconsole-test.sh` 的限度已记录但未消除**：它接受 `--dwg`，"headless 所以安全"
+   不是已证明的命题。它被列为**有理由的例外**而非"已通过闸门"。
+6. **P1 阶段本身仍为 INCOMPLETE**（G01/G02 NOT_RUN），与本次审计无关但状态未变。
 
 ---
 
-## 7. 需要项目所有者操作的一步
+## 8. 固定流程（已建立并在 PR #1 上跑通）
 
-安装 Sourcery GitHub App（仅授权本仓库）：
+```
+feature branch → commit → PR → Sourcery Review → 修复
+              → Sourcery re-review → merge main
+```
 
-1. 打开 <https://github.com/apps/sourcery-ai/installations/new>
-2. 用 **moshouhot** 登录
-3. **Repository access** → **Only select repositories** → 只勾选 **`moshouhot/CadBridge`**
-4. 确认权限 → **Install**
+- 每次 push 自动触发 re-review，**自动上限 5 次**，超过后状态检查显示 `Skipped`；
+  需要完整重跑时评论 `@sourcery-ai review`（会重置计数器）。
+- 状态检查名为 **`Sourcery review`**。它**不会阻塞合并**，所以"检查是绿的"**不等于**
+  "评论已处理完" —— 合并前必须逐条核对行内评论是否已解决或已说明不修改理由。
+- 本项目约定：**不接受** Sourcery 自动 approve 代替人工确认。
 
-随后按 `docs/sourcery/DASHBOARD-SETTINGS.md` 填写 Review Settings（基线期用 **Verbose**、
-语言选**中文**、粘贴 R1–R10 规则）并启用 Security Scan。
+---
+
+## 9. 需要项目所有者操作的一步
+
+GitHub App 已安装。剩下的是网页配置：
+
+1. <https://app.sourcery.ai/dashboard/review-settings> → Review profile 选 **Verbose**、
+   语言选 **中文**、在 **Review rules** 标签页粘贴 `DASHBOARD-SETTINGS.md` §4 的 R1–R10。
+2. <https://app.sourcery.ai/dashboard/security/repositories> → 为 `CadBridge` 启用
+   **Scanning enabled**（Open Source 计划无按需触发按钮，为每周两次）。
+3. 配置完成后回填 `DASHBOARD-SETTINGS.md` §7 的「配置回执」表。
