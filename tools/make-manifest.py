@@ -146,10 +146,19 @@ def write_manifest_atomically(out: Path, manifest: dict) -> None:
         os.replace(tmp_name, out)
     except BaseException:
         # Never leave a temp file behind, and never leave the previous manifest damaged.
+        # If the cleanup ITSELF fails, that must be reported rather than swallowed: silently
+        # discarding it would leave manifest.json.*.tmp files behind while the function claims
+        # the "no temp file on failure" invariant, and repeated failures would accumulate
+        # stale temp files. The original exception still propagates; the cleanup failure is
+        # reported alongside it.
         try:
             os.unlink(tmp_name)
-        except OSError:
-            pass
+        except OSError as cleanup_error:
+            print(
+                f"ERROR: could not remove temporary file {tmp_name}: {cleanup_error}. "
+                f"The write failed AND its cleanup failed, so a stale temp file remains.",
+                file=sys.stderr,
+            )
         raise
 
 

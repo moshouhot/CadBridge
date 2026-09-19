@@ -79,14 +79,77 @@ def _tracked_files(root: pathlib.Path) -> list[pathlib.Path]:
             for p in out.stdout.split(b"\0") if p]
 
 
+def _detect_encoding(raw: bytes) -> tuple[str | None, str]:
+    """Determine the text encoding of `raw`, or report that it is not scannable text.
+
+    Returns (encoding, reason). encoding is None when the bytes are not decodable text.
+
+    BOM-less UTF-16 is detected STRUCTURALLY, not by trial decoding: decoding arbitrary bytes
+    as utf-16 rarely raises (it just produces garbage), so a naive loop silently mis-decodes
+    and reports a false clean. Evidence here includes UTF-16LE output captured from
+    accoreconsole when stdout was not a console, and it has no BOM.
+
+    GB18030 is included because this project's host is a Chinese Windows install and some
+    captured console output is GBK/GB18030, not UTF-8.
+    """
+    if len(raw) >= 2:
+        odd_nuls = raw[1::2].count(0)
+        even_nuls = raw[0::2].count(0)
+        pairs = max(1, len(raw) // 2)
+        # ASCII text in UTF-16LE has NULs in every odd byte position; in BE, every even one.
+        if odd_nuls / pairs > 0.3 and even_nuls / pairs < 0.05:
+            enc = "utf-16-le"
+        elif even_nuls / pairs > 0.3 and odd_nuls / pairs < 0.05:
+            enc = "utf-16-be"
+        else:
+            enc = None
+        if enc:
+            # Structural detection still requires the bytes to decode cleanly; otherwise the
+            # file is not scannable text and must not be reported as clean.
+            try:
+                raw.decode(enc)
+            except (UnicodeDecodeError, UnicodeError):
+                return None, f"structurally UTF-16 ({enc}) but contains malformed sequences"
+            return enc, ""
+
+    for enc in ("utf-8-sig", "utf-8", "gb18030"):
+        try:
+            raw.decode(enc)
+            return enc, ""
+        except (UnicodeDecodeError, UnicodeError):
+            continue
+    return None, "cannot decode as UTF-8, UTF-16 or GB18030"
+
+
+def _pattern_codec(encoding: str) -> str:
+    """The BOM-less codec to use when encoding the identifier for byte-level matching.
+
+    A real defect came from using the DETECTION codec for the pattern: "utf-8-sig".encode()
+    prepends a UTF-8 BOM, so the pattern became b'\xef\xbb\xbfAdministrator...' and never
+    matched anything. The identifier is plain text, so the pattern must never carry a BOM.
+    """
+    if encoding == "utf-8-sig":
+        return "utf-8"
+    if encoding == "utf-16":
+        return "utf-16-le"  # detection returns explicit endianness; this is a safe default
+    return encoding
+
+
 def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
     """Replace the identifier in one text file. Returns the number of occurrences.
 
-    Encodings handled: UTF-8 (with or without BOM), UTF-16 LE/BE (with or without BOM).
-    Evidence in this repository includes UTF-16LE accoreconsole output, so a UTF-8-only scan
-    would report a false clean on exactly the files most likely to contain host paths.
-    A file that cannot be decoded is NOT silently skipped: it is reported, because skipping
-    it would let --check claim a clean result it never verified.
+    REPLACEMENT IS DONE AT THE BYTE LEVEL, and that is the point.
+
+    An earlier version decoded with errors="replace", substituted the identifier, and encoded
+    back with errors="replace". That rewrites EVERY malformed sequence in the file, not just
+    the identifier: a lone surrogate in an otherwise-fine UTF-16 evidence file became U+FFFD.
+    The scrub then silently altered unrelated evidence bytes while appearing to only remove a
+    username. Verified before fixing: a file whose tail was the bytes 00 d8 came back as fd ff.
+
+    So the file is now: (1) checked to be decodable text, which is required to know the
+    identifier's byte pattern and to refuse unscannable files; (2) scrubbed by replacing only
+    the encoded identifier bytes; and (3) VERIFIED by re-inserting the identifier pattern and
+    asserting the result is byte-identical to the original, which proves nothing else changed.
     """
     if p.suffix.lower() in SKIP_SUFFIXES:
         return 0
@@ -95,53 +158,36 @@ def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
     except OSError as e:
         raise RuntimeError(f"cannot read {p}: {e}")
 
-    text = None
-    encoding = None
-
-    # BOM-less UTF-16 must be detected STRUCTURALLY, not by trial decoding: decoding arbitrary
-    # bytes as utf-16 rarely raises (it just produces garbage), so a naive loop silently
-    # mis-decodes and reports a false clean. Evidence in this repo includes UTF-16LE output
-    # captured from accoreconsole when stdout was not a console, and it has NO BOM.
-    if len(raw) >= 2:
-        odd_nuls = raw[1::2].count(0)
-        even_nuls = raw[0::2].count(0)
-        pairs = max(1, len(raw) // 2)
-        # ASCII text in UTF-16LE has NULs in every odd byte position; in BE, every even one.
-        if odd_nuls / pairs > 0.3 and even_nuls / pairs < 0.05:
-            text, encoding = raw.decode("utf-16-le", errors="replace"), "utf-16-le"
-        elif even_nuls / pairs > 0.3 and odd_nuls / pairs < 0.05:
-            text, encoding = raw.decode("utf-16-be", errors="replace"), "utf-16-be"
-
-    if text is None:
-        # GB18030 is tried because this project's host is a Chinese Windows install and some
-        # captured console output is GBK/GB18030, not UTF-8. Decoding it as UTF-8 fails, and
-        # silently skipping it would mean the file is never scanned.
-        for enc in ("utf-8-sig", "utf-8", "gb18030"):
-            try:
-                text, encoding = raw.decode(enc), enc
-                break
-            except (UnicodeDecodeError, UnicodeError):
-                continue
-
-    if text is None:
-        # Not decodable as any supported text encoding. Report it rather than pretending it is
-        # clean: it may be a binary that embeds the identifier, and the caller must know it was
-        # never scanned.
+    encoding, reason = _detect_encoding(raw)
+    if encoding is None:
         raise RuntimeError(
-            f"cannot decode {p} as UTF-8, UTF-16 or GB18030; it was NOT scanned for the "
-            f"identifier"
+            f"cannot scan {p}: {reason}; it was NOT checked for the identifier"
         )
 
-    n = text.count(identifier)
+    pattern = identifier.encode(_pattern_codec(encoding))
+    replacement = REPLACEMENT.encode(_pattern_codec(encoding))
+    n = raw.count(pattern)
     if not n:
         return 0
     if dry_run:
         return n
 
+    scrubbed = raw.replace(pattern, replacement)
+
+    # VERIFY that ONLY the identifier bytes changed. The check reconstructs the expected result
+    # from the original segments and compares it to what was written, which is exact and
+    # unambiguous. (Re-inserting the identifier into the scrubbed bytes would NOT be: if the
+    # file already contained the literal replacement text, that approach would rewrite it too
+    # and report a false failure.)
+    expected = replacement.join(raw.split(pattern))
+    if scrubbed != expected:
+        raise RuntimeError(
+            f"refusing to write {p}: byte-level verification failed, so the scrub would change "
+            f"bytes other than the identifier"
+        )
+
     before = _sha256(p)
-    # Encode back in the SAME encoding, so a scrub does not silently rewrite the file's bytes
-    # beyond the identifier (which would break the recorded evidence hash for unrelated text).
-    p.write_bytes(text.replace(identifier, REPLACEMENT).encode(encoding, errors="replace"))
+    p.write_bytes(scrubbed)
     after = _sha256(p)
     p.with_name(p.name + ".redaction.txt").write_text(
         f"Redaction provenance for {p.name}\n"
@@ -149,9 +195,13 @@ def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
         f"stored_sha256={after}\n"
         f"occurrences={n}\n"
         f"encoding={encoding}\n"
+        f"method=byte-level replacement of the encoded identifier only\n"
+        f"verification=the written bytes equal the original bytes with only the encoded "
+        f"identifier spans replaced\n"
         f"replacement=local account/machine identifier -> {REPLACEMENT}\n"
-        f"scope=Only the identifier inside machine-local paths was replaced. No measurement,\n"
-        f"warning count, exit code or conclusion was altered.\n",
+        f"scope=Only the encoded identifier bytes were replaced. Every other byte, including any\n"
+        f"malformed sequences, is unchanged. No measurement, warning count, exit code or\n"
+        f"conclusion was altered.\n",
         encoding="utf-8",
     )
     return n

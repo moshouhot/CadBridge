@@ -201,6 +201,38 @@ else
   fail=$((fail+1))
 fi
 
+# A cleanup failure during a failed write must be REPORTED, not swallowed. Silently discarding
+# it would leave manifest.json.*.tmp files behind while the function still claims the "no temp
+# file on failure" invariant, and repeated failures would accumulate stale temp files.
+if python - "$TOOLS" "$TMP" <<'PYEOF'
+import contextlib, importlib.util, io, pathlib, shutil, sys
+tools, tmp = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+spec = importlib.util.spec_from_file_location("mm", tools / "make-manifest.py")
+mm = importlib.util.module_from_spec(spec); spec.loader.exec_module(mm)
+d = tmp / "cleanupfail"; shutil.rmtree(d, ignore_errors=True); d.mkdir(parents=True)
+(d / "manifest.json").write_text('{"phase":"OLD"}', encoding="utf-8")
+mm.os.replace = lambda a, b: (_ for _ in ()).throw(OSError("replace failed"))
+mm.os.unlink = lambda p: (_ for _ in ()).throw(OSError("unlink failed"))
+captured = io.StringIO()
+try:
+    with contextlib.redirect_stderr(captured):
+        mm.write_manifest_atomically(d / "manifest.json", {"phase": "NEW"})
+except OSError:
+    pass
+else:
+    print("  FAIL  injected failure did not propagate"); sys.exit(1)
+if "could not remove temporary file" not in captured.getvalue():
+    print("  FAIL  a failed cleanup was swallowed instead of reported"); sys.exit(1)
+if (d / "manifest.json").read_text(encoding="utf-8") != '{"phase":"OLD"}':
+    print("  FAIL  previous manifest was modified"); sys.exit(1)
+sys.exit(0)
+PYEOF
+then
+  echo "  PASS  a failed temp-file cleanup is reported, not swallowed"; pass=$((pass+1))
+else
+  fail=$((fail+1))
+fi
+
 echo "== safety: no unverified process termination in tooling =="
 # An earlier round cleaned up leftover CAD with `Get-Process acad | Stop-Process -Force`,
 # which terminates EVERY process with that name and can close a user's CAD session. This
@@ -492,6 +524,57 @@ PYEOF
   else
     echo "  PASS  an unscannable file fails --check instead of reporting a false clean"
     pass=$((pass+1))
+  fi
+
+  # A scrub must change ONLY the identifier bytes. An earlier version decoded with
+  # errors="replace" and encoded back the same way, which rewrote every malformed sequence in
+  # the file: a lone surrogate in a UTF-16 evidence file became U+FFFD. Reproduced before
+  # fixing (tail bytes 00 d8 came back as fd ff).
+  MIX_DIR="$TMP/malformed-utf16"
+  mkdir -p "$MIX_DIR"
+  python - "$MIX_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import pathlib, sys
+d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+bs = chr(92)
+raw = ("path C:" + bs + "Users" + bs + ident + bs + "x").encode("utf-16-le") + b"\x00\xd8"
+(d / "mixed.txt").write_bytes(raw)
+PYEOF
+  if CB_REDACT_IDENTIFIER="$CB_REDACT_IDENTIFIER" python "$TOOLS/redact-evidence.py" \
+       --check "$MIX_DIR" >/dev/null 2>&1; then
+    echo "  FAIL  a file with malformed sequences was reported clean instead of refused"
+    fail=$((fail+1))
+  else
+    echo "  PASS  malformed-but-identified UTF-16 is refused rather than silently rewritten"
+    pass=$((pass+1))
+  fi
+
+  # The byte-level scrub must preserve every non-identifier byte. Asserted directly: after
+  # scrubbing a valid UTF-16 file, the surrounding text is unchanged and only the identifier
+  # is gone.
+  OK_DIR="$TMP/utf16-scrub"
+  mkdir -p "$OK_DIR"
+  python - "$OK_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import pathlib, sys
+d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+bs = chr(92)
+(d / "ok.txt").write_bytes(("keep C:" + bs + "Users" + bs + ident + bs + "x end").encode("utf-16-le"))
+PYEOF
+  CB_REDACT_IDENTIFIER="$CB_REDACT_IDENTIFIER" python "$TOOLS/redact-evidence.py" \
+    "$OK_DIR/ok.txt" >/dev/null 2>&1
+  if python - "$OK_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import pathlib, sys
+d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+text = (d / "ok.txt").read_bytes().decode("utf-16-le")
+assert ident not in text, "identifier still present"
+assert text.startswith("keep C:"), f"leading text changed: {text!r}"
+assert text.endswith("x end"), f"trailing text changed: {text!r}"
+sys.exit(0)
+PYEOF
+  then
+    echo "  PASS  byte-level scrub removes only the identifier and preserves the rest"
+    pass=$((pass+1))
+  else
+    fail=$((fail+1))
   fi
 else
   echo "  SKIP  identifier check (CB_REDACT_IDENTIFIER not set in this environment)"

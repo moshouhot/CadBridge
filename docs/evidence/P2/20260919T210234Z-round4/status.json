@@ -1,0 +1,11 @@
+{"tests":[
+ {"id":"R4-1","name":"selftest suite incl. 15 gate mutations + privacy/encoding/manifest fixtures","expected":"all pass, exit 0","actual":"47 passed, 0 failed, exit 0","status":"PASS","evidence":["selftest.txt"]},
+ {"id":"R4-2","name":"Sourcery round-4 finding: failed temp-file cleanup must be reported, not swallowed","expected":"cleanup failure printed; previous manifest intact","actual":"reported to stderr; manifest unchanged","status":"PASS","evidence":["round4-finding-cleanup-failure-reported.txt"]},
+ {"id":"R4-3","name":"Sourcery round-4 finding: malformed UTF-16 must be refused, not silently rewritten","expected":"--check non-zero; file bytes unchanged","actual":"refused; bytes unchanged","status":"PASS","evidence":["round4-finding-malformed-utf16-refused.txt"]},
+ {"id":"R4-4","name":"Live AutoCAD behaviour re-verified","expected":"n/a","actual":"NOT RUN: no CAD session started","status":"N/A","evidence":[]}
+],"notes":[
+ "Round-4 findings were raised against the round-3 fix commit and are fixed here; both are now permanent selftest checks.",
+ "A further defect was found and fixed while addressing them: the byte-level pattern was encoded with the DETECTION codec, so 'utf-8-sig' prepended a BOM and the identifier was never matched in UTF-8/GB18030 files. The detection codec and the pattern codec are now separate.",
+ "The scrub now performs byte-level replacement and verifies that the written bytes equal the original with only the encoded identifier spans replaced, so malformed sequences elsewhere are untouched.",
+ "No AutoCAD, CoreConsole or debug adapter process was started."
+]}

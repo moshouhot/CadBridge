@@ -1,0 +1,4 @@
+exit=1
+file_bytes_unchanged=True
+stderr=  FAIL  1 file(s) could not be decoded and were therefore NOT scanned for the identifier. Reporting a clean result would be a false clean. Decode them, add the suffix to SKIP_SUFFIXES with a reason, or scan them at the byte level.
+
