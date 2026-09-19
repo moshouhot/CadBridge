@@ -23,8 +23,8 @@ vs 全部仓库）无法用 API 验证** —— 需要项目所有者自行在�
 | 项目测试 + 针对性回归测试 | ✅ 通过（23 + 14 项，含变异测试） |
 | Sourcery App 产生 PR Review | ✅ 已验证（PR #1 有 `sourcery-ai` 检查与中文评论） |
 | App 安装范围＝仅本仓库 | ⚠️ **无法验证**：GitHub API 不暴露该信息，需人工在设置页确认 |
-| Sourcery PR Review（中文） | ✅ 已完成：PR #1，2 条行内评论，均已整改 |
-| Sourcery re-review（整改后） | ✅ 已完成：0 条新评论，2 条线程均已解决 |
+| Sourcery PR Review（中文） | ✅ 已完成：PR #1，**四轮** Review，共 **10 条**行内评论，全部属实并已整改 |
+| Sourcery re-review（整改后） | ✅ 已完成：最终一轮 **0 条新评论**，**10/10 线程已解决**（`unresolved=0`） |
 | Security Scan（全仓库基线扫描） | ⛔ **未运行**（需网页启用；Open Source 为受限预览） |
 | IDE「Review current file」（审现有核心文件） | ⛔ **未执行**（无浏览器/桌面自动化，需人工） |
 | 网页 Review Settings / Rules R1–R10 | ⛔ **未填写**（需人工粘贴） |
@@ -185,6 +185,50 @@ PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条�
 
 ### S3–S8 — 第二轮完整 Review 又发现 6 个真实缺陷（均已复现并整改）
 
+自动 re-review 达到上限（5 次）后，用 `@sourcery-ai review` 请求了一次**完整重审**。
+它审的是整个 PR diff（不只是最后一个 commit），又在**我新增的硬化代码里**找到 6 个真实缺陷。
+每个都先复现再修，且都固化为永久变异测试。
+
+| # | 缺陷 | 复现结果（修复前） |
+|---|---|---|
+| S3 | `from safe_process import require_safety_review_passed as gate` 直接导入后**重新赋值**为 lambda，检查器仍认为已设闸 | PASS（漏检） |
+| S4 | live-intent 守卫只做**文本匹配**不查极性，`if not live_intent:` 被接受 —— 实时路径反而跳过闸门 | PASS（漏检） |
+| S5 | 分类以 **basename** 为键，新增 `subdir/safe_process.py` 会继承 `GATE_MECHANISM`，嵌套 harness 既不需闸门也不被拒 | PASS（漏检） |
+| S6 | 覆盖扫描只看后缀，带 shebang 的**无扩展名**可执行文件完全被遗漏 | PASS（漏检） |
+| S7 | 无法解码的文件被收集后**继续执行**，`--check` 仍打印 PASS —— **假清洁** | PASS（漏检） |
+| S8 | 环境变量绕过检测不认别名，`from os import environ` / `env = os.environ` 后读取不被发现 | PASS（漏检） |
+
+**整改要点**：直接导入与模块别名**共用同一套重新绑定分析**（并补上 with-target、跨模块重复导入）；
+live-intent 改为**结构化检查极性**；分类改为**按相对路径为键**并拒绝 basename 冲突；
+覆盖改为**后缀或 shebang** 两种识别（GATED 项若既非 Python 也非 shell 则直接拒绝而非假定安全）；
+不可解码文件**不再豁免**（仅显式 SKIP_SUFFIXES 的二进制除外）；环境变量检测**解析别名**，
+且动态名安全网只检查**真正喂给环境访问**的表达式。
+
+### S9–S10 — 第三轮 Review 又发现 2 个真实缺陷（均已复现并整改）
+
+第三轮 Review 针对第二轮修复提交，又找到 2 个真实缺陷（均在 `make-manifest.py`）：
+
+| # | 缺陷 | 复现结果（修复前） |
+|---|---|---|
+| S9 | 已存在但**无法解析**的 manifest 被当成 `{}` 后**直接覆盖**，丢掉非派生的 `tests`/`redactions` —— 重新制造了 D3 那个数据丢失缺陷 | 覆盖成功，`tests` 归 0 |
+| S10 | `artifact_count` **从不**与 `artifacts` 数组长度校验，可声明 16 实际 15，而 `validation` 仍为 ok | 不一致且未报错 |
+
+**S10 不是假设性的**：本工作中我自己的一次手工编辑就出现过这个不一致（改了 `artifacts` 没改
+`artifact_count`），当时**没有被发现**。
+
+**整改**：无法解析的现有 manifest 现在是**错误**（退出 2，文件逐字节不变）；`artifact_count`
+改为**派生**，并在 `--extra` 与继承块之后再做一次一致性门禁（派生值获胜，篡改记入
+`validation.problems` 且 `validation.ok=false`）。
+
+**顺带发现的第三个问题**：原子写入**无条件用 LF**，导致重新生成 273 行的 CRLF manifest 会产生
+“整文件 diff 但内容无变化”——使每次 manifest 编辑都不可评审。因 `docs/evidence/**` 在
+`.gitattributes` 中是 `-text`，写入字节即存储字节，现已**检测并保留原行尾风格**。
+
+> 新增的 3 项 selftest 检查都写成**能够失败**：损坏 manifest 测试比较前后哈希（恢复旧的静默
+> 重置会让它退出 0 从而失败）；计数测试通过 `--extra` 注入矛盾（唯一仍能进入的路径）并断言写出
+> 的文件仍自洽；行尾测试重新生成 CRLF manifest 并断言 CRLF 保留。计数测试的**第一版是空转的**
+> （新派生的值天然一致），已重写。
+
 自动 re-review 达到上限（5 次）后，用 `@sourcery-ai review` 请求了一次**完整重审**。它审的是
 整个 PR diff（不只是最后一个 commit），又在**我新增的硬化代码里**找到 6 个真实缺陷。
 每个都先复现再修，且都固化为永久变异测试。
@@ -250,7 +294,7 @@ live-intent 改为**结构化检查极性**；分类改为**按相对路径为�
 
 | 项目 | 命令 | 结果 |
 |---|---|---|
-| 工具自检（含 **15** 个变异测试 + 隐私守卫 + 编码/假清洁夹具） | `bash tools/selftest.sh` | **41 passed, 0 failed**，exit 0 |
+| 工具自检（含 **15** 个变异测试 + 隐私守卫 + 编码/假清洁/manifest 夹具） | `bash tools/selftest.sh` | **44 passed, 0 failed**，exit 0 |
 | 半径策略回归测试 | `bash tests/run-radius-policy-tests.sh` | **14 passed, 0 failed**，exit 0 |
 | 变异：删 `dap-probe` 闸门 | `check-live-gates.py` 对损坏副本 | **检出** |
 | 变异：闸门改注释 | 同上 | **检出** |
@@ -271,6 +315,9 @@ live-intent 改为**结构化检查极性**；分类改为**按相对路径为�
 | 负向测试：不可解码文件（S7） | `--check` | **检出**（exit 1，不再假 PASS） |
 | 负向测试：UTF-8/UTF-16/UTF-16LE/BE/GB18030 | `--check` | **5/5 检出** |
 | 负向测试：原子写入清理回退 | 注入 `os.replace` 失败 | **检出**（残留 .tmp） |
+| 负向测试：损坏的现有 manifest（S9） | 前后哈希比对 | **检出**（exit 2，文件不变） |
+| 负向测试：`artifact_count` 被 `--extra` 篡改（S10） | 一致性门禁 | **检出**（派生值获胜，ok=false） |
+| 负向测试：manifest 行尾风格被改写 | CRLF 重新生成 | **检出**（CRLF 保留） |
 | Legacy 插件构建 | `dotnet build ...Legacy.csproj -c Release` | 0 警告 0 错误 |
 | Modern 插件构建 | `dotnet build ...Modern.csproj -c Release` | 0 错误（3 个已记录的 MSB3277 警告） |
 | 包内无 Autodesk DLL | `find src/*/bin -name "ac*.dll"` | 无（符合 `Private=false`） |

@@ -88,3 +88,31 @@ all eight threads.
 
 Each of the 8 is now a permanent mutation test in tools/selftest.sh, so the same defect
 class cannot silently return.
+
+## Run 5 - fourth FULL review, head ab493af
+
+check: Sourcery review, status=completed, conclusion=success
+New inline comments: 0
+Review threads total: 10   unresolved: 0   (all isResolved=true)
+
+## Run 3b - third review round findings (raised against the round-2 fix)
+
+Sourcery's review of 9da5471 raised 2 further real defects in make-manifest.py:
+  - an existing but unparseable manifest was treated as {} and overwritten, discarding the
+    non-derived tests/redactions blocks (re-creating the data-loss defect)
+  - `artifact_count` was never checked against the `artifacts` array length
+Both were reproduced before fixing, and a third issue was found while fixing them: the atomic
+writer rewrote CRLF manifests as LF, producing whole-file diffs with no content change.
+
+## FINAL TALLY
+
+  Round 1 review (1925b68): 2 findings, both real, fixed
+  Round 2 review (c7654e5): 6 findings, all real, fixed
+  Round 3 review (9da5471): 2 findings, both real, fixed  (+1 found while fixing)
+  Round 4 review (ab493af): 0 findings
+  Total real findings raised by Sourcery and fixed: 10
+  Unresolved review threads at HEAD: 0
+
+Every finding is now a permanent test in tools/selftest.sh (44 checks, 15 of them mutation
+tests that assert the protection can actually fail), so the same defect class cannot silently
+return.
