@@ -183,6 +183,29 @@ PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条�
 
 > **注**：两条整改都同步加进了 `selftest.sh` 的变异测试集，因此这个缺陷类**不能**再悄悄回归。
 
+### S3–S8 — 第二轮完整 Review 又发现 6 个真实缺陷（均已复现并整改）
+
+自动 re-review 达到上限（5 次）后，用 `@sourcery-ai review` 请求了一次**完整重审**。它审的是
+整个 PR diff（不只是最后一个 commit），又在**我新增的硬化代码里**找到 6 个真实缺陷。
+每个都先复现再修，且都固化为永久变异测试。
+
+| # | 缺陷 | 复现结果（修复前） |
+|---|---|---|
+| S3 | `from safe_process import require_safety_review_passed as gate` 直接导入后**重新赋值**为 lambda，检查器仍认为已设闸 | PASS（漏检） |
+| S4 | live-intent 守卫只做**文本匹配**不查极性，`if not live_intent:` 被接受 —— 实时路径反而跳过闸门 | PASS（漏检） |
+| S5 | 分类以 **basename** 为键，新增 `subdir/safe_process.py` 会继承 `GATE_MECHANISM`，嵌套 harness 既不需闸门也不被拒 | PASS（漏检） |
+| S6 | 覆盖扫描只看后缀，带 shebang 的**无扩展名**可执行文件完全被遗漏 | PASS（漏检） |
+| S7 | 无法解码的文件被收集后**继续执行**，`--check` 仍打印 PASS —— **假清洁** | PASS（漏检） |
+| S8 | 环境变量绕过检测不认别名，`from os import environ` / `env = os.environ` 后读取不被发现 | PASS（漏检） |
+
+**整改要点**：直接导入与模块别名**共用同一套重新绑定分析**（并补上 with-target、跨模块重复导入）；
+live-intent 改为**结构化检查极性**；分类改为**按相对路径为键**并拒绝 basename 冲突；
+覆盖改为**后缀或 shebang** 两种识别（GATED 项若既非 Python 也非 shell 则直接拒绝而非假定安全）；
+不可解码文件**不再豁免**（仅显式 SKIP_SUFFIXES 的二进制除外）；环境变量检测**解析别名**，
+且动态名安全网只检查**真正喂给环境访问**的表达式（前一版扫描所有字符串字面量，会在文档字符串上误报）。
+
+**第三轮 Review 结果**：**0 条新评论**，8 条线程全部 `isResolved=true`（`unresolved=0`）。
+
 ---
 
 ### D5（中）— 本机账号名在公开仓库里泄漏了三次（已改为强制校验）
@@ -227,21 +250,33 @@ PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条�
 
 | 项目 | 命令 | 结果 |
 |---|---|---|
-| 工具自检（含 **6** 个变异测试 + 隐私守卫） | `bash tools/selftest.sh` | **26 passed, 0 failed**，exit 0 |
+| 工具自检（含 **15** 个变异测试 + 隐私守卫 + 编码/假清洁夹具） | `bash tools/selftest.sh` | **41 passed, 0 failed**，exit 0 |
 | 半径策略回归测试 | `bash tests/run-radius-policy-tests.sh` | **14 passed, 0 failed**，exit 0 |
-| 变异：删 `dap-probe` 闸门 | `check-live-gates.py` 对损坏副本 | **检出**（exit 1） |
-| 变异：闸门改注释 | 同上 | **检出**（exit 1） |
-| 变异：退休 harness 去掉 `--gate` | 同上 | **检出**（exit 1） |
-| 变异：同名方法冒充闸门（S1） | 同上 | **检出**（exit 1） |
-| 变异：新增未设闸门的 harness（S2） | 同上 | **检出**（exit 1） |
-| 变异：`Cancel` 改回创建 | 半径测试对损坏源码 | **检出**（2 项失败，exit 1） |
-| 负向测试：标识符重新出现 | `redact-evidence.py --check` + 套件 | **检出**（套件 25 passed/1 failed，exit 1） |
+| 变异：删 `dap-probe` 闸门 | `check-live-gates.py` 对损坏副本 | **检出** |
+| 变异：闸门改注释 | 同上 | **检出** |
+| 变异：退休 harness 去掉 `--gate` | 同上 | **检出** |
+| 变异：同名方法冒充闸门（S1） | 同上 | **检出** |
+| 变异：新增未设闸门的 harness（S2） | 同上 | **检出** |
+| 变异：模块别名被重新赋值 | 同上 | **检出** |
+| 变异：别名被函数参数遮蔽 | 同上 | **检出** |
+| 变异：计算式 exe 路径（发现机制看不见） | 同上 | **检出** |
+| 变异：PowerShell 真实启动 CAD | 同上 | **检出** |
+| 变异：直接导入的闸门函数被重新赋值（S3） | 同上 | **检出** |
+| 变异：live-intent 极性反转（S4） | 同上 | **检出** |
+| 变异：嵌套脚本复用注册表 basename（S5） | 同上 | **检出** |
+| 变异：无扩展名 shebang 可执行文件（S6） | 同上 | **检出** |
+| 变异：别名 environ 读取（S8） | 同上 | **检出** |
+| 变异：`Cancel` 改回创建 | 半径测试对损坏源码 | **检出**（2 项失败） |
+| 负向测试：标识符重新出现 | `redact-evidence.py --check` + 套件 | **检出**（套件 exit 1） |
+| 负向测试：不可解码文件（S7） | `--check` | **检出**（exit 1，不再假 PASS） |
+| 负向测试：UTF-8/UTF-16/UTF-16LE/BE/GB18030 | `--check` | **5/5 检出** |
+| 负向测试：原子写入清理回退 | 注入 `os.replace` 失败 | **检出**（残留 .tmp） |
 | Legacy 插件构建 | `dotnet build ...Legacy.csproj -c Release` | 0 警告 0 错误 |
 | Modern 插件构建 | `dotnet build ...Modern.csproj -c Release` | 0 错误（3 个已记录的 MSB3277 警告） |
-| 包内无 Autodesk DLL | `find src/*/bin -name "ac*.dll"` | 无（符合 `Private=false` 约束） |
+| 包内无 Autodesk DLL | `find src/*/bin -name "ac*.dll"` | 无（符合 `Private=false`） |
 | 静态检查 | `python -m pyflakes tools/*.py` | 干净 |
-| 凭据 / 标识符扫描 | 对全部已提交 blob | 无命中 |
-| 证据哈希 | blob 级 SHA-256 对照 manifest | **161/161** 一致（2 个有意排除） |
+| 凭据 / 标识符扫描 | 对全部已提交 blob（按编码） | `HEAD` 无命中；`main` 仍有 2 处（见 §7.6） |
+| 证据哈希 | blob 级 SHA-256 对照 manifest | 全部一致（仅 2 个有意排除） |
 
 ---
 

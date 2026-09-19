@@ -121,16 +121,6 @@
       ]
     },
     {
-      "id": "P2-13",
-      "name": "Sourcery PR review + re-review on the remediation PR",
-      "expected": "review runs; every real finding fixed; threads resolved",
-      "actual": "Review 1 (head 1925b68) posted 2 inline comments in Chinese; both were reproduced as real and fixed. Re-review (head cac0c37) posted 0 new comments and resolved both threads (unresolved=0).",
-      "status": "PASS",
-      "evidence": [
-        "sourcery-pr-review-evidence.md"
-      ]
-    },
-    {
       "id": "P2-14",
       "name": "Privacy guard: local machine identifier must not appear in tracked files",
       "expected": "guard fails when the identifier is reintroduced; suite exits 1",
@@ -140,6 +130,16 @@
         "privacy-guard-negative-test.txt",
         "redact-build-log.txt",
         "selftest.txt"
+      ]
+    },
+    {
+      "id": "P2-13",
+      "name": "Sourcery PR reviews: two full rounds, all findings fixed, all threads resolved",
+      "expected": "review runs; every real finding fixed; 0 unresolved threads",
+      "actual": "Run 1 (1925b68) 2 findings both real; run 3 (c7654e5, via @sourcery-ai review after the 5-re-review auto limit) 6 findings all real; run 4 (9da5471) 0 new findings. Threads total=8, unresolved=0.",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-pr-review-evidence.md"
       ]
     }
   ],

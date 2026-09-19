@@ -1,7 +1,7 @@
 {
   "phase": "P2",
   "run_id": "20260919T154319Z",
-  "generated_at_utc": "2026-09-19T16:04:52Z",
+  "generated_at_utc": "2026-09-19T16:50:09Z",
   "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T154319Z",
   "artifact_count": 16,
   "artifacts": [
@@ -77,13 +77,13 @@
     },
     {
       "path": "sourcery-pr-review-evidence.md",
-      "bytes": 2285,
-      "sha256": "4e56b636fb294850759c4a79557283f8b0c003f21d8b176d857d8a1c2a20e305"
+      "bytes": 4378,
+      "sha256": "cab816dba204c06d6abee6b7851244851a5846a1d9b9b29e27c0939e885d1f70"
     },
     {
       "path": "status.json",
-      "bytes": 5799,
-      "sha256": "37b7121f3d665ede6f56af8a196bad17b1e873b17d651f0cd8dce25f7af65c0c",
+      "bytes": 5835,
+      "sha256": "d54cca6023775c431d9d4239fe0b79681a50ee8dc132d5e73b4ee76bfa03cbef",
       "json_parses": true
     }
   ],
@@ -209,16 +209,6 @@
       ]
     },
     {
-      "id": "P2-13",
-      "name": "Sourcery PR review + re-review on the remediation PR",
-      "expected": "review runs; every real finding fixed; threads resolved",
-      "actual": "Review 1 (head 1925b68) posted 2 inline comments in Chinese; both were reproduced as real and fixed. Re-review (head cac0c37) posted 0 new comments and resolved both threads (unresolved=0).",
-      "status": "PASS",
-      "evidence": [
-        "sourcery-pr-review-evidence.md"
-      ]
-    },
-    {
       "id": "P2-14",
       "name": "Privacy guard: local machine identifier must not appear in tracked files",
       "expected": "guard fails when the identifier is reintroduced; suite exits 1",
@@ -228,6 +218,16 @@
         "privacy-guard-negative-test.txt",
         "redact-build-log.txt",
         "selftest.txt"
+      ]
+    },
+    {
+      "id": "P2-13",
+      "name": "Sourcery PR reviews: two full rounds, all findings fixed, all threads resolved",
+      "expected": "review runs; every real finding fixed; 0 unresolved threads",
+      "actual": "Run 1 (1925b68) 2 findings both real; run 3 (c7654e5, via @sourcery-ai review after the 5-re-review auto limit) 6 findings all real; run 4 (9da5471) 0 new findings. Threads total=8, unresolved=0.",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-pr-review-evidence.md"
       ]
     }
   ],
