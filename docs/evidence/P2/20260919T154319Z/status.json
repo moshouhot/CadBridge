@@ -134,9 +134,9 @@
     },
     {
       "id": "P2-13",
-      "name": "Sourcery PR reviews across four rounds: every real finding fixed, 0 unresolved threads",
+      "name": "Sourcery PR reviews across five rounds: every real finding fixed, 0 unresolved threads",
       "expected": "review runs; every real finding fixed; 0 unresolved threads",
-      "actual": "Round 1 (1925b68) 2 findings; round 2 (c7654e5, via @sourcery-ai review after the auto limit of 5) 6 findings; round 3 (9da5471) 2 findings; round 4 (ab493af) 0 findings. All 10 real; threads total=10, unresolved=0.",
+      "actual": "Rounds: 2 findings (1925b68), 6 (c7654e5), 2 (9da5471), 2 (ab493af), 0 (2b32c66). All 12 real and fixed. Threads total=12, unresolved=0.",
       "status": "PASS",
       "evidence": [
         "sourcery-pr-review-evidence.md"

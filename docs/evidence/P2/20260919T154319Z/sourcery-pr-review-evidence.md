@@ -116,3 +116,33 @@ writer rewrote CRLF manifests as LF, producing whole-file diffs with no content 
 Every finding is now a permanent test in tools/selftest.sh (44 checks, 15 of them mutation
 tests that assert the protection can actually fail), so the same defect class cannot silently
 return.
+
+## Run 6 - fifth FULL review, head 2b32c66
+
+check: Sourcery review, status=completed, conclusion=success
+New inline comments: 0
+Review threads total: 12   unresolved: 0   (all isResolved=true)
+
+## Run 4b - fourth review round findings (raised against the round-3 fix)
+
+Sourcery's review of ab493af raised 2 further real defects:
+  - a failed temp-file cleanup was swallowed, leaving a stale .tmp file while claiming the
+    "no temp file on failure" invariant
+  - a scrub decoded/encoded with errors="replace", rewriting EVERY malformed sequence in the
+    file, not just the identifier (a lone surrogate 00 d8 came back as fd ff)
+Both were reproduced before fixing. A third defect was found while fixing them: the byte
+pattern was encoded with the detection codec, so "utf-8-sig" prepended a BOM and the identifier
+was never matched in UTF-8/GB18030 files.
+
+## FINAL TALLY
+
+  Round 1 review (1925b68): 2 findings, both real, fixed
+  Round 2 review (c7654e5): 6 findings, all real, fixed
+  Round 3 review (9da5471): 2 findings, both real, fixed  (+1 found while fixing)
+  Round 4 review (ab493af): 2 findings, both real, fixed  (+1 found while fixing)
+  Round 5 review (2b32c66): 0 findings
+  Total real findings raised by Sourcery and fixed: 12
+  Unresolved review threads at HEAD: 0
+
+Every finding is now a permanent test in tools/selftest.sh (47 checks, 15 of them mutation
+tests), so the same defect class cannot silently return.

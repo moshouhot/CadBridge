@@ -1,7 +1,7 @@
 {
   "phase": "P2",
   "run_id": "20260919T154319Z",
-  "generated_at_utc": "2026-09-19T17:00:11Z",
+  "generated_at_utc": "2026-09-19T21:04:48Z",
   "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T154319Z",
   "artifact_count": 16,
   "artifacts": [
@@ -77,13 +77,13 @@
     },
     {
       "path": "sourcery-pr-review-evidence.md",
-      "bytes": 5691,
-      "sha256": "68cfa805e3ea0702e439d58f216755e226654fb627fea6b237837a15f5feeff4"
+      "bytes": 7126,
+      "sha256": "a04904529ba24d0c308bcea7c44e52521126c9f9e3ccd4672e6d2aaaaa2018c6"
     },
     {
       "path": "status.json",
-      "bytes": 5863,
-      "sha256": "7c72f0b524c393c9e404c5ba91ab3923abf61c83dd50d0ed8b2389a12b196395",
+      "bytes": 5784,
+      "sha256": "5d64277cf076fd7d97904646b7db072034621ca64f16ac08f4a6d79fd59f11d7",
       "json_parses": true
     }
   ],
@@ -222,9 +222,9 @@
     },
     {
       "id": "P2-13",
-      "name": "Sourcery PR reviews across four rounds: every real finding fixed, 0 unresolved threads",
+      "name": "Sourcery PR reviews across five rounds: every real finding fixed, 0 unresolved threads",
       "expected": "review runs; every real finding fixed; 0 unresolved threads",
-      "actual": "Round 1 (1925b68) 2 findings; round 2 (c7654e5, via @sourcery-ai review after the auto limit of 5) 6 findings; round 3 (9da5471) 2 findings; round 4 (ab493af) 0 findings. All 10 real; threads total=10, unresolved=0.",
+      "actual": "Rounds: 2 findings (1925b68), 6 (c7654e5), 2 (9da5471), 2 (ab493af), 0 (2b32c66). All 12 real and fixed. Threads total=12, unresolved=0.",
       "status": "PASS",
       "evidence": [
         "sourcery-pr-review-evidence.md"
