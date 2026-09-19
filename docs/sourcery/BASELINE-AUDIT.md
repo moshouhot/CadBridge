@@ -142,7 +142,6 @@ CreateCircle(100.0, 100.0, radius);   // 对所有状态都执行
 ---
 
 ## 4. Sourcery Review 发现的问题（均属实，已整改）
-
 PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条行内评论**。两条都指向我
 新增的 `tools/check-live-gates.py`，**两条都属实**，我先复现再修复。
 
@@ -180,6 +179,32 @@ PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条�
 
 ---
 
+### D5（中）— 本机账号名在公开仓库里泄漏了三次（已改为强制校验）
+
+**这是本次工作自身造成的缺陷，如实记录。** 本机账号/机器名在公开仓库里泄漏了三次：
+
+1. 4 个 P0/P1 证据文件（首次发布前修复）；
+2. **修复第 1 次泄漏时发现的**：P1 的两个 `.raw` 证据文件（UTF-16）各一处，且它们是
+   **manifest 引用**的证据；
+3. 在修复第 1 次泄漏过程中新生成的 `docs/evidence/P2/.../build-modern.txt`，MSB3277 警告
+   带出了 24 处机器路径。
+
+**根因**：证据是真实命令在真实主机上跑出来的，机器路径天然携带账号名。因此“每次事后手工清理”
+不是修复。
+
+**整改**：
+- 新增 `tools/redact-evidence.py`：脱敏并写出 `<file>.redaction.txt` 旁注（原始 SHA-256、
+  存储后 SHA-256、命中次数、替换范围），使改动**可审计**；标识符经参数/环境变量传入，
+  **刻意不写进代码**（该文件公开，写死等于重新发布要删的字符串）；`--check` 只报告不写入。
+- `tools/selftest.sh` 新增**不变式**：任何被跟踪文件出现该标识符即失败。**未设置环境变量时显示
+  `SKIP` 而非 `PASS`**，避免“没配置”被误认为“已验证干净”。
+- 受影响的 manifest 已更新哈希并在 `redactions` 块逐条记录原始/存储哈希。
+
+**负向测试（已录证）**：把标识符注入一个被跟踪文件 → 守卫失败、套件 `25 passed, 1 failed`
+退出码 1；恢复后回到 `26 passed, 0 failed`。
+
+---
+
 ## 5. 记录为"不修改"的发现（含理由）
 
 | 发现 | 判断 | 理由 |
@@ -196,7 +221,7 @@ PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条�
 
 | 项目 | 命令 | 结果 |
 |---|---|---|
-| 工具自检（含 **5** 个变异测试） | `bash tools/selftest.sh` | **25 passed, 0 failed**，exit 0 |
+| 工具自检（含 **6** 个变异测试 + 隐私守卫） | `bash tools/selftest.sh` | **26 passed, 0 failed**，exit 0 |
 | 半径策略回归测试 | `bash tests/run-radius-policy-tests.sh` | **14 passed, 0 failed**，exit 0 |
 | 变异：删 `dap-probe` 闸门 | `check-live-gates.py` 对损坏副本 | **检出**（exit 1） |
 | 变异：闸门改注释 | 同上 | **检出**（exit 1） |
@@ -204,12 +229,13 @@ PR #1 上 Sourcery 以**中文**给出了 Reviewer's Guide、摘要和 **2 条�
 | 变异：同名方法冒充闸门（S1） | 同上 | **检出**（exit 1） |
 | 变异：新增未设闸门的 harness（S2） | 同上 | **检出**（exit 1） |
 | 变异：`Cancel` 改回创建 | 半径测试对损坏源码 | **检出**（2 项失败，exit 1） |
+| 负向测试：标识符重新出现 | `redact-evidence.py --check` + 套件 | **检出**（套件 25 passed/1 failed，exit 1） |
 | Legacy 插件构建 | `dotnet build ...Legacy.csproj -c Release` | 0 警告 0 错误 |
 | Modern 插件构建 | `dotnet build ...Modern.csproj -c Release` | 0 错误（3 个已记录的 MSB3277 警告） |
 | 包内无 Autodesk DLL | `find src/*/bin -name "ac*.dll"` | 无（符合 `Private=false` 约束） |
 | 静态检查 | `python -m pyflakes tools/*.py` | 干净 |
-| 凭据扫描 | 对 `HEAD` 的 208 个 blob | 无命中 |
-| 证据哈希 | blob 级 SHA-256 对照 manifest | 145/145 一致（2 个有意排除） |
+| 凭据 / 标识符扫描 | 对全部已提交 blob | 无命中 |
+| 证据哈希 | blob 级 SHA-256 对照 manifest | **161/161** 一致（2 个有意排除） |
 
 ---
 
