@@ -371,6 +371,76 @@ mutation_caught "extensionless executable with a shebang" \
 mutation_caught "environment read through an aliased environ mapping" \
   'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import os as _os\nimport safe_process as sp\nenv = _os.environ"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py live mode\")", "        if env.get(\"CBRIDGE_ACK_UNREVIEWED_LIVE\"):\n            pass\n        sp.require_safety_review_passed(\"dap-probe.py live mode\")"); p.write_text(t, encoding="utf-8")'
 
+# Regressions for the two defects Sourcery found in the third review round, both in
+# make-manifest.py. Reproduced against the previous version before fixing.
+#
+# (a) A manifest that exists but cannot be parsed was treated as {} and overwritten, which
+#     discards the non-derived tests/redactions blocks -- re-creating the very data-loss
+#     defect the preservation logic exists to prevent.
+mkdir -p "$TMP/corrupt"
+printf '{ this is not valid json' > "$TMP/corrupt/manifest.json"
+printf '{"ok":true}' > "$TMP/corrupt/a.json"
+CORRUPT_BEFORE=$(sha256sum "$TMP/corrupt/manifest.json" | cut -d' ' -f1)
+if python "$TOOLS/make-manifest.py" "$TMP/corrupt" --phase X --run-id R >/dev/null 2>&1; then
+  echo "  FAIL  a corrupt existing manifest was overwritten instead of refused"
+  fail=$((fail+1))
+else
+  CORRUPT_AFTER=$(sha256sum "$TMP/corrupt/manifest.json" | cut -d' ' -f1)
+  if [ "$CORRUPT_BEFORE" = "$CORRUPT_AFTER" ]; then
+    echo "  PASS  corrupt manifest refused and left byte-identical"; pass=$((pass+1))
+  else
+    echo "  FAIL  corrupt manifest was modified"; fail=$((fail+1))
+  fi
+fi
+
+# (b) artifact_count must be checked against the artifacts array length. Because the tool now
+#     DERIVES the field, a fresh generation is trivially consistent -- so the test must exercise
+#     the path where a contradicting value can still enter: `--extra`. That is the real risk
+#     (an injected or hand-written block disagreeing with the array it describes).
+mkdir -p "$TMP/countchk"
+printf '{"ok":true}' > "$TMP/countchk/a.json"
+printf '{"artifact_count": 999}' > "$TMP/countchk/extra.json"
+python "$TOOLS/make-manifest.py" "$TMP/countchk" --phase X --run-id R \
+  --extra "$TMP/countchk/extra.json" >/dev/null 2>&1
+COUNT_RC=$?
+if [ "$COUNT_RC" -eq 0 ]; then
+  echo "  FAIL  a contradicting artifact_count injected via --extra was accepted"
+  fail=$((fail+1))
+else
+  # It must be REJECTED, and the written file must still be self-consistent.
+  if python - "$TMP/countchk" <<'PYEOF'
+import json, pathlib, sys
+d = json.loads((pathlib.Path(sys.argv[1]) / "manifest.json").read_text(encoding="utf-8"))
+assert d["artifact_count"] == len(d["artifacts"]), "written manifest is internally inconsistent"
+assert d["validation"]["ok"] is False, "inconsistency was not reflected in validation.ok"
+sys.exit(0)
+PYEOF
+  then
+    echo "  PASS  contradicting artifact_count is rejected and the manifest stays consistent"
+    pass=$((pass+1))
+  else
+    fail=$((fail+1))
+  fi
+fi
+
+# (c) Line endings must be preserved, or every manifest edit becomes an unreviewable
+#     whole-file diff (docs/evidence is -text in .gitattributes, so bytes are what matter).
+mkdir -p "$TMP/crlf"
+printf '{\r\n  "phase": "X",\r\n  "artifacts": [],\r\n  "tests": []\r\n}\r\n' > "$TMP/crlf/manifest.json"
+printf '{"ok":true}' > "$TMP/crlf/a.json"
+python "$TOOLS/make-manifest.py" "$TMP/crlf" --phase X --run-id R >/dev/null 2>&1
+if python - "$TMP/crlf" <<'PYEOF'
+import pathlib, sys
+b = (pathlib.Path(sys.argv[1]) / "manifest.json").read_bytes()
+crlf = b.count(b"\r\n"); bare = b.count(b"\n") - crlf
+sys.exit(0 if crlf > bare else 1)
+PYEOF
+then
+  echo "  PASS  manifest line endings are preserved (CRLF stays CRLF)"; pass=$((pass+1))
+else
+  echo "  FAIL  manifest line endings were rewritten"; fail=$((fail+1))
+fi
+
 # Privacy guard: the local account/machine identifier must never appear in a tracked file.
 # It leaked THREE times during this audit -- the P0/P1 artifacts, the P1 .raw evidence files,
 # and the P2 build log produced while fixing the first leak -- so it is now a checked

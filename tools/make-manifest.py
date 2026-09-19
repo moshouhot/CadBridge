@@ -106,22 +106,41 @@ def validate_tests(tests: list[dict], root: Path) -> list[str]:
 def write_manifest_atomically(out: Path, manifest: dict) -> None:
     """Write the manifest via a temp file + atomic replace.
 
-    WHY: the manifest is the artifact that makes the rest of the evidence checkable. A direct
-    write_text() truncates the destination first, so an interruption (disk full, Ctrl-C, a
-    crash) leaves a PARTIAL manifest in place. A truncated manifest is worse than no manifest
-    at all: it still parses as JSON in many cases and still looks like evidence, while the
-    hashes it should guarantee are silently wrong or absent.
+    WHY ATOMIC: the manifest is the artifact that makes the rest of the evidence checkable. A
+    direct write_text() truncates the destination first, so an interruption (disk full,
+    Ctrl-C, a crash) leaves a PARTIAL manifest in place. A truncated manifest is worse than no
+    manifest at all: it still parses as JSON in many cases and still looks like evidence,
+    while the hashes it should guarantee are silently wrong or absent.
 
     os.replace() is atomic on the same filesystem, so a reader sees either the previous
     complete manifest or the new complete one, never a half-written file.
+
+    WHY LINE ENDINGS ARE PRESERVED: docs/evidence/** is marked -text in .gitattributes, so
+    manifest bytes are stored exactly as written. The existing P0/P1 manifests use CRLF while
+    newer ones use LF. Writing LF unconditionally rewrote a 273-line CRLF manifest as LF and
+    produced a whole-file diff with no content change, which makes every manifest edit
+    unreviewable. The existing convention is therefore kept.
     """
     payload = json.dumps(manifest, indent=2, ensure_ascii=False)
+
+    newline = "\n"
+    if out.is_file():
+        try:
+            existing = out.read_bytes()
+        except OSError:
+            existing = b""
+        # CRLF if the file uses CRLF more often than bare LF, else LF.
+        crlf = existing.count(b"\r\n")
+        bare_lf = existing.count(b"\n") - crlf
+        if crlf > bare_lf:
+            newline = "\r\n"
+
     # Keep the temp file in the same directory so the replace cannot cross a filesystem
     # boundary (which would make it a copy + delete instead of an atomic rename).
     fd, tmp_name = tempfile.mkstemp(dir=str(out.parent), prefix=MANIFEST_NAME + ".", suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="") as fh:
-            fh.write(payload)
+            fh.write(payload.replace("\n", newline) if newline != "\n" else payload)
             fh.flush()
             os.fsync(fh.fileno())
         os.replace(tmp_name, out)
@@ -159,14 +178,31 @@ def main() -> int:
     # test results, and the publication `redactions` provenance block. Re-running the tool
     # without --status-file used to silently DROP them -- observed in practice: a regeneration
     # reduced a 13-test manifest to 0 tests and erased the redaction provenance, while still
-    # printing "validation OK". That is exactly the class of quiet evidence loss this project
-    # forbids, so existing blocks are now carried forward unless explicitly replaced.
+    # printing "validation OK".
+    #
+    # A manifest that EXISTS but cannot be read or parsed is an ERROR, not an empty starting
+    # point. Treating it as {} would discard the non-derived blocks and re-create exactly the
+    # data-loss defect this preservation logic exists to prevent -- and a truncated or corrupt
+    # manifest is precisely the situation where those blocks are most valuable. The file is
+    # left untouched and the tool exits non-zero.
     previous: dict = {}
     if out.is_file():
         try:
             previous = json.loads(out.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            previous = {}
+        except OSError as e:
+            print(f"ERROR: existing manifest {out} cannot be read: {e}. Refusing to overwrite "
+                  f"it, because its non-derived blocks (tests, redactions) would be lost.",
+                  file=sys.stderr)
+            return 2
+        except json.JSONDecodeError as e:
+            print(f"ERROR: existing manifest {out} is not valid JSON: {e}. Refusing to "
+                  f"overwrite it, because its non-derived blocks (tests, redactions) would be "
+                  f"lost. Repair or remove it deliberately.", file=sys.stderr)
+            return 2
+        if not isinstance(previous, dict):
+            print(f"ERROR: existing manifest {out} is not a JSON object; refusing to overwrite.",
+                  file=sys.stderr)
+            return 2
 
     tests: list[dict] = []
     if args.status_file:
@@ -183,12 +219,19 @@ def main() -> int:
     if not args.no_validate:
         problems += validate_tests(tests, root)
 
+    # SELF-CONSISTENCY: `artifact_count` must equal the array length. Nothing checked this, so
+    # a manifest could declare 16 artifacts while listing 15 -- observed in practice after a
+    # hand edit that updated `artifacts` without `artifact_count`. A consumer that trusts the
+    # declared count to verify completeness would silently accept an inconsistent manifest, and
+    # the in-file validation reported ok. Derived first, then asserted.
+    artifact_count = len(artifacts)
+
     manifest = {
         "phase": args.phase,
         "run_id": args.run_id,
         "generated_at_utc": dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "run_dir": str(root),
-        "artifact_count": len(artifacts),
+        "artifact_count": artifact_count,
         "artifacts": artifacts,
         "tests": tests,
         "validation": {
@@ -219,6 +262,18 @@ def main() -> int:
                 "REDACTION: preserved from the previous manifest; some artifact hashes cover "
                 "bytes that differ from the originally captured ones."
             )
+
+    # Final self-consistency gate, AFTER --extra and the carried-forward blocks, so a value
+    # injected by --extra cannot silently contradict the array it describes. The DERIVED count
+    # wins: the written file is always internally consistent, and the tampering is recorded as
+    # a validation problem rather than left in the file for a consumer to trip over.
+    if manifest.get("artifact_count") != len(manifest.get("artifacts", [])):
+        problems.append(
+            f"artifact_count {manifest.get('artifact_count')!r} does not match the artifacts "
+            f"array length {len(manifest.get('artifacts', []))}; using the derived value"
+        )
+        manifest["artifact_count"] = len(manifest.get("artifacts", []))
+        manifest["validation"] = {"problems": problems, "ok": False}
 
     write_manifest_atomically(out, manifest)
     print(f"WROTE {out}  ({len(artifacts)} artifacts, {len(tests)} tests)")
