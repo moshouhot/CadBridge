@@ -119,12 +119,23 @@
       "evidence": [
         "sourcery-finding2-new-ungated-harness-detected.txt"
       ]
+    },
+    {
+      "id": "P2-13",
+      "name": "Sourcery PR review + re-review on the remediation PR",
+      "expected": "review runs; every real finding fixed; threads resolved",
+      "actual": "Review 1 (head 1925b68) posted 2 inline comments in Chinese; both were reproduced as real and fixed. Re-review (head cac0c37) posted 0 new comments and resolved both threads (unresolved=0).",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-pr-review-evidence.md"
+      ]
     }
   ],
   "notes": [
     "No AutoCAD, CoreConsole or debug adapter process was started during this audit.",
     "The Sourcery GitHub App is NOT installed; no Sourcery review or security scan has run. This audit was performed manually with local tooling.",
     "sourcery-cli is Python-only and cannot substitute for Sourcery App/IDE review of this C# repository.",
-    "P2-11/P2-12 are regressions for the two defects Sourcery found in the first version of tools/check-live-gates.py on PR #1. Both attacks were reproduced against that version before the fix."
+    "P2-11/P2-12 are regressions for the two defects Sourcery found in the first version of tools/check-live-gates.py on PR #1. Both attacks were reproduced against that version before the fix.",
+    "Sourcery App is installed on this repository only. Dashboard Review Rules, Review profile and Security Scan are still unset by the owner."
   ]
 }
