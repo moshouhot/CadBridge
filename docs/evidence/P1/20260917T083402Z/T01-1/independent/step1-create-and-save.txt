@@ -1,0 +1,61 @@
+Redirect stdout (file: E:\360data\TEMP\accc236282).
+AcCoreConsole: StdOutConsoleMode: processed-output: disabled,auto
+AutoCAD Core Engine Console - Copyright 2023 Autodesk, Inc.  All rights reserved. (U.212.0.0)
+
+Execution Path:
+D:\Program Files\Autodesk\AutoCAD_2024.1.7\AutoCAD 2024\accoreconsole.exe
+Current Directory: F:\Nextcloud\project\CadBridge
+
+Version Number: U.212.0.0 (UNICODE)
+LogFilePath has been set to the working folder.
+CoreHeartBeat
+正在重生成模型。
+CoreHeartBeat
+
+**** 系统变量更改 ****
+已从首选值更改 1 个监视系统变量。使用 SYSVARMONITOR 命令以查看更改。
+
+; 错误: LOAD 失败: "appload.lsp"
+
+AutoCAD 菜单实用工具 已加载。
+命令:
+命令:
+
+命令:
+命令: NETLOAD
+程序集文件名: f:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll
+
+命令: CBBRIDGEINFO
+
+CBBRIDGEINFO BEGIN
+  compiled_target=net48; clr=4.0.30319.42000; runtime_framework=.NET Framework 4.8.9261.0; framework_clr=True; arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll; asmver=0.1.0.0
+  acad_application_version: 24.3.0.0
+  acad_product_version: 24.3.212.0.0
+  document_name: Drawing1.dwg
+  lock_and_transaction: OK
+  model_space_entities: 0
+  drawing_insunits: Millimeters
+CBBRIDGEINFO END
+
+
+命令: CBBRIDGEPINGCIRCLE
+
+CBBRIDGECIRCLE OK handle=2B8 layer=0 center=100,100,0 r=10
+
+命令: CBBRIDGESAVEAS
+
+CBBRIDGESAVEAS OK path=F:/CadBridge-run/20260917T083402Z/fixture.dwg
+
+命令: CBBRIDGEINFO
+
+CBBRIDGEINFO BEGIN
+  compiled_target=net48; clr=4.0.30319.42000; runtime_framework=.NET Framework 4.8.9261.0; framework_clr=True; arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll; asmver=0.1.0.0
+  acad_application_version: 24.3.0.0
+  acad_product_version: 24.3.212.0.0
+  document_name: F:\CadBridge-run\20260917T083402Z\fixture.dwg
+  lock_and_transaction: OK
+  model_space_entities: 1
+  drawing_insunits: Millimeters
+CBBRIDGEINFO END
+
+

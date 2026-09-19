@@ -1,0 +1,33 @@
+=== full tooling self-test 2026-09-18T06:41:34Z ===
+== pathconv ==
+  PASS  to-win converts /f/a/b
+  PASS  to-msys converts F:\a\b
+  PASS  to-win-slash converts /f/a/b
+  PASS  unknown mode fails
+== decoder ==
+  PASS  decodes UTF-16LE
+  PASS  decodes UTF-8
+  PASS  missing input fails
+== accoreconsole harness: argument validation ==
+  PASS  missing --plugin rejected
+  PASS  missing accoreconsole rejected
+  PASS  missing plugin rejected
+== script generation: last line must be newline-terminated ==
+  PASS  script has 4 newline-terminated lines
+== manifest validation ==
+  PASS  valid manifest accepted
+  PASS  non-vocabulary status rejected
+  PASS  missing evidence path rejected
+  PASS  empty JSON artifact rejected
+== safety: no unverified process termination in tooling ==
+  PASS  no unverified termination or COM Dispatch fallback in tooling
+  PASS  safe_process self-test passes
+  PASS  repl probe offline tests pass (fakes, no CAD)
+  PASS  repl probe offline tests pass (fakes, no CAD)
+  PASS  no unguarded SystemExit inside finally blocks
+  PASS  no directory-scan PID adoption in tooling
+  PASS  no caller-built ownership records
+  PASS  every live CAD harness is gated on the safety review
+  PASS  safety gate refuses live harnesses by default
+
+self-tests: 18 passed, 0 failed

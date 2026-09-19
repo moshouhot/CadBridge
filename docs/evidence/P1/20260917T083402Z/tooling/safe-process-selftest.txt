@@ -1,0 +1,44 @@
+=== safe_process self-test 2026-09-18T06:40:00Z ===
+safe_process self-test (fabricated process tables; launches nothing real)
+  [OK ] norm_path folds slashes and case
+  [OK ] a fabricated token is refused :: token is not in this process's ownership registry: ownership is NOT established (a fabricated record cannot authorize termination)
+  [OK ] terminate_owned refuses a fabricated token
+  [OK ] a dict record is refused (only registry tokens are accepted) :: no ownership token supplied
+  [OK ] a registered, matching owner verifies :: verified: pid 4242 creation=2026-01-01T00:00:00.0 path=d:/program files/autodesk/autocad 2026/acad.exe
+  [OK ] audit() serialises without touching the handle :: ['creation', 'launched_at', 'path', 'pid', 'requested_exe', 'role']
+  [OK ] audit() output is JSON-serialisable
+  [OK ] PID reuse (creation time differs) is refused :: pid 4242 creation time changed (2026-01-01T00:00:00.0 -> 1999-01-01T00:00:00.0); this is a DIFFERENT process that reused the pid
+  [OK ] terminate_owned refuses after PID reuse
+  [OK ] a different executable at the same pid is refused :: pid 4242 executable path changed (D:/Program Files/Autodesk/AutoCAD 2026/acad.exe -> C:/Windows/notepad.exe)
+  [OK ] actual executable not matching the REQUESTED one is refused :: pid 4242 is running D:/Program Files/Autodesk/AutoCAD 2026/acad.exe, but we requested D:/Other/acad.exe
+  [OK ] missing metadata refused (empty creation+path) :: incomplete recorded identity for pid 4242; refusing because a partial match cannot prove ownership
+  [OK ] missing metadata refused (empty path) :: incomplete recorded identity for pid 4242; refusing because a partial match cannot prove ownership
+  [OK ] missing metadata refused (empty creation) :: incomplete recorded identity for pid 4242; refusing because a partial match cannot prove ownership
+  [OK ] enumeration failure is refused (not treated as absence) :: process enumeration unavailable, refusing: injected enumeration failure
+  [OK ] enumeration failure raises EnumerationError :: injected enumeration failure
+  [OK ] a pid that no longer exists is refused :: pid 4242 no longer exists
+  [OK ] terminate_owned uses the retained handle
+  [OK ] terminated entry is removed from the registry
+  [OK ] a failed handle terminate does NOT fall back to a PID kill
+  [OK ] the entry is kept when termination failed
+  [OK ] no retained handle means no termination
+  [OK ] a preexisting user instance is never adopted :: token=None
+  [OK ] launch_and_record returns an ownership token :: token=21ee1b9c20d5497f9978f1842a6a0e41
+  [OK ] the launched process is registered
+  [OK ] the registered pid matches the launched pid :: 4242
+  [OK ] audit() is JSON-serialisable on a real launch record
+  [OK ] a freshly launched process verifies :: verified: pid 4242 creation=2026-01-01T00:00:00.0 path=d:/program files/autodesk/autocad 2026/acad.exe
+  [OK ] launch -> terminate succeeds end to end
+  [OK ] the entry is gone after a successful terminate
+  [OK ] a failed wait() is NOT reported as success
+  [OK ] ownership is retained after a failed wait
+  [OK ] a launch whose handle already exited is refused :: token=None
+  [OK ] launch refuses a process whose exe is not the requested one :: token=None
+  [OK ] launch fails closed on enumeration failure :: token=None
+  [OK ] provider_scope restores the previous provider
+  [OK ] no by-name process termination in executable code
+  [OK ] no taskkill by image name in executable code
+  [OK ] no win32com Dispatch fallback in executable code
+  [OK ] no PID-based termination fallback in executable code
+
+self-test: PASS (0 failure(s))

@@ -1,0 +1,118 @@
+<Project>
+
+  <!--
+    CadBridge build conventions.
+
+    SCOPE RULE: nothing in this file injects AutoCAD references into arbitrary projects.
+    Autodesk references are only added when a project opts in with
+    <CadBridgePlugin>true</CadBridgePlugin>. Host, CLI, Contracts and test projects must
+    never acquire a CAD dependency by accident.
+
+    LICENSING RULE: Autodesk managed assemblies are compile-time references only
+    (Private=false). They are never copied to output. The release package must bind to the
+    installed AutoCAD. See docs/evidence/P0/20260917T083402Z/raw/source-register-summary.md
+    and docs/design/dependency-lock.md.
+
+    REFERENCE-DIR RULE: the reference directory is explicit and pinned per shell. There is
+    deliberately NO "first directory that happens to exist wins" search, because that makes
+    a build silently depend on whichever AutoCAD the machine currently has installed.
+    Each shell names one directory; the build fails loudly if it is absent, and records the
+    SHA-256 of every assembly it actually referenced.
+  -->
+
+  <PropertyGroup>
+    <CadBridgePlugin Condition="'$(CadBridgePlugin)' == ''">false</CadBridgePlugin>
+
+    <!--
+      Reference set:
+        core = acdbmgd + accoremgd only. Loadable by accoreconsole.exe and by full AutoCAD.
+        full = acdbmgd + accoremgd + acmgd. Required for UI-level APIs (view capture, zoom).
+      The CadBridge plugin uses `core` so one shared source tree stays loadable in both.
+    -->
+    <CadBridgeRefSet Condition="'$(CadBridgeRefSet)' == ''">core</CadBridgeRefSet>
+
+    <!--
+      Legacy floor: ObjectARX 2014 (assembly 19.1) is the OLDEST Autodesk managed reference
+      set present on this machine. Building the net48 shell against the oldest available
+      generation is the conservative choice: code that compiles here cannot depend on APIs
+      introduced after it.
+
+      This is NOT proof of AutoCAD 2015 compatibility. AutoCAD 2015 is R20.0 and no R20.0
+      reference assemblies exist locally, so 2015 remains unproven by construction and is
+      reported as such in the compatibility matrix.
+    -->
+    <CadBridgeLegacyRefDir Condition="'$(CadBridgeLegacyRefDir)' == ''">D:\CAD APPLOAD\ObjectARX\ObjectARX-2014\inc</CadBridgeLegacyRefDir>
+
+    <!--
+      Modern floor: ObjectARX 2025 (assembly 25.0) is the lowest Modern generation, matching
+      the first .NET 8 AutoCAD. AutoCAD 2026 is 25.1, i.e. newer than the reference set.
+    -->
+    <CadBridgeModernRefDir Condition="'$(CadBridgeModernRefDir)' == ''">D:\CAD APPLOAD\ObjectARX\ObjectARX-2025\inc</CadBridgeModernRefDir>
+  </PropertyGroup>
+
+  <Target Name="CadBridgeResolveRefDir" Condition="'$(CadBridgePlugin)' == 'true'"
+          BeforeTargets="ResolveAssemblyReferences">
+
+    <PropertyGroup>
+      <AcadRefDir Condition="'$(AcadRefDir)' == '' AND '$(TargetFramework)' == 'net48'">$(CadBridgeLegacyRefDir)</AcadRefDir>
+      <AcadRefDir Condition="'$(AcadRefDir)' == '' AND '$(TargetFramework)' == 'net8.0-windows'">$(CadBridgeModernRefDir)</AcadRefDir>
+    </PropertyGroup>
+
+    <Error Condition="'$(AcadRefDir)' == ''"
+           Text="CadBridge: no AutoCAD reference directory is defined for TargetFramework '$(TargetFramework)'. Set CadBridgeLegacyRefDir / CadBridgeModernRefDir, or pass -p:AcadRefDir=..." />
+    <Error Condition="!Exists('$(AcadRefDir)\acdbmgd.dll')"
+           Text="CadBridge: '$(AcadRefDir)' does not contain acdbmgd.dll. The reference directory is pinned on purpose; fix the path or pass -p:AcadRefDir=... explicitly." />
+
+    <!-- Declared inside the target so HintPath sees the resolved value. -->
+    <ItemGroup>
+      <Reference Include="acdbmgd">
+        <HintPath>$(AcadRefDir)\acdbmgd.dll</HintPath>
+        <Private>false</Private>
+        <SpecificVersion>false</SpecificVersion>
+      </Reference>
+      <Reference Include="accoremgd">
+        <HintPath>$(AcadRefDir)\accoremgd.dll</HintPath>
+        <Private>false</Private>
+        <SpecificVersion>false</SpecificVersion>
+      </Reference>
+      <Reference Include="acmgd" Condition="'$(CadBridgeRefSet)' == 'full'">
+        <HintPath>$(AcadRefDir)\acmgd.dll</HintPath>
+        <Private>false</Private>
+        <SpecificVersion>false</SpecificVersion>
+      </Reference>
+    </ItemGroup>
+
+    <Message Importance="high" Text="CadBridge[$(TargetFramework)] refs: dir=$(AcadRefDir) refset=$(CadBridgeRefSet)" />
+  </Target>
+
+  <!--
+    Record the exact assembly files used, with hashes, into obj/ so evidence can cite them.
+    Also fail the build if an Autodesk assembly would be copied to output.
+  -->
+  <Target Name="CadBridgeRecordRefs" Condition="'$(CadBridgePlugin)' == 'true'"
+          AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <_CadBridgeRef Include="@(ReferencePath)"
+                     Condition="$([System.String]::Copy('%(Filename)').ToLowerInvariant()) == 'acdbmgd' or $([System.String]::Copy('%(Filename)').ToLowerInvariant()) == 'accoremgd' or $([System.String]::Copy('%(Filename)').ToLowerInvariant()) == 'acmgd'" />
+      <_CadBridgeCopied Include="@(ReferenceCopyLocalPaths)"
+                        Condition="$([System.String]::Copy('%(Filename)').ToLowerInvariant()) == 'acdbmgd' or $([System.String]::Copy('%(Filename)').ToLowerInvariant()) == 'accoremgd' or $([System.String]::Copy('%(Filename)').ToLowerInvariant()) == 'acmgd'" />
+    </ItemGroup>
+
+    <Error Condition="'@(_CadBridgeCopied)' != ''"
+           Text="CadBridge: Autodesk assemblies must never be copied to output, but found: @(_CadBridgeCopied). Check Private=false." />
+
+    <!--
+      MSB3277 is expected and benign here, but it is NOT suppressed:
+        AutoCAD's own managed assemblies (acdbmgd/accoremgd/acmgd) reference
+        Microsoft.VisualBasic 10.1.0.0, while the .NET 8 reference pack provides 10.0.0.0.
+        The conflict is internal to Autodesk's assemblies; CadBridge.Plugin.* itself has no
+        Microsoft.VisualBasic reference (verified by inspecting the built assembly). It is
+        recorded rather than hidden so a future change in the warning set is visible.
+    -->
+    <WriteLinesToFile File="$(IntermediateOutputPath)cadbridge-refs.txt"
+                      Lines="CadBridge[$(TargetFramework)];dir=$(AcadRefDir);refset=$(CadBridgeRefSet);@(_CadBridgeRef->'%(Filename)|%(FullPath)')"
+                      Overwrite="true" />
+    <Message Importance="high" Text="CadBridge[$(TargetFramework)] referenced: @(_CadBridgeRef->'%(Filename)=%(FullPath)')" />
+  </Target>
+
+</Project>

@@ -1,0 +1,821 @@
+{
+  "observations": {
+    "breakpoints": [
+      {
+        "column": 3,
+        "endColumn": 3,
+        "endLine": 6,
+        "id": 0,
+        "line": 6,
+        "message": "",
+        "verified": true
+      },
+      {
+        "column": 3,
+        "endColumn": 3,
+        "endLine": 8,
+        "id": 1,
+        "line": 8,
+        "message": "",
+        "verified": true
+      }
+    ],
+    "trigger": {
+      "result": ""
+    },
+    "stop1_event": {
+      "description": "",
+      "reason": "breakpoint",
+      "text": "",
+      "threadId": 1
+    },
+    "stop1_frames": [
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":BREAK-POINT"
+      },
+      {
+        "column": 3,
+        "endColumn": 22,
+        "endLine": 6,
+        "id": 131,
+        "line": 6,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 126,
+        "line": 0,
+        "moduleId": "",
+        "name": "#<USUBR @00000207f084c160 -top->"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":USER-INPUT"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": "C:VLDEBUG"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":ARQ-SUBR-CALLBACK"
+      }
+    ],
+    "stop1_line": 6,
+    "stop1_locals": {
+      "N": "2",
+      "P": "nil"
+    },
+    "stop2_event": {
+      "description": "",
+      "reason": "breakpoint",
+      "text": "",
+      "threadId": 1
+    },
+    "stop2_frames": [
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":BEFORE-EXP"
+      },
+      {
+        "column": 11,
+        "endColumn": 21,
+        "endLine": 6,
+        "id": 131,
+        "line": 6,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 11,
+        "endColumn": 21,
+        "endLine": 6,
+        "id": 126,
+        "line": 6,
+        "moduleId": "",
+        "name": "#<USUBR @00000207f084c160 -top->",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":USER-INPUT"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": "C:VLDEBUG"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":ARQ-SUBR-CALLBACK"
+      }
+    ],
+    "stop2_entered_name": ":BEFORE-EXP",
+    "stop2_line": 0,
+    "stop2_locals": {},
+    "stop2b_frames": [
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":FUNCTION-ENTRY"
+      },
+      {
+        "column": 1,
+        "endColumn": 5,
+        "endLine": 3,
+        "id": 137,
+        "line": 1,
+        "moduleId": "",
+        "name": "CB-ADD",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 11,
+        "endColumn": 21,
+        "endLine": 6,
+        "id": 131,
+        "line": 6,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 1,
+        "endColumn": 5,
+        "endLine": 3,
+        "id": 126,
+        "line": 1,
+        "moduleId": "",
+        "name": "#<USUBR @00000207f084c160 -top->",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":USER-INPUT"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": "C:VLDEBUG"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":ARQ-SUBR-CALLBACK"
+      }
+    ],
+    "stop2b_locals": {
+      "X": "2",
+      "Y": "nil"
+    },
+    "stop2b_line": 1,
+    "stop3_frames": [
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":AFTER-GOTO-RETURN"
+      },
+      {
+        "column": 5,
+        "endColumn": 1,
+        "endLine": 1,
+        "id": 137,
+        "line": 3,
+        "moduleId": "",
+        "name": "CB-ADD",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 11,
+        "endColumn": 21,
+        "endLine": 6,
+        "id": 131,
+        "line": 6,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 5,
+        "endColumn": 1,
+        "endLine": 1,
+        "id": 126,
+        "line": 3,
+        "moduleId": "",
+        "name": "#<USUBR @00000207f084c160 -top->",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":USER-INPUT"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": "C:VLDEBUG"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":ARQ-SUBR-CALLBACK"
+      }
+    ],
+    "stop3_locals": {
+      "X": "2",
+      "Y": "3"
+    },
+    "stop3_line": 3,
+    "stop4_frames": [
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":AFTER-EXP"
+      },
+      {
+        "column": 21,
+        "endColumn": 11,
+        "endLine": 6,
+        "id": 131,
+        "line": 6,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 21,
+        "endColumn": 11,
+        "endLine": 6,
+        "id": 126,
+        "line": 6,
+        "moduleId": "",
+        "name": "#<USUBR @00000207f084c160 -top->",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":USER-INPUT"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": "C:VLDEBUG"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":ARQ-SUBR-CALLBACK"
+      }
+    ],
+    "stop4_locals": {
+      "N": "2",
+      "P": "nil"
+    },
+    "stop4_line": 6,
+    "stop5_frames": [
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":BREAK-POINT"
+      },
+      {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 126,
+        "line": 8,
+        "moduleId": "",
+        "name": "#<USUBR @00000207f084c160 -top->",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":USER-INPUT"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": "C:VLDEBUG"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":ARQ-SUBR-CALLBACK"
+      }
+    ],
+    "stop5_line": 8,
+    "stale_ref_probe": {
+      "body": {
+        "variables": [
+          {
+            "evaluateName": "*LAST-VALUE*",
+            "name": "*LAST-VALUE*",
+            "type": "INT",
+            "value": "3",
+            "variablesReference": 0
+          }
+        ]
+      },
+      "command": "variables",
+      "request_seq": 26,
+      "seq": 32,
+      "success": true,
+      "type": "response"
+    }
+  },
+  "checks": [
+    {
+      "name": "initialize",
+      "ok": true,
+      "detail": {
+        "supportsConfigurationDoneRequest": true,
+        "supportsEvaluateForHovers": true
+      }
+    },
+    {
+      "name": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "launch",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "setBreakpoints lines 6 and 8",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 6,
+          "id": 0,
+          "line": 6,
+          "message": "",
+          "verified": true
+        },
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 1,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "name": "both breakpoints verified",
+      "ok": true,
+      "detail": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "breakpoint 6 bound to requested line",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "breakpoint 8 bound to requested line",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "evaluate (C:CBDBG) accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped event #1 received",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stop1 has a real source frame",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 22,
+        "endLine": 6,
+        "id": 131,
+        "line": 6,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "stop1 frame is C:CBDBG",
+      "ok": true,
+      "detail": "C:CBDBG"
+    },
+    {
+      "name": "stop1 locals contain n=2",
+      "ok": true,
+      "detail": {
+        "N": "2",
+        "P": "nil"
+      }
+    },
+    {
+      "name": "stepIn accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped event #2 after stepIn",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stop2 entered the cb-add call",
+      "ok": true,
+      "detail": [
+        ":BEFORE-EXP",
+        "C:CBDBG",
+        "#<USUBR @00000207f084c160 -top->",
+        ":USER-INPUT",
+        ":CALLBACK-ENTRY",
+        "C:VLDEBUG",
+        ":CALLBACK-ENTRY",
+        ":ARQ-SUBR-CALLBACK"
+      ]
+    },
+    {
+      "name": "second stepIn accepted (enter cb-add body)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "now inside cb-add",
+      "ok": true,
+      "detail": [
+        ":FUNCTION-ENTRY",
+        "CB-ADD",
+        "C:CBDBG",
+        "#<USUBR @00000207f084c160 -top->",
+        ":USER-INPUT",
+        ":CALLBACK-ENTRY",
+        "C:VLDEBUG",
+        ":CALLBACK-ENTRY",
+        ":ARQ-SUBR-CALLBACK"
+      ]
+    },
+    {
+      "name": "inside cb-add, x=2",
+      "ok": true,
+      "detail": {
+        "X": "2",
+        "Y": "nil"
+      }
+    },
+    {
+      "name": "next accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped event #3 after next",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "after next inside cb-add, y=3",
+      "ok": true,
+      "detail": {
+        "X": "2",
+        "Y": "3"
+      }
+    },
+    {
+      "name": "stepOut accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped event #4 after stepOut",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "returned to C:CBDBG",
+      "ok": true,
+      "detail": "C:CBDBG"
+    },
+    {
+      "name": "after cb-add returned, p=3",
+      "ok": false,
+      "detail": {
+        "N": "2",
+        "P": "nil"
+      }
+    },
+    {
+      "name": "continue accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "line 8 breakpoint reached",
+      "ok": true,
+      "detail": 8
+    }
+  ],
+  "capabilities": {
+    "supportsConfigurationDoneRequest": true,
+    "supportsEvaluateForHovers": true
+  },
+  "adapter_alive": true,
+  "adapter_stderr": []
+}

@@ -1,0 +1,13 @@
+Redirect stdout (file: E:\360data\TEMP\accc280442).
+AcCoreConsole: StdOutConsoleMode: processed-output: disabled,auto
+AutoCAD Core Engine Console - Copyright 2021 Autodesk, Inc.  All rights reserved. (S.191.0.0)
+
+Execution Path:
+D:\Program Files\Autodesk\AutoCAD 2022.1.5\AutoCAD 2022\accoreconsole.exe
+Current Directory: F:\Nextcloud\project\CadBridge
+
+Version Number: S.191.0.0 (UNICODE)
+LogFilePath has been set to the working folder.
+LogFilePath has been restored to ''.
+
+ERROR: Something went wrong. ErrorStatus=53.

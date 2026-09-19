@@ -1,0 +1,12 @@
+{"t": 1789663737.5155, "dir": "out", "payload": {"seq": 1, "type": "request", "command": "initialize", "arguments": {"clientID": "cadbridge-dap-probe", "clientName": "CadBridge DAP Probe", "adapterID": "autolisp", "pathFormat": "path", "linesStartAt1": true, "columnsStartAt1": true, "supportsVariableType": true}}}
+{"t": 1789663737.5705, "dir": "in", "payload": {"body": {"supportsConfigurationDoneRequest": true, "supportsEvaluateForHovers": true}, "command": "initialize", "request_seq": 1, "seq": 1, "success": true, "type": "response"}}
+{"t": 1789663737.5715, "dir": "in", "payload": {"body": {"supportsConfigurationDoneRequest": true, "supportsEvaluateForHovers": true}, "event": "initialized", "seq": 1, "type": "event"}}
+{"t": 1789663737.6176, "dir": "out", "payload": {"seq": 2, "type": "request", "command": "launch", "arguments": {"program": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp", "type": "autolisp", "request": "launch"}}}
+{"t": 1789663746.4811, "dir": "in", "payload": {"body": null, "command": "launch", "request_seq": 2, "seq": 1, "success": true, "type": "response"}}
+{"t": 1789663746.5121, "dir": "out", "payload": {"seq": 3, "type": "request", "command": "setBreakpoints", "arguments": {"source": {"path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp", "name": "cb_debug_fixture.lsp"}, "breakpoints": [{"line": 6}], "lines": [6]}}}
+{"t": 1789663746.5432, "dir": "in", "payload": {"body": {"breakpoints": [{"column": 3, "endColumn": 3, "endLine": 6, "id": 0, "line": 6, "message": "", "verified": true}]}, "command": "setBreakpoints", "request_seq": 3, "seq": 2, "success": true, "type": "response"}}
+{"t": 1789663746.5632, "dir": "out", "payload": {"seq": 4, "type": "request", "command": "configurationDone", "arguments": {}}}
+{"t": 1789663746.7304, "dir": "in", "payload": {"body": null, "command": "configurationDone", "request_seq": 4, "seq": 3, "success": true, "type": "response"}}
+{"t": 1789663746.7464, "dir": "in", "payload": {"body": {"category": "stdout", "output": "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"}, "event": "output", "seq": 4, "type": "event"}}
+{"t": 1789663746.7645, "dir": "out", "payload": {"seq": 5, "type": "request", "command": "threads", "arguments": {}}}
+{"t": 1789663746.7925, "dir": "in", "payload": {"body": {"threads": [{"id": 1, "name": "main"}]}, "command": "threads", "request_seq": 5, "seq": 5, "success": true, "type": "response"}}

@@ -1,0 +1,26 @@
+[
+    {
+        "file":  "PRD.md",
+        "bytes":  13000,
+        "sha256":  "A678ED2CEC701066D6B04F8B1E4D001E7C7AD86402436285038A11DA1BC5E6F5",
+        "modified_utc":  "2026-09-17T08:17:31.4504657Z"
+    },
+    {
+        "file":  "DESIGN.md",
+        "bytes":  53621,
+        "sha256":  "CC9C33605CC1037D0D5C4311426C23C187FDCE73E9091B25D0C4097439185178",
+        "modified_utc":  "2026-09-17T08:17:31.4514668Z"
+    },
+    {
+        "file":  "IMPLEMENTATION_PLAN.md",
+        "bytes":  17053,
+        "sha256":  "221F5C9E7E60A5EAA84A8AC66165F52BFF59E9FAA8F2F5835C90D61E18DA60B4",
+        "modified_utc":  "2026-09-17T08:17:31.4504657Z"
+    },
+    {
+        "file":  "ACCEPTANCE.md",
+        "bytes":  26279,
+        "sha256":  "DA34036A0D973C5D1013EF9D45FAFA4A2567E57CEFF2B4BC8ACE42FC97DBB86D",
+        "modified_utc":  "2026-09-17T08:17:31.4524676Z"
+    }
+]

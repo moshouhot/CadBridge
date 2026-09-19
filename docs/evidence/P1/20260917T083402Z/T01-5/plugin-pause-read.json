@@ -1,0 +1,227 @@
+{
+  "checks": [
+    {
+      "name": "initialize",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "attach to the CAD that has the plugin loaded",
+      "ok": true,
+      "detail": {
+        "success": true,
+        "message": null
+      }
+    },
+    {
+      "name": "breakpoint line 8 verified",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 0,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "name": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trigger (C:CBDBG)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped at line 8",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stopped in a real source frame at line 8",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "PLUGIN code (CBLIVEREAD) executed while paused",
+      "ok": false,
+      "detail": {
+        "expression": "(CBLIVEREAD)",
+        "returned": true,
+        "success": true,
+        "result": "无法在监视窗口中计算用户定义的函数",
+        "type": "STR",
+        "message": null,
+        "seconds": 0.051,
+        "new_stdout": []
+      }
+    },
+    {
+      "name": "PLUGIN read reported the circle created by line 7 (circles=1)",
+      "ok": false,
+      "detail": "无法在监视窗口中计算用户定义的函数"
+    },
+    {
+      "name": "PLUGIN read reported r=3 for the last circle",
+      "ok": false,
+      "detail": "无法在监视窗口中计算用户定义的函数"
+    },
+    {
+      "name": "control: plain-Lisp read also works while paused",
+      "ok": true,
+      "detail": {
+        "expression": "(cdr (assoc 40 (entget (entlast))))",
+        "returned": true,
+        "success": true,
+        "result": "3.0",
+        "type": "REAL",
+        "message": null,
+        "seconds": 0.052,
+        "new_stdout": []
+      }
+    },
+    {
+      "name": "continue accepted after the paused plugin read",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "CBDBG_DONE printed after continue",
+      "ok": true,
+      "detail": [
+        "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+        "CBDBG_DONE",
+        "\r\n"
+      ]
+    },
+    {
+      "name": "independent COM read confirms the r=3 circle",
+      "ok": true,
+      "detail": {
+        "circles": [
+          {
+            "handle": "2CE",
+            "radius": 3.0,
+            "center": [
+              100.0,
+              100.0,
+              0.0
+            ]
+          }
+        ],
+        "status": "OK"
+      }
+    }
+  ],
+  "paused_reads": {
+    "plugin_lispfunction": {
+      "expression": "(CBLIVEREAD)",
+      "returned": true,
+      "success": true,
+      "result": "无法在监视窗口中计算用户定义的函数",
+      "type": "STR",
+      "message": null,
+      "seconds": 0.051,
+      "new_stdout": []
+    },
+    "plain_lisp": {
+      "expression": "(cdr (assoc 40 (entget (entlast))))",
+      "returned": true,
+      "success": true,
+      "result": "3.0",
+      "type": "REAL",
+      "message": null,
+      "seconds": 0.052,
+      "new_stdout": []
+    }
+  },
+  "startup_script": "F:\\CadBridge-run\\_t01-5-plugin\\netload-only.scr",
+  "acad_pid": 75408,
+  "stop_frame": {
+    "column": 3,
+    "endColumn": 23,
+    "endLine": 8,
+    "id": 131,
+    "line": 8,
+    "moduleId": "",
+    "name": "C:CBDBG",
+    "source": {
+      "name": "cb_debug_fixture.lsp",
+      "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+    }
+  },
+  "plugin_read_verdict": {
+    "plugin_code_ran_while_paused": false,
+    "returned_marker": false,
+    "raw_result": "无法在监视窗口中计算用户定义的函数",
+    "note": "CBLIVEREAD is managed plugin code registered with [LispFunction]; the marker in its return value distinguishes it from plain-Lisp evaluation."
+  },
+  "output_after_continue": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+    "CBDBG_DONE",
+    "\r\n"
+  ],
+  "com_after_continue": {
+    "completed": true,
+    "snapshot": {
+      "circles": [
+        {
+          "handle": "2CE",
+          "radius": 3.0,
+          "center": [
+            100.0,
+            100.0,
+            0.0
+          ]
+        }
+      ],
+      "status": "OK"
+    }
+  },
+  "verdict": {
+    "derived_from_checks": true,
+    "checks_total": 15,
+    "checks_failed": 3,
+    "failed_names": [
+      "PLUGIN code (CBLIVEREAD) executed while paused",
+      "PLUGIN read reported the circle created by line 7 (circles=1)",
+      "PLUGIN read reported r=3 for the last circle"
+    ],
+    "plugin_mediated_pause_read": "NOT DEMONSTRATED",
+    "explicitly_not_claimed": [
+      "that DEBUG_BUSY / STALE_DEBUG_HANDLE / control leases are implemented -- they are Host policy and remain unimplemented",
+      "that ACAD_USERPROFILE isolates the user's real profile -- not demonstrated",
+      "that writes during a pause are refused -- the raw adapter does not refuse them",
+      "that this generalises to other AutoCAD versions -- only the host under test was exercised"
+    ]
+  },
+  "adapter_stderr": []
+}

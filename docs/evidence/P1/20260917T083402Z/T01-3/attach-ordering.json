@@ -1,0 +1,88 @@
+{
+  "cases": [
+    {
+      "case": "no_wait_ordering",
+      "wait_for_attach_response": false,
+      "acad_pid": 75532,
+      "initialize_success": true,
+      "initialized_event": true,
+      "messages": [
+        {
+          "kind": "response",
+          "command": "setBreakpoints",
+          "success": true,
+          "body": {
+            "breakpoints": [
+              {
+                "column": 3,
+                "endColumn": 3,
+                "endLine": 6,
+                "id": 0,
+                "line": 6,
+                "message": "",
+                "verified": true
+              }
+            ]
+          },
+          "message": null
+        },
+        {
+          "kind": "response",
+          "command": "attach",
+          "success": true,
+          "body": null,
+          "message": null
+        },
+        {
+          "kind": "event",
+          "event": "initialized",
+          "body": {
+            "supportsConfigurationDoneRequest": true,
+            "supportsEvaluateForHovers": true
+          }
+        },
+        {
+          "kind": "response",
+          "command": "configurationDone",
+          "success": true,
+          "body": null,
+          "message": null
+        },
+        {
+          "kind": "event",
+          "event": "output",
+          "body": {
+            "category": "stdout",
+            "output": "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+          }
+        }
+      ],
+      "adapter_alive": true,
+      "adapter_stderr": []
+    },
+    {
+      "case": "wait_control",
+      "wait_for_attach_response": true,
+      "acad_pid": 20464,
+      "initialize_success": true,
+      "initialized_event": true,
+      "attach": {
+        "success": true,
+        "body": null,
+        "message": null
+      },
+      "messages": [
+        {
+          "kind": "event",
+          "event": "initialized",
+          "body": {
+            "supportsConfigurationDoneRequest": true,
+            "supportsEvaluateForHovers": true
+          }
+        }
+      ],
+      "adapter_alive": true,
+      "adapter_stderr": []
+    }
+  ]
+}

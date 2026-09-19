@@ -1,0 +1,56 @@
+Redirect stdout (file: E:\360data\TEMP\accc378602).
+AcCoreConsole: StdOutConsoleMode: processed-output: disabled,auto
+AutoCAD Core Engine Console - Copyright 2025 Autodesk, Inc.  All rights reserved. (W.74.0.0)
+
+Execution Path:
+D:\Program Files\Autodesk\AutoCAD 2026\accoreconsole.exe
+Current Directory: F:\Nextcloud\project\CadBridge
+
+Version Number: W.74.0.0 (UNICODE)
+LogFilePath has been set to the working folder.
+CoreHeartBeat
+正在重生成模型。
+CoreHeartBeat
+使用 acadiso.dwt 从 AutoCAD 配置文件 <<未命名配置>> 创建的图形
+**** 系统变量更改 ****
+已从首选值更改 1 个监视系统变量。使用 SYSVARMONITOR 命令以查看更改。
+
+
+AutoCAD 菜单实用工具 已加载。
+命令:
+命令:
+
+命令:
+命令: NETLOAD
+程序集文件名: f:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Modern\bin\Release\net8.0-windows\CadBridge.Plugin.Modern.dll
+
+命令: CBBRIDGEINFO
+
+CBBRIDGEINFO BEGIN
+  runtime: shell=net8.0-windows; clr=8.0.22; framework=.NET 8.0.22; arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Modern\bin\Release\net8.0-windows\CadBridge.Plugin.Modern.dll; asmver=0.1.0.0
+  acad_application_version: 25.1.0.0
+  acad_product_version: 25.1.74.0.0
+  document_name: Drawing1.dwg
+  lock_and_transaction: OK
+  model_space_entities: 0
+  drawing_insunits: Millimeters
+CBBRIDGEINFO END
+
+
+命令: CBBRIDGEPINGCIRCLE
+
+CBBRIDGEPINGCIRCLE OK handle=2CE layer=0 center=100,100,0 r=10
+
+命令: CBBRIDGEINFO
+
+CBBRIDGEINFO BEGIN
+  runtime: shell=net8.0-windows; clr=8.0.22; framework=.NET 8.0.22; arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Modern\bin\Release\net8.0-windows\CadBridge.Plugin.Modern.dll; asmver=0.1.0.0
+  acad_application_version: 25.1.0.0
+  acad_product_version: 25.1.74.0.0
+  document_name: Drawing1.dwg
+  lock_and_transaction: OK
+  model_space_entities: 1
+  drawing_insunits: Millimeters
+CBBRIDGEINFO END
+
+

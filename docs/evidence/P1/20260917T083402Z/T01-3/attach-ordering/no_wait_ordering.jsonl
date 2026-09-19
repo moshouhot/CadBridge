@@ -1,0 +1,10 @@
+{"t": 1789690566.4403, "dir": "out", "payload": {"seq": 1, "type": "request", "command": "initialize", "arguments": {"clientID": "cadbridge-order", "clientName": "CadBridge Order", "adapterID": "autolisp", "pathFormat": "path", "linesStartAt1": true, "columnsStartAt1": true}}}
+{"t": 1789690566.4653, "dir": "in", "payload": {"body": {"supportsConfigurationDoneRequest": true, "supportsEvaluateForHovers": true}, "command": "initialize", "request_seq": 1, "seq": 1, "success": true, "type": "response"}}
+{"t": 1789690566.4653, "dir": "in", "payload": {"body": {"supportsConfigurationDoneRequest": true, "supportsEvaluateForHovers": true}, "event": "initialized", "seq": 1, "type": "event"}}
+{"t": 1789690566.4923, "dir": "out", "payload": {"seq": 2, "type": "request", "command": "attach", "arguments": {"type": "attachlisp", "request": "attach", "processId": "75532", "program": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"}}}
+{"t": 1789690566.9928, "dir": "out", "payload": {"seq": 3, "type": "request", "command": "setBreakpoints", "arguments": {"source": {"path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp", "name": "cb_debug_fixture.lsp"}, "breakpoints": [{"line": 6}], "lines": [6]}}}
+{"t": 1789690567.149, "dir": "in", "payload": {"body": null, "command": "attach", "request_seq": 2, "seq": 1, "success": true, "type": "response"}}
+{"t": 1789690567.149, "dir": "in", "payload": {"body": {"breakpoints": [{"column": 3, "endColumn": 3, "endLine": 6, "id": 0, "line": 6, "message": "", "verified": true}]}, "command": "setBreakpoints", "request_seq": 3, "seq": 2, "success": true, "type": "response"}}
+{"t": 1789690567.4933, "dir": "out", "payload": {"seq": 4, "type": "request", "command": "configurationDone", "arguments": {}}}
+{"t": 1789690567.629, "dir": "in", "payload": {"body": null, "command": "configurationDone", "request_seq": 4, "seq": 3, "success": true, "type": "response"}}
+{"t": 1789690567.6295, "dir": "in", "payload": {"body": {"category": "stdout", "output": "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"}, "event": "output", "seq": 4, "type": "event"}}

@@ -1,0 +1,112 @@
+{
+  "checks": [
+    {
+      "name": "idle document-context baseline recorded before DAP attach",
+      "ok": false,
+      "detail": "baseline file absent/empty"
+    },
+    {
+      "name": "exclusive CAD environment still holds before DAP attach",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "Job Object cleanup confirmed",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "name": "no acad.exe remains after cleanup",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "all mandatory checks ran",
+      "ok": false,
+      "detail": {
+        "missing": [
+          "attach",
+          "breakpoint line 8 verified",
+          "stopped at line 8",
+          "PLUGIN callback ran via repl (our nonce came back)",
+          "PLUGIN callback reported status=ok",
+          "PLUGIN callback released its read transaction (disposed=true)",
+          "PLUGIN read exactly 1 circle",
+          "PLUGIN read circle radius exactly 3.0",
+          "no invalidating event during the read (continued/terminated/exited/unexpected stopped/error/CBDBG_DONE)",
+          "still stopped at line 8 after the read",
+          "PLUGIN value was delivered BEFORE any continue (still paused)",
+          "PLUGIN read the same entity handle the fixture created (independent hover read)",
+          "PLUGIN callback used the documented read-only no-explicit-lock mode",
+          "PLUGIN callback actually ACQUIRED a transaction (tx_ms present)",
+          "PLUGIN callback reported each disposal outcome truthfully",
+          "CBDBG_DONE printed after continue"
+        ]
+      }
+    }
+  ],
+  "timing": {},
+  "acad_pid": 26752,
+  "idle_baseline": "",
+  "foreign_acad_before_dap": [],
+  "post_cleanup_acad": [],
+  "verdict": {
+    "derived_from_checks": true,
+    "checks_total": 5,
+    "checks_failed": 2,
+    "failed_names": [
+      "idle document-context baseline recorded before DAP attach",
+      "all mandatory checks ran"
+    ],
+    "mandatory_checks": [
+      "idle document-context baseline recorded before DAP attach",
+      "exclusive CAD environment still holds before DAP attach",
+      "attach",
+      "breakpoint line 8 verified",
+      "stopped at line 8",
+      "PLUGIN callback ran via repl (our nonce came back)",
+      "PLUGIN callback reported status=ok",
+      "PLUGIN callback released its read transaction (disposed=true)",
+      "PLUGIN read exactly 1 circle",
+      "PLUGIN read circle radius exactly 3.0",
+      "no invalidating event during the read (continued/terminated/exited/unexpected stopped/error/CBDBG_DONE)",
+      "still stopped at line 8 after the read",
+      "PLUGIN value was delivered BEFORE any continue (still paused)",
+      "PLUGIN read the same entity handle the fixture created (independent hover read)",
+      "PLUGIN callback used the documented read-only no-explicit-lock mode",
+      "PLUGIN callback actually ACQUIRED a transaction (tx_ms present)",
+      "PLUGIN callback reported each disposal outcome truthfully",
+      "CBDBG_DONE printed after continue",
+      "Job Object cleanup confirmed",
+      "no acad.exe remains after cleanup"
+    ],
+    "mandatory_checks_missing": [
+      "attach",
+      "breakpoint line 8 verified",
+      "stopped at line 8",
+      "PLUGIN callback ran via repl (our nonce came back)",
+      "PLUGIN callback reported status=ok",
+      "PLUGIN callback released its read transaction (disposed=true)",
+      "PLUGIN read exactly 1 circle",
+      "PLUGIN read circle radius exactly 3.0",
+      "no invalidating event during the read (continued/terminated/exited/unexpected stopped/error/CBDBG_DONE)",
+      "still stopped at line 8 after the read",
+      "PLUGIN value was delivered BEFORE any continue (still paused)",
+      "PLUGIN read the same entity handle the fixture created (independent hover read)",
+      "PLUGIN callback used the documented read-only no-explicit-lock mode",
+      "PLUGIN callback actually ACQUIRED a transaction (tx_ms present)",
+      "PLUGIN callback reported each disposal outcome truthfully",
+      "CBDBG_DONE printed after continue"
+    ],
+    "observed": "NOT established: at least one required observation failed.",
+    "not_proven_here": [
+      "absence of an internal resume/re-stop inside the debugger during the read",
+      "execution-thread identity beyond what the callback self-reports",
+      "that hover/watch/clipboard refuse user functions generally -- only this function in the hover context was measured",
+      "that repl's empty `result` field is a universal guarantee",
+      "DEBUG_BUSY / STALE_DEBUG_HANDLE / control leases -- CadBridge Host policy, still unimplemented; the raw adapter does not refuse paused writes",
+      "ACAD_USERPROFILE isolating the user's real profile -- never demonstrated",
+      "any AutoCAD version other than the one host exercised"
+    ]
+  }
+}

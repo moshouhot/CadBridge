@@ -1,0 +1,5 @@
+{"t": 1789663335.703, "dir": "out", "payload": {"seq": 1, "type": "request", "command": "initialize", "arguments": {"clientID": "cadbridge-dap-probe", "clientName": "CadBridge DAP Probe", "adapterID": "autolisp", "pathFormat": "path", "linesStartAt1": true, "columnsStartAt1": true, "supportsVariableType": true}}}
+{"t": 1789663335.7391, "dir": "in", "payload": {"body": {"supportsConfigurationDoneRequest": true, "supportsEvaluateForHovers": true}, "command": "initialize", "request_seq": 1, "seq": 1, "success": true, "type": "response"}}
+{"t": 1789663335.7391, "dir": "in", "payload": {"body": {"supportsConfigurationDoneRequest": true, "supportsEvaluateForHovers": true}, "event": "initialized", "seq": 1, "type": "event"}}
+{"t": 1789663335.7541, "dir": "out", "payload": {"seq": 2, "type": "request", "command": "configurationDone", "arguments": {}}}
+{"t": 1789663343.7911, "dir": "out", "payload": {"seq": 3, "type": "request", "command": "threads", "arguments": {}}}

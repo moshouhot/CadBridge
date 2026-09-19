@@ -1,0 +1,36 @@
+=== offline probe tests (fakes; no CAD) 2026-09-18T06:39:59Z ===
+repl probe offline tests (fakes; launches nothing)
+  [OK ] cursor drains new output in order :: 'first second'
+  [OK ] cursor returns nothing when there is no new output
+  [OK ] cursor picks up only the new event
+  [OK ] identical repeated chunks are both delivered :: 'samesame'
+  [OK ] events sharing one adapter seq are both consumed :: 'AB'
+  [OK ] a partial envelope is not accepted :: 'nonce=abc status=ok'
+  [OK ] the envelope is accepted once complete :: 'nonce=abc status=ok circles=1 r=3'
+  [OK ] the `stopped` that began the stop is NOT flagged (outside the window) :: ['continued']
+  [OK ] a `continued` inside the window IS flagged :: ['continued']
+  [OK ] unexpected stopped is flagged :: ['stopped', 'error', 'output']
+  [OK ] error is flagged :: ['stopped', 'error', 'output']
+  [OK ] premature CBDBG_DONE is flagged :: [None, None, 'CBDBG_DONE appeared']
+  [OK ] normal plugin output is not flagged
+  [OK ] journal records the event :: [{'recv_index': 1, 'received_at': 1789713600.2042835, 'event': 'output', 'body': {'category': 'stdout', 'output': 'x'}}]
+  [OK ] journal does not remove events from the client journal :: 1 -> 1
+  [OK ] journal does not duplicate already-seen events
+  [OK ] parse_fields reads the nonce :: {'nonce': 'abc123', 'status': 'ok', 'circles': '1', 'last_circle_radius': '3.0', 'src': 'CadBridge.Plugin.Shared.LiveReadLispFunction'}
+  [OK ] parse_fields reads status :: {'nonce': 'abc123', 'status': 'ok', 'circles': '1', 'last_circle_radius': '3.0', 'src': 'CadBridge.Plugin.Shared.LiveReadLispFunction'}
+  [OK ] parse_fields reads the radius :: {'nonce': 'abc123', 'status': 'ok', 'circles': '1', 'last_circle_radius': '3.0', 'src': 'CadBridge.Plugin.Shared.LiveReadLispFunction'}
+  [OK ] MANDATORY list is discoverable :: 16
+  [OK ] finalize returns 0 when every mandatory check passes
+  [OK ] finalize writes its output file
+  [OK ] finalize records that all mandatory checks ran
+  [OK ] finalize FAILS when mandatory checks did not run :: 1
+  [OK ] finalize reports which mandatory checks were missing :: ['breakpoint line 8 verified', 'stopped at line 8', 'PLUGIN callback ran via repl (our nonce came back)', 'PLUGIN callback reported status=ok', 'PLUGIN callback released its lock and transaction (disposed=true)', 'PLUGIN read exactly 1 circle', 'PLUGIN read circle radius exactly 3.0', 'no invalidating event during the read (continued/terminated/exited/unexpected stopped/error/CBDBG_DONE)', 'still stopped at line 8 after the read', 'PLUGIN value was delivered BEFORE any continue (still paused)', 'PLUGIN read the same entity handle the fixture created (independent hover read)', 'PLUGIN callback actually ACQUIRED the document lock (lock_ms present)', 'PLUGIN callback actually ACQUIRED a transaction (tx_ms present)', 'PLUGIN callback reported each disposal outcome truthfully', 'CBDBG_DONE printed after continue']
+  [OK ] finalize FAILS when a mandatory check fails :: 1
+  [OK ] finalize names the failed check :: ['stopped at line 8']
+  [OK ] verdict is marked derived_from_checks
+  [OK ] verdict reports NOT established when checks failed :: NOT established: at least one required observation failed.
+  [OK ] no SystemExit inside a finally block
+  [OK ] run_session does not compute a verdict
+  [OK ] run_session does not raise SystemExit
+
+offline probe tests: PASS (0 failure(s))

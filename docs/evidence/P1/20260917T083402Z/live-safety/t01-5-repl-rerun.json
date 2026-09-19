@@ -1,0 +1,471 @@
+{
+  "checks": [
+    {
+      "name": "idle document-context baseline recorded before DAP attach",
+      "ok": true,
+      "detail": "CBBASELINE_RECORDED native_thread_id=8024 managed_thread_id=1 is_application_context=false has_document=true src=CadBridge.Plugin.Shared.ExecutionContextBaseline"
+    },
+    {
+      "name": "exclusive CAD environment still holds before DAP attach",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "initialize",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "attach",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "breakpoint line 8 verified",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 0,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "name": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trigger (C:CBDBG) accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped at line 8",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stopped in real source frame at line 8",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:\\CadBridge-run\\20260917T083402Z\\cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "no invalidating event during the read (continued/terminated/exited/unexpected stopped/error/CBDBG_DONE)",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "still stopped in the same source file after the read",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:\\CadBridge-run\\20260917T083402Z\\cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "still stopped at line 8 after the read",
+      "ok": true,
+      "detail": 8
+    },
+    {
+      "name": "PLUGIN callback ran via repl (our nonce came back)",
+      "ok": true,
+      "detail": {
+        "expected": "cba1da6867ed27",
+        "got": "cba1da6867ed27"
+      }
+    },
+    {
+      "name": "PLUGIN callback reported status=ok",
+      "ok": true,
+      "detail": {
+        "nonce": "cba1da6867ed27",
+        "thread_id": "8024",
+        "managed_tid": "1",
+        "depth": "1",
+        "context": "verified",
+        "context_app": "false",
+        "in_command": "true",
+        "doc": "Drawing1.dwg",
+        "lock_mode": "not_requested_read_only",
+        "tx_ms": "0",
+        "read_ms": "6",
+        "entities": "1",
+        "circles": "1",
+        "last_circle_handle": "2CE",
+        "last_circle_center": "100,100,0",
+        "last_circle_radius": "3",
+        "status": "ok",
+        "tr_disposed": "ok",
+        "lock_disposed": "n/a_read_only",
+        "disposed": "true",
+        "total_ms": "19",
+        "src": "CadBridge.Plugin."
+      }
+    },
+    {
+      "name": "PLUGIN callback released its read transaction (disposed=true)",
+      "ok": true,
+      "detail": {
+        "nonce": "cba1da6867ed27",
+        "thread_id": "8024",
+        "managed_tid": "1",
+        "depth": "1",
+        "context": "verified",
+        "context_app": "false",
+        "in_command": "true",
+        "doc": "Drawing1.dwg",
+        "lock_mode": "not_requested_read_only",
+        "tx_ms": "0",
+        "read_ms": "6",
+        "entities": "1",
+        "circles": "1",
+        "last_circle_handle": "2CE",
+        "last_circle_center": "100,100,0",
+        "last_circle_radius": "3",
+        "status": "ok",
+        "tr_disposed": "ok",
+        "lock_disposed": "n/a_read_only",
+        "disposed": "true",
+        "total_ms": "19",
+        "src": "CadBridge.Plugin."
+      }
+    },
+    {
+      "name": "PLUGIN callback reported no reentrancy (depth=1)",
+      "ok": true,
+      "detail": {
+        "nonce": "cba1da6867ed27",
+        "thread_id": "8024",
+        "managed_tid": "1",
+        "depth": "1",
+        "context": "verified",
+        "context_app": "false",
+        "in_command": "true",
+        "doc": "Drawing1.dwg",
+        "lock_mode": "not_requested_read_only",
+        "tx_ms": "0",
+        "read_ms": "6",
+        "entities": "1",
+        "circles": "1",
+        "last_circle_handle": "2CE",
+        "last_circle_center": "100,100,0",
+        "last_circle_radius": "3",
+        "status": "ok",
+        "tr_disposed": "ok",
+        "lock_disposed": "n/a_read_only",
+        "disposed": "true",
+        "total_ms": "19",
+        "src": "CadBridge.Plugin."
+      }
+    },
+    {
+      "name": "PLUGIN callback verified its thread against the idle baseline (context=verified)",
+      "ok": true,
+      "detail": "verified"
+    },
+    {
+      "name": "PLUGIN callback used the documented read-only no-explicit-lock mode",
+      "ok": true,
+      "detail": "not_requested_read_only"
+    },
+    {
+      "name": "PLUGIN callback actually ACQUIRED a transaction (tx_ms present)",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "PLUGIN callback reported each disposal outcome truthfully",
+      "ok": true,
+      "detail": {
+        "tr_disposed": "ok",
+        "lock_disposed": "n/a_read_only"
+      }
+    },
+    {
+      "name": "PLUGIN read exactly 1 entity",
+      "ok": true,
+      "detail": "1"
+    },
+    {
+      "name": "PLUGIN read exactly 1 circle",
+      "ok": true,
+      "detail": "1"
+    },
+    {
+      "name": "PLUGIN read circle radius exactly 3.0",
+      "ok": true,
+      "detail": "3"
+    },
+    {
+      "name": "PLUGIN read circle centre exactly (100,100,0)",
+      "ok": true,
+      "detail": "100,100,0"
+    },
+    {
+      "name": "PLUGIN read the same entity handle the fixture created (independent hover read)",
+      "ok": false,
+      "detail": {
+        "plugin": "2CE",
+        "independent": "UNAVAILABLE"
+      }
+    },
+    {
+      "name": "PLUGIN value was delivered BEFORE any continue (still paused)",
+      "ok": true,
+      "detail": {
+        "waited": 0.101
+      }
+    },
+    {
+      "name": "continue accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "CBDBG_DONE printed after continue",
+      "ok": false,
+      "detail": null
+    },
+    {
+      "name": "Job Object cleanup confirmed",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "name": "no acad.exe remains after cleanup",
+      "ok": false,
+      "detail": [
+        {
+          "pid": 9932,
+          "creation": "2026-09-18T23:56:05.3091940+08:00",
+          "path": "D:\\Program Files\\Autodesk\\AutoCAD_2023.1.5\\AutoCAD 2023\\acad.exe",
+          "cmd": "\"D:\\Program Files\\Autodesk\\AutoCAD_2023.1.5\\AutoCAD 2023\\acad.exe\" \"D:/Program Files/Git/nologo\""
+        }
+      ]
+    },
+    {
+      "name": "all mandatory checks ran",
+      "ok": true,
+      "detail": "20 present"
+    }
+  ],
+  "timing": {
+    "repl_response": {
+      "nonce": "cba1da6867ed27",
+      "expression": "(CBLIVEREAD \"cba1da6867ed27\")",
+      "returned": true,
+      "success": true,
+      "result": "",
+      "type": null,
+      "seconds": 0.051
+    },
+    "while_paused": {
+      "nonce_found": true,
+      "waited_seconds": 0.101,
+      "output": "\"CBLIVEREAD nonce=cba1da6867ed27 thread_id=8024 managed_tid=1 depth=1 context=verified context_app=false in_command=true doc=Drawing1.dwg lock_mode=not_requested_read_only tx_ms=0 read_ms=6 entities=1 circles=1 last_circle_handle=2CE last_circle_center=100,100,0 last_circle_radius=3 status=ok tr_disposed=ok lock_disposed=n/a_read_only disposed=true total_ms=19 src=CadBridge.Plugin."
+    },
+    "parsed_fields": {
+      "nonce": "cba1da6867ed27",
+      "thread_id": "8024",
+      "managed_tid": "1",
+      "depth": "1",
+      "context": "verified",
+      "context_app": "false",
+      "in_command": "true",
+      "doc": "Drawing1.dwg",
+      "lock_mode": "not_requested_read_only",
+      "tx_ms": "0",
+      "read_ms": "6",
+      "entities": "1",
+      "circles": "1",
+      "last_circle_handle": "2CE",
+      "last_circle_center": "100,100,0",
+      "last_circle_radius": "3",
+      "status": "ok",
+      "tr_disposed": "ok",
+      "lock_disposed": "n/a_read_only",
+      "disposed": "true",
+      "total_ms": "19",
+      "src": "CadBridge.Plugin."
+    },
+    "non_stop_events": [],
+    "measurement_window": {
+      "start_index": 2,
+      "end_index": 6
+    },
+    "journal": [
+      {
+        "recv_index": 1,
+        "received_at": 1789746936.4908307,
+        "event": "initialized",
+        "body": {
+          "supportsConfigurationDoneRequest": true,
+          "supportsEvaluateForHovers": true
+        }
+      },
+      {
+        "recv_index": 2,
+        "received_at": 1789746936.4908307,
+        "event": "output",
+        "body": {
+          "category": "stdout",
+          "output": "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+        }
+      },
+      {
+        "recv_index": 4,
+        "received_at": 1789746936.4908307,
+        "event": "output",
+        "body": {
+          "category": "stdout",
+          "output": "\"CBLIVEREAD nonce=cba1da6867ed27 thread_id=8024 managed_tid=1 depth=1 context=verified context_app=false in_command=true doc=Dra"
+        }
+      },
+      {
+        "recv_index": 5,
+        "received_at": 1789746936.4908307,
+        "event": "output",
+        "body": {
+          "category": "stdout",
+          "output": "wing1.dwg lock_mode=not_requested_read_only tx_ms=0 read_ms=6 entities=1 circles=1 last_circle_handle=2CE last_circle_center=100"
+        }
+      },
+      {
+        "recv_index": 6,
+        "received_at": 1789746936.4908307,
+        "event": "output",
+        "body": {
+          "category": "stdout",
+          "output": ",100,0 last_circle_radius=3 status=ok tr_disposed=ok lock_disposed=n/a_read_only disposed=true total_ms=19 src=CadBridge.Plugin."
+        }
+      }
+    ],
+    "frame_after_read": {
+      "column": 3,
+      "endColumn": 23,
+      "endLine": 8,
+      "id": 131,
+      "line": 8,
+      "moduleId": "",
+      "name": "C:CBDBG",
+      "source": {
+        "name": "cb_debug_fixture.lsp",
+        "path": "F:\\CadBridge-run\\20260917T083402Z\\cb_debug_fixture.lsp"
+      }
+    },
+    "expected_handle_via_hover": {
+      "success": null,
+      "result": null,
+      "normalised": null
+    }
+  },
+  "acad_pid": 27636,
+  "idle_baseline": "CBBASELINE_RECORDED native_thread_id=8024 managed_thread_id=1 is_application_context=false has_document=true src=CadBridge.Plugin.Shared.ExecutionContextBaseline",
+  "foreign_acad_before_dap": [],
+  "expected_circle_handle": null,
+  "output_after_continue": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+    "\"CBLIVEREAD nonce=cba1da6867ed27 thread_id=8024 managed_tid=1 depth=1 context=verified context_app=false in_command=true doc=Dra",
+    "wing1.dwg lock_mode=not_requested_read_only tx_ms=0 read_ms=6 entities=1 circles=1 last_circle_handle=2CE last_circle_center=100",
+    ",100,0 last_circle_radius=3 status=ok tr_disposed=ok lock_disposed=n/a_read_only disposed=true total_ms=19 src=CadBridge.Plugin.",
+    "Shared.LiveReadLispFunction\"\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "; 警告: 忽略展开 ",
+    "异常",
+    "\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n"
+  ],
+  "adapter_stderr": [],
+  "post_cleanup_acad": [
+    {
+      "pid": 9932,
+      "creation": "2026-09-18T23:56:05.3091940+08:00",
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD_2023.1.5\\AutoCAD 2023\\acad.exe",
+      "cmd": "\"D:\\Program Files\\Autodesk\\AutoCAD_2023.1.5\\AutoCAD 2023\\acad.exe\" \"D:/Program Files/Git/nologo\""
+    }
+  ],
+  "verdict": {
+    "derived_from_checks": true,
+    "checks_total": 32,
+    "checks_failed": 3,
+    "failed_names": [
+      "PLUGIN read the same entity handle the fixture created (independent hover read)",
+      "CBDBG_DONE printed after continue",
+      "no acad.exe remains after cleanup"
+    ],
+    "mandatory_checks": [
+      "idle document-context baseline recorded before DAP attach",
+      "exclusive CAD environment still holds before DAP attach",
+      "attach",
+      "breakpoint line 8 verified",
+      "stopped at line 8",
+      "PLUGIN callback ran via repl (our nonce came back)",
+      "PLUGIN callback reported status=ok",
+      "PLUGIN callback released its read transaction (disposed=true)",
+      "PLUGIN read exactly 1 circle",
+      "PLUGIN read circle radius exactly 3.0",
+      "no invalidating event during the read (continued/terminated/exited/unexpected stopped/error/CBDBG_DONE)",
+      "still stopped at line 8 after the read",
+      "PLUGIN value was delivered BEFORE any continue (still paused)",
+      "PLUGIN read the same entity handle the fixture created (independent hover read)",
+      "PLUGIN callback used the documented read-only no-explicit-lock mode",
+      "PLUGIN callback actually ACQUIRED a transaction (tx_ms present)",
+      "PLUGIN callback reported each disposal outcome truthfully",
+      "CBDBG_DONE printed after continue",
+      "Job Object cleanup confirmed",
+      "no acad.exe remains after cleanup"
+    ],
+    "mandatory_checks_missing": [],
+    "observed": "NOT established: at least one required observation failed.",
+    "not_proven_here": [
+      "absence of an internal resume/re-stop inside the debugger during the read",
+      "execution-thread identity beyond what the callback self-reports",
+      "that hover/watch/clipboard refuse user functions generally -- only this function in the hover context was measured",
+      "that repl's empty `result` field is a universal guarantee",
+      "DEBUG_BUSY / STALE_DEBUG_HANDLE / control leases -- CadBridge Host policy, still unimplemented; the raw adapter does not refuse paused writes",
+      "ACAD_USERPROFILE isolating the user's real profile -- never demonstrated",
+      "any AutoCAD version other than the one host exercised"
+    ]
+  }
+}

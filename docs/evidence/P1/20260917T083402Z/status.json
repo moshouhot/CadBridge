@@ -1,0 +1,294 @@
+{
+  "phase": "P1",
+  "run_id": "20260917T083402Z",
+  "gate": "pre-G01/G02",
+  "phase_status": "INCOMPLETE",
+  "phase_status_reason": "第三方 Live Safety Gate 审计完成离线整改：进程安全 43/43、bounded worker 6/6、probe 32/32、targeted pyflakes 0；发现并退休旧 run-acad-gui-test.sh 的 PID 误归属竞态，严格化进程枚举，补 dap-probe live gate，并将 COM timeout 改为可收回 worker。官方 execution-context/只读锁规则已进入代码，但 DAP 暂停态 managed LispFunction 仍需真机验证。项目所有者尚未确认独占授权测试环境，且 launcher-stub/child handoff 的 GUI ownership 尚未闭环。因此 P1 INCOMPLETE；T01-3/T01-5 NOT_RUN；G01/G02 NOT_RUN；Live Safety Gate=BLOCKED。",
+  "tests": [
+    {
+      "id": "T01-1a",
+      "name": "同一共享源码编译出 Legacy(net48) 与 Modern(net8.0-windows) 两个 Shell",
+      "expected": "两 TFM 均编译成功；引用来自明确锁定的 Autodesk 参考目录；输出不含任何 Autodesk 程序集",
+      "actual": "Legacy 引用 ObjectARX-2014/inc（19.1，最旧可用代，保守下限）；Modern 引用 ObjectARX-2025/inc（25.0）。两者 0 错误。构建目标在发现 ReferenceCopyLocalPaths 含 acdbmgd/accoremgd/acmgd 时直接 Error，当前未触发。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/build/legacy-build.log",
+        "T01-1/build/modern-build.log"
+      ]
+    },
+    {
+      "id": "T01-1b",
+      "name": "两 Shell 在真实 AutoCAD 内核进程中 NETLOAD 并被调用",
+      "expected": "命令注册成功，在合法主线程执行，DocumentLock/Transaction 边界成立",
+      "actual": "accoreconsole.exe（真实 AutoCAD 内核，非模拟）中两 Shell 均加载并执行；lock_and_transaction: OK。矩阵覆盖 2017/2018/2020/2024.1.5/2024.1.7/2026。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/matrix/matrix-summary.tsv",
+        "T01-1/matrix/2024.1.7-legacy.txt",
+        "T01-1/matrix/2026-modern.txt",
+        "T01-1/matrix/2026-legacy.txt"
+      ]
+    },
+    {
+      "id": "T01-1c",
+      "name": "报告真实运行时而非编译常量",
+      "expected": "分别报告 compiled_target（构建常量，须标注）与实际 CLR/Framework（须实测）",
+      "actual": "Legacy 在 2024.1.7：clr=4.0.30319.42000, runtime_framework=.NET Framework 4.8.9261.0, framework_clr=True。Modern 在 2026：clr=8.0.22, runtime_framework=.NET 8.0.22, framework_clr=False。Legacy 在 2026：clr=8.0.22, framework_clr=True。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/independent/step1-create-and-save.txt",
+        "T01-1/matrix/2026-modern.txt",
+        "T01-1/matrix/2026-legacy.txt"
+      ]
+    },
+    {
+      "id": "T01-1d",
+      "name": "受控写入的真实提交 + 跨进程独立读回",
+      "expected": "写入后由另一进程重新打开保存的 DWG 读回几何，而非同进程自读",
+      "actual": "进程 A 建圆 r=10 handle=2B8 并 SaveAs；进程 B 独立启动、打开该 DWG、读回 CIRCLE handle=2B8 center=100,100,0 r=10 normal=0,0,1，circle_count=1。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/independent/step1-create-and-save.txt",
+        "T01-1/independent/step2-reopen-and-verify.txt"
+      ]
+    },
+    {
+      "id": "T01-1e",
+      "name": "非法输入的负例：拒绝且无半成品实体",
+      "expected": "radius=0 / 负数被拒；拒绝后实体数不增加；正对照必须成功",
+      "actual": "radius=0 -> REJECTED，count 保持 1；radius=-5 -> REJECTED，count 保持 1；radius=50 -> OK handle=2C9，count 变 2。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/independent/step3-reject-radius-0.txt",
+        "T01-1/independent/step4-reject-radius-negative.txt",
+        "T01-1/independent/step5-accept-radius-50.txt"
+      ]
+    },
+    {
+      "id": "T01-1f",
+      "name": "完整 T01-1：Pipe 后台收发与正式 CAD 调度器",
+      "expected": "Named Pipe 双工后台读写、request_id 关联、串行 CAD 调度、DocumentLock 不跨 await",
+      "actual": "未实现、未执行。当前 PoC 仅证明进程内 CAD API 调用，不含任何跨进程传输。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "T01-2",
+      "name": "绿色 Bootstrap 与准确目标（PID/启动时间/HWND 核验、重复 attach、ATTACH_AMBIGUOUS、显式 launch）",
+      "expected": "仅目标 PID 被 NETLOAD；无法证明归属时 ATTACH_AMBIGUOUS；不新建隐藏实例",
+      "actual": "未执行。需完整 AutoCAD 会话与 COM；本轮全部运行均为 headless 内核，不涉及 attach。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "T01-3",
+      "name": "官方 DAP 独立 Client（无 VS Code）",
+      "expected": "真实 attach/断点/单步/栈/变量，含 adapter verified 位置与源码 hash",
+      "actual": "PARTIAL。attach 拓扑在 AutoCAD 2026 上实测通过 23/23：裸启动适配器后 attach{type:'attachlisp', processId:'<字符串>', program}，断点 6/8 均 verified，stopped(reason=breakpoint)，stackTrace 得到真实源帧 C:CBDBG，scopes/variables 得到 N=2/X=2/Y=3，stepIn/next/stepOut/continue 均可用并命中第 8 行断点。launch 拓扑（adapter -- acad.exe + launch）同样可用（27/28）。纠正：早前『attach 无响应』是探针缺陷（processId 传整数、type 传 autolisp、超时过短、分帧解析器遇游离 LF 即 return），不是产品限制。未覆盖：runtimeerror 异常策略、错误 PID/多实例行为、源码 hash 校验。归因限度：type/processId/超时三项同时改动，各自必要性未单独证明。",
+      "status": "NOT_RUN",
+      "evidence": [
+        "T01-3/attach-a14.jsonl",
+        "T01-3/attach-a14.summary.json",
+        "T01-3/a14-sequence.summary.json",
+        "T01-3/attach-ordering.json",
+        "T01-3/report.md"
+      ]
+    },
+    {
+      "id": "T01-4",
+      "name": "LSP 结果、中文路径与交互状态",
+      "expected": "真实返回值、类型保持、提交/完成回执分离、编码拒绝、reload 语义",
+      "actual": "NOT_RUN。但 T01-5 已发现一条对本项有约束的事实：repl 求值的响应 result 恒为空，真实值经 stdout 送达；因此『提交/完成』必须建模为两个独立回执，否则会实现出假同步语义。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "T01-5",
+      "name": "暂停点图面 live query 与防死锁（核心不可降级项）",
+      "expected": "同一 stop_id 下合法读取已创建实体且不死锁；普通写返回 DEBUG_BUSY",
+      "actual": "NOT_RUN（核心机制有可行性证据，但未达验收）。已观测：AutoLISP 停在第 8 行时，经 DAP evaluate context='repl' 调用插件自身的 managed [LispFunction(\"CBLIVEREAD\")]，其返回字符串经 DAP **output 事件**在客户端发出 continue **之前**到达，内容为 'CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction'。**该结论仅限上述观测**，尚未证明：stop 世代未变、期间无内部 resume/再停止、回调线程身份、可安全重入。成功取得锁/事务本身不证明这些性质。另：以 hover/watch/clipboard 求值该用户自定义函数时，适配器返回中文拒绝消息『无法在监视窗口中计算用户定义的函数』——但**仅测了 hover 与该函数**，不得推广为『所有上下文』或『唯一可能的插件通道』。repl 响应 result 为空是本机观测，不是普遍保证。未实现：DEBUG_BUSY（适配器不拒绝暂停期写入）、STALE_DEBUG_HANDLE、控制租约；本轮用 frame id 定位，frame/thread id 不等于 stop_id。**更正**：早前称『受保护表达式 -1→1 已用于陈旧性反证』——该改动是在那次运行**之后**写入脚本的，**并未实际运行**，故撤回该测量声明。",
+      "status": "NOT_RUN",
+      "evidence": [
+        "T01-5/repl-plugin-read.json",
+        "T01-5/repl-plugin-read.jsonl",
+        "T01-5/plugin-pause-read.json",
+        "T01-5/definitive.json",
+        "T01-5/report.md"
+      ]
+    },
+    {
+      "id": "T01-6",
+      "name": "版本边界与 2015-2020 调试探索",
+      "expected": "2022/2024/2026 调试端点结论；2025 缺失原因；2015-2020 探索结论",
+      "actual": "未执行真实 DAP。静态层：2022/2024/2026 存在 AutoLispDebugAdapter.exe，2025 不存在，2016-2020 不存在（文件缺失不等于官方不支持）。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "BLOCKED-2016",
+      "name": "AutoCAD 2016 内核加载",
+      "expected": "NETLOAD 并执行 CBBRIDGEINFO",
+      "actual": "宿主启动阶段失败：无效的配置路径/文件夹 C:\\Users\\...\\AppData\\Local\\Autodesk\\AutoCAD 2016\\R20.1\\chs\\，随后 Error handler re-entered. Exiting now.",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_HOST_ENV — 启动即失败，未到达 NETLOAD，与插件无关。需修复宿主安装/配置。",
+      "evidence": [
+        "T01-1/matrix/2016-legacy.txt"
+      ]
+    },
+    {
+      "id": "BLOCKED-2022",
+      "name": "AutoCAD 2022 内核加载",
+      "expected": "NETLOAD 并执行 CBBRIDGEINFO",
+      "actual": "宿主启动阶段失败：ERROR: Something went wrong. ErrorStatus=53.；LogFilePath has been restored to ''.",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_HOST_ENV — 启动阶段失败，未到达 NETLOAD。",
+      "evidence": [
+        "T01-1/matrix/2022-legacy.txt"
+      ]
+    },
+    {
+      "id": "NOTRUN-2023-2025",
+      "name": "AutoCAD 2023 / 2025 内核加载",
+      "expected": "NETLOAD 并执行 CBBRIDGEINFO",
+      "actual": "这两个安装目录不含 accoreconsole.exe，本方法不适用。",
+      "status": "NOT_RUN",
+      "blocked_reason": "NOT_RUN_METHOD_UNAVAILABLE — 缺 accoreconsole 不等于该年份不可测或不受支持；必须由完整 acad.exe 会话覆盖。",
+      "evidence": [
+        "T01-1/matrix/matrix-summary.tsv"
+      ]
+    },
+    {
+      "id": "A01-A24",
+      "name": "全部产品验收项",
+      "expected": "真机功能/调试/性能/Agent E2E",
+      "actual": "未执行",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "T01-1g",
+      "name": "完整 GUI acad.exe 会话中的加载与执行（Legacy + Modern）",
+      "expected": "在真实完整 AutoCAD GUI 进程中 NETLOAD 并执行命令，实测运行时与宿主版本",
+      "actual": "Legacy(net48) 载入 AutoCAD 2024.1.7 GUI：clr=4.0.30319.42000, runtime_framework=.NET Framework 4.8.9261.0, product=R24.3.212.0.0，建圆 handle=2B8 r=10 并读回。Modern(net8) 载入 AutoCAD 2026 GUI：clr=8.0.22, runtime_framework=.NET 8.0.22, product=R25.1.74.0.0，建圆 handle=2CE r=10 并读回。GUI 宿主不向 stdout 输出，故插件通过 CB_LOG_PATH 写证据文件。",
+      "status": "PASS",
+      "evidence": [
+        "T01-2-gui/gui-legacy-net48-acad2024.1.7-evidence.txt",
+        "T01-2-gui/gui-modern-net8-acad2026-evidence.txt"
+      ]
+    },
+    {
+      "id": "T01-2-partial",
+      "name": "历史 GUI 隔离启动观测（第三审计后不再作为 ownership PASS）",
+      "expected": "只启动自己的实例；不 attach/关闭既有会话；超时只终止可证明归属的宿主",
+      "actual": "历史运行曾观测到 2024/2026 GUI 测试实例启动并退出；但第三审计发现当时使用的 tools/run-acad-gui-test.sh 在 launch 后按安装目录重新扫描并选择 acad.exe PID，存在并发用户进程被误归属/超时误终止的竞态。该 shell 已永久退休。旧结果只能保留为历史行为观测，不能证明『只终止自己实例』；安全 ownership 必须由新的可证明 GUI harness 重新实测。",
+      "status": "NOT_RUN",
+      "evidence": [
+        "T01-2-gui/gui-legacy-net48-acad2024.1.7.scr",
+        "T01-2-gui/gui-modern-net8-acad2026.scr",
+        "THIRD-AUDIT-LIVE-SAFETY.md"
+      ]
+    },
+    {
+      "id": "T01-2b",
+      "name": "T01-2 核心：COM/HWND 核验、指定 PID 附加、ATTACH_AMBIGUOUS、重复 attach",
+      "expected": "PID+启动时间+HWND 核验后才 NETLOAD；同版本双实例只影响目标；无法证明时 ATTACH_AMBIGUOUS",
+      "actual": "未实现、未执行。本轮只是隔离启动 + /b 脚本加载，不含 COM 目标选择逻辑。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "A01-PARTIAL",
+      "name": "A01 前置：测试前后 AutoCAD 配置比对",
+      "expected": "测试不降低 SECURELOAD、不新增 TRUSTEDPATHS、不修改 LISPSYS",
+      "actual": "比对 19 个 profile：CadBridge 未写入任何 TRUSTEDPATHS（新增 20 条全部是第三方 E:ðdata\\TEMP\\hosttest-* 路径，时间戳 2026-09-17 17:50–21:57，非本项目）。但 R24.3 profile 的 SECURELOAD 由“未落盘”变为 '0'——最可能是首次以该 profile 启动 GUI 时 AutoCAD 物化了既有默认值（该机多 profile 既存为 0），无法事后区分。CadBridge 未主动降低该值，也不会为“修复”它而写注册表。",
+      "status": "BLOCKED",
+      "blocked_reason": "无法事后区分“AutoCAD 物化既有默认值”与“更早的第三方设置”；且本机 SECURELOAD 既存为 0，使 A01/A18 要求的“策略阻挡加载”负例无法自然复现。需项目所有者在受控环境确认。",
+      "evidence": [
+        "T01-2-gui/security-baseline-diff.txt",
+        "T01-2-gui/cad-security-baseline-AFTER.json",
+        "T01-2-gui/ENVIRONMENT-FINDINGS.md"
+      ]
+    },
+    {
+      "id": "ENV-CONCURRENT-ACTIVITY",
+      "name": "环境风险：检测到并发第三方 AutoCAD 活动",
+      "expected": "受控环境：仅 CadBridge 操作目标宿主",
+      "actual": "AutoCAD 2023(R24.2) 的 TRUSTEDPATHS 在 P0 与 P1 两次快照之间被追加 20 条 E:ðdata\\TEMP\\hosttest-* 路径，时间戳 2026-09-17 17:50–21:57，非 CadBridge 所为。表明另一进程/代理正在同一机器上做 AutoCAD 加载实验。",
+      "status": "BLOCKED",
+      "blocked_reason": "并发第三方写入破坏独占性，影响 G01/G03 可复现性。需项目所有者确认在独占阶段前停止其他代理。",
+      "evidence": [
+        "T01-2-gui/ENVIRONMENT-FINDINGS.md",
+        "T01-2-gui/security-baseline-diff.txt"
+      ]
+    },
+    {
+      "id": "TOOLING-SELFTEST",
+      "name": "证据工具链自检",
+      "expected": "路径转换/解码/脚本生成/清单校验在异常时必须非零退出，不得静默产生空证据",
+      "actual": "15 项自检全部通过：未知模式、缺失输入、缺失参数、脚本末行换行、非法状态枚举、缺失证据路径、空 JSON 均被正确拒绝。",
+      "status": "PASS",
+      "evidence": [
+        "tooling/selftest-output.txt"
+      ]
+    },
+    {
+      "id": "SAFETY-INCIDENT-CLEANUP",
+      "name": "安全事件：早期按进程名清理 CAD（已自纠）",
+      "expected": "不得关闭用户 CAD；清理必须可验证归属（过程记录，非 ACCEPTANCE 验收项）",
+      "actual": "在 T01-3/T01-5 试跑之间，交互式命令中多次使用以进程名为条件的终止（`Get-Process acad,AutoLispDebugAdapter | Stop-Process -Force`），不校验归属。**实际影响未能核实**：历史进程归属与是否曾影响用户会话**无法事后确证**，因此**不声称『未造成实际损害』，也不声称具体次数**。已采取的整改（截至本记录）：新增 tools/safe_process.py 与 tools/selftest.sh 检查。**但该 harness 本身尚未通过审查**（见 §整改未完成），故不声称『安全已修复』。",
+      "status": "N/A",
+      "evidence": [
+        "SAFETY-INCIDENT-process-cleanup.md",
+        "tooling/safe-process-selftest.txt"
+      ]
+    },
+    {
+      "id": "TOOLING-VALIDITY-FIXES",
+      "name": "测试有效性缺陷：硬编码判定、假断言、非零退出缺失",
+      "expected": "判定必须由检查结果派生；失败必须非零退出；不得使用非受控基线（过程记录，非 ACCEPTANCE 验收项）",
+      "actual": "发现并部分修正：t01-5-definitive.py 曾硬编码 'ACHIEVABLE' 判定；曾断言不存在的 queued 字段；陈旧性曾用『错误串 vs 值』比较；失败时曾仍返回 0；曾用 win32com Dispatch 回退。**仍未完成**：poll_for 按累积字符串去重而非按事件序号游标消费、未用请求 nonce 关联回调结果、未重组被拆分的输出块、未断言源码/hash/行号与『期间无 continued/意外 stopped/终止』、几何比较用子串（'r=3' 也会匹配 'r=30'）、finally 中的 SystemExit 可能掩盖异常。",
+      "status": "N/A",
+      "evidence": [
+        "tooling/selftest-output.txt",
+        "T01-5/report.md"
+      ]
+    },
+    {
+      "id": "SAFETY-REVIEW-REQUIRED",
+      "name": "Live Safety Gate：第三方审计后仍 BLOCKED",
+      "expected": "恢复任何真机实验前：所有 live 入口默认冻结；进程 ownership/enumeration/worker fail-closed；COM 在文档访问前完成 owned PID + creation + exe + HWND→PID 校验；执行上下文按官方规则检查；GUI launcher ownership 可证明；所有者确认独占授权环境。",
+      "actual": "第三审计离线层已收敛：safe_process 43/43、bounded worker 6/6、repl probe 32/32、targeted pyflakes 0；旧 GUI shell 退休；通用 dap-probe live mode 补闸；进程 JSON 严格 fail-closed；T01-5 COM daemon thread 已迁移为 bounded subprocess；ExecutionContextBaseline 使用 IsApplicationContext，纯读 LispFunction 不再显式 LockDocument。仍未完成真机验证；用户尚未确认独占授权环境；新 GUI harness 尚未解决 launcher-stub/child handoff ownership。",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_LIVE_SAFETY — 离线代码审计通过部分不等于真机批准。必须先得到项目所有者独占/授权确认，并完成 ownership-preserving GUI harness 与最小 live revalidation；当前任何 live harness 仍未 allowlist。",
+      "evidence": [
+        "SAFETY-INCIDENT-process-cleanup.md",
+        "REVIEW-REMEDIATION-round2.md",
+        "THIRD-AUDIT-LIVE-SAFETY.md"
+      ]
+    }
+  ],
+  "gates": {
+    "G01": "NOT_RUN",
+    "G02": "NOT_RUN",
+    "G03": "NOT_RUN",
+    "G04": "NOT_RUN",
+    "G05": "NOT_RUN",
+    "G06": "NOT_RUN"
+  },
+  "environment": {
+    "os": "Microsoft Windows NT 10.0.19045.0 (Windows 10 Pro 22H2, x64)",
+    "dotnet_framework": "4.8.09037 (release 533325); runtime measured in-process as 4.8.9261.0",
+    "dotnet_sdk": [
+      "10.0.400",
+      "9.0.314"
+    ],
+    "method": "accoreconsole.exe (headless AutoCAD core engine) + NETLOAD of the built shells",
+    "method_limits": [
+      "accoreconsole does not ship acmgd.dll, so no editor UI, view capture or zoom can be evidenced.",
+      "No DAP: the AutoLISP debug adapter is not reachable from the core console.",
+      "Not a substitute for a full acad.exe GUI session (G01 requirement)."
+    ]
+  },
+  "licensing_note": "All AutoCAD hosts on this machine have license_provenance=unverified. These P1 results must be treated as LICENSE_UNVERIFIED and must not be used as Gate release evidence until the project owner confirms licensing.",
+  "secrets_note": "No credentials, tokens or user DWG content are stored here. Disposable fixtures live in F:\\CadBridge-run\\ (outside the Nextcloud sync root)."
+}

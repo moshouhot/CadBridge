@@ -1,0 +1,34 @@
+# CadBridge build outputs — never committed, never included in packages.
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# NuGet
+packages/
+*.nupkg
+project.assets.json
+*.nuget.g.props
+*.nuget.g.targets
+
+# Runtime / evidence artifacts that may contain machine or user data
+docs/evidence/**/raw/autocad-inventory.json
+docs/evidence/**/raw/running-cad-processes.json
+docs/evidence/**/artifacts/
+runtime/
+logs/
+data/
+
+# Local scratch
+.work/
+
+# AutoCAD runtime junk accidentally written to the repo root during live tests.
+# These are host console logs, not evidence: real evidence lives in docs/evidence/.
+/acad.err
+/Drawing1_*.log
+/CadBridge-run_*/
+
+# Python bytecode
+__pycache__/
+*.py[cod]

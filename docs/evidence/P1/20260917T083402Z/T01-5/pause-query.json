@@ -1,0 +1,226 @@
+{
+  "question": "is a pause-state live query architecturally possible?",
+  "checks": [
+    {
+      "name": "initialize",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "attach to live PID",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "breakpoint line 8 verified",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 0,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "name": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trigger (C:CBDBG)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped at line 8",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "CBDBG_DONE not yet printed at stop",
+      "ok": true,
+      "detail": [
+        "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+      ]
+    },
+    {
+      "name": "COM read while paused returned",
+      "ok": false,
+      "detail": {
+        "status": "OK",
+        "waited_seconds": 45.012,
+        "connect_seconds": 45.029,
+        "document_name": "Drawing1.dwg",
+        "circles": [
+          {
+            "handle": "2CE",
+            "center": [
+              100.0,
+              100.0,
+              0.0
+            ],
+            "radius": 3.0,
+            "layer": "0"
+          }
+        ],
+        "total_entities": 1,
+        "elapsed_seconds": 45.071
+      }
+    },
+    {
+      "name": "continue accepted while paused",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "com_read_while_paused": {
+    "status": "OK",
+    "waited_seconds": 45.012,
+    "connect_seconds": 45.029,
+    "document_name": "Drawing1.dwg",
+    "circles": [
+      {
+        "handle": "2CE",
+        "center": [
+          100.0,
+          100.0,
+          0.0
+        ],
+        "radius": 3.0,
+        "layer": "0"
+      }
+    ],
+    "total_entities": 1,
+    "elapsed_seconds": 45.071
+  },
+  "com_read_after_continue": {
+    "connect_seconds": 0.005,
+    "document_name": "Drawing1.dwg",
+    "circles": [
+      {
+        "handle": "2CE",
+        "center": [
+          100.0,
+          100.0,
+          0.0
+        ],
+        "radius": 3.0,
+        "layer": "0"
+      }
+    ],
+    "total_entities": 1,
+    "elapsed_seconds": 0.033,
+    "status": "OK"
+  },
+  "acad_pid": 27572,
+  "stop_event": {
+    "description": "",
+    "reason": "breakpoint",
+    "text": "",
+    "threadId": 1
+  },
+  "frames_at_stop": [
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":BREAK-POINT"
+    },
+    {
+      "column": 3,
+      "endColumn": 23,
+      "endLine": 8,
+      "id": 131,
+      "line": 8,
+      "moduleId": "",
+      "name": "C:CBDBG",
+      "source": {
+        "name": "cb_debug_fixture.lsp",
+        "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+      }
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 126,
+      "line": 0,
+      "moduleId": "",
+      "name": "#<USUBR @000002436ecde160 -top->"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":USER-INPUT"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":CALLBACK-ENTRY"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": "C:VLDEBUG"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":CALLBACK-ENTRY"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":ARQ-SUBR-CALLBACK"
+    }
+  ],
+  "stop_line": 8,
+  "output_at_stop": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+  ],
+  "output_after_continue": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+    "CBDBG_DONE",
+    "\r\n"
+  ],
+  "verdict": "LIVE_QUERY_FEASIBLE",
+  "adapter_stderr": []
+}

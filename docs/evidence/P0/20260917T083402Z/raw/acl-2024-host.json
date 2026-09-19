@@ -1,0 +1,19 @@
+{
+    "path":  "D:\\Program Files\\Autodesk\\AutoCAD_2024.1.5\\AutoCAD 2024",
+    "exists":  true,
+    "can_write_test_file":  null,
+    "error":  null,
+    "owner":  "BUILTIN\\Administrators",
+    "access_rules":  [
+                         "BUILTIN\\Administrators:Allow:FullControl",
+                         "BUILTIN\\Administrators:Allow:268435456",
+                         "NT AUTHORITY\\SYSTEM:Allow:FullControl",
+                         "NT AUTHORITY\\SYSTEM:Allow:268435456",
+                         "NT AUTHORITY\\Authenticated Users:Allow:Modify, Synchronize",
+                         "NT AUTHORITY\\Authenticated Users:Allow:-536805376",
+                         "BUILTIN\\Users:Allow:ReadAndExecute, Synchronize",
+                         "BUILTIN\\Users:Allow:-1610612736"
+                     ],
+    "current_user":  "TIGER5800\\Administrator",
+    "is_admin":  true
+}

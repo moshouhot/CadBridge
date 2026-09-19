@@ -1,0 +1,70 @@
+{
+  "checks": [
+    {
+      "name": "no target-install acad.exe existed before launch",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "Job-owned acad.exe launched",
+      "ok": true,
+      "detail": {
+        "pid": 24352,
+        "creation": "2026-09-18T23:49:06.2734250+08:00",
+        "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acad.exe",
+        "requested_exe": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acad.exe",
+        "role": "ownership-smoke",
+        "launched_at": 1789746548.3801336,
+        "ownership_kind": "job"
+      }
+    },
+    {
+      "name": "primary acad.exe identity + Job membership re-verify",
+      "ok": true,
+      "detail": "verified: pid 24352 creation=2026-09-18T23:49:06.2734250+08:00 path=d:/program files/autodesk/autocad 2026/acad.exe"
+    },
+    {
+      "name": "primary acad.exe PID is inside retained Job Object",
+      "ok": true,
+      "detail": {
+        "primary": 24352,
+        "members": [
+          24352
+        ]
+      }
+    },
+    {
+      "name": "Job Object cleanup confirmed",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "name": "no target-install acad.exe remains after cleanup",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "acad": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acad.exe",
+  "started_at": 1789746545.832616,
+  "preexisting": [],
+  "owned": {
+    "pid": 24352,
+    "creation": "2026-09-18T23:49:06.2734250+08:00",
+    "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acad.exe",
+    "requested_exe": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acad.exe",
+    "role": "ownership-smoke",
+    "launched_at": 1789746548.3801336,
+    "ownership_kind": "job"
+  },
+  "verify": {
+    "ok": true,
+    "reason": "verified: pid 24352 creation=2026-09-18T23:49:06.2734250+08:00 path=d:/program files/autodesk/autocad 2026/acad.exe"
+  },
+  "job_members_before_cleanup": [
+    24352
+  ],
+  "cleanup_ok": true,
+  "postexisting": [],
+  "verdict": "PASS",
+  "failed": []
+}

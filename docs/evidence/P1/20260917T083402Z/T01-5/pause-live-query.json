@@ -1,0 +1,447 @@
+{
+  "checks": [
+    {
+      "name": "initialize",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "attach to live PID",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "breakpoint line 8 verified",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 0,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "name": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trigger (C:CBDBG)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped at line 8",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stopped in a real source frame",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "CBDBG_DONE not printed before stop",
+      "ok": true,
+      "detail": [
+        "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+      ]
+    },
+    {
+      "name": "A: COM read while paused does NOT complete (main thread blocked)",
+      "ok": true,
+      "detail": {
+        "outcome": "TIMEOUT",
+        "snapshot": {}
+      }
+    },
+    {
+      "name": "B: paused LISP can read the drawing (circle count)",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "B: paused LISP reports the circle radius as 3",
+      "ok": false,
+      "detail": ""
+    },
+    {
+      "name": "E: next accepted while paused",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "E: stopped again after next",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "E: continue accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "E: CBDBG_DONE printed after continue",
+      "ok": true,
+      "detail": [
+        "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+        "1\r\n",
+        "((-1 . <图元名: 1a8dfaacc60>) (0 . \"CIRCLE\") (330 . <图元名: 1a8dfaaf9f0>) (5 . \"2CE\") (100 . \"AcDbEntity\") (67 . 0) (410 ",
+        ". \"Model\") (8 . \"0\") (100 . \"AcDbCircle\") (10 100.0 100.0 0.0) (40 . 3.0) (210 0.0 0.0 1.0))\r\n",
+        "3.0\r\n",
+        "(100.0 100.0 0.0)\r\n",
+        "<图元名: 1a8dfaacc70>\r\n",
+        "CBDBG_DONE",
+        "\r\n"
+      ]
+    },
+    {
+      "name": "G: COM read after continue completes",
+      "ok": true,
+      "detail": {
+        "outcome": "COMPLETED",
+        "snapshot": {
+          "connect_seconds": 0.005,
+          "document_name": "Drawing1.dwg",
+          "circles": [
+            {
+              "handle": "2CE",
+              "center": [
+                100.0,
+                100.0,
+                0.0
+              ],
+              "radius": 3.0,
+              "layer": "0"
+            },
+            {
+              "handle": "2CF",
+              "center": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "radius": 99.0,
+              "layer": "0"
+            }
+          ],
+          "total_entities": 2,
+          "elapsed_seconds": 0.044,
+          "status": "OK"
+        }
+      }
+    },
+    {
+      "name": "G: the r=3 circle exists in the drawing",
+      "ok": true,
+      "detail": [
+        {
+          "handle": "2CE",
+          "center": [
+            100.0,
+            100.0,
+            0.0
+          ],
+          "radius": 3.0,
+          "layer": "0"
+        },
+        {
+          "handle": "2CF",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "radius": 99.0,
+          "layer": "0"
+        }
+      ]
+    },
+    {
+      "name": "G: the r=99 write was NOT applied (write refused while paused)",
+      "ok": false,
+      "detail": [
+        {
+          "handle": "2CE",
+          "center": [
+            100.0,
+            100.0,
+            0.0
+          ],
+          "radius": 3.0,
+          "layer": "0"
+        },
+        {
+          "handle": "2CF",
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "radius": 99.0,
+          "layer": "0"
+        }
+      ]
+    }
+  ],
+  "findings": {
+    "stop_event": {
+      "description": "",
+      "reason": "breakpoint",
+      "text": "",
+      "threadId": 1
+    },
+    "stop_frame": {
+      "column": 3,
+      "endColumn": 23,
+      "endLine": 8,
+      "id": 131,
+      "line": 8,
+      "moduleId": "",
+      "name": "C:CBDBG",
+      "source": {
+        "name": "cb_debug_fixture.lsp",
+        "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+      }
+    },
+    "output_before_stop": [
+      "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+    ],
+    "A_com_read_while_paused": {
+      "outcome": "TIMEOUT",
+      "snapshot": {}
+    },
+    "B_dap_lisp_reads": {
+      "circle_count_via_ssget": {
+        "expression": "(sslength (ssget \"X\" (list (cons 0 \"CIRCLE\"))))",
+        "success": true,
+        "result": "",
+        "message": null
+      },
+      "last_entity_dxf": {
+        "expression": "(entget (entlast))",
+        "success": true,
+        "result": "",
+        "message": null
+      },
+      "circle_radius_via_entget": {
+        "expression": "(cdr (assoc 40 (entget (entlast))))",
+        "success": true,
+        "result": "",
+        "message": null
+      },
+      "circle_center_via_entget": {
+        "expression": "(cdr (assoc 10 (entget (entlast))))",
+        "success": true,
+        "result": "",
+        "message": null
+      }
+    },
+    "C_write_while_paused": {
+      "expression": "(entmakex (list (cons 0 \"CIRCLE\") (cons 10 (list 0.0 0.0 0.0)) (cons 40 99.0)))",
+      "success": true,
+      "result": "",
+      "message": null
+    },
+    "D_second_client": {
+      "initialize": {
+        "success": true,
+        "body": {
+          "supportsConfigurationDoneRequest": true,
+          "supportsEvaluateForHovers": true
+        }
+      }
+    },
+    "E_frames_after_next": [
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":AFTER-STEP"
+      },
+      {
+        "column": 23,
+        "endColumn": 3,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 23,
+        "endColumn": 3,
+        "endLine": 8,
+        "id": 126,
+        "line": 8,
+        "moduleId": "",
+        "name": "#<USUBR @000001a8e65de160 -top->",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":USER-INPUT"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": "C:VLDEBUG"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":CALLBACK-ENTRY"
+      },
+      {
+        "column": 0,
+        "endColumn": 0,
+        "endLine": 0,
+        "id": 0,
+        "line": 0,
+        "moduleId": "",
+        "name": ":ARQ-SUBR-CALLBACK"
+      }
+    ],
+    "output_after_continue": [
+      "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+      "1\r\n",
+      "((-1 . <图元名: 1a8dfaacc60>) (0 . \"CIRCLE\") (330 . <图元名: 1a8dfaaf9f0>) (5 . \"2CE\") (100 . \"AcDbEntity\") (67 . 0) (410 ",
+      ". \"Model\") (8 . \"0\") (100 . \"AcDbCircle\") (10 100.0 100.0 0.0) (40 . 3.0) (210 0.0 0.0 1.0))\r\n",
+      "3.0\r\n",
+      "(100.0 100.0 0.0)\r\n",
+      "<图元名: 1a8dfaacc70>\r\n",
+      "CBDBG_DONE",
+      "\r\n"
+    ],
+    "F_stale_frame": {
+      "frameId": 131,
+      "response": {
+        "body": {
+          "scopes": [
+            {
+              "indexedVariables": 2,
+              "name": "Locals",
+              "namedVariables": 0,
+              "variablesReference": 131
+            },
+            {
+              "indexedVariables": 1,
+              "name": "Last Value",
+              "namedVariables": 0,
+              "variablesReference": 60001
+            }
+          ]
+        },
+        "command": "scopes",
+        "request_seq": 15,
+        "seq": 25,
+        "success": true,
+        "type": "response"
+      }
+    },
+    "G_com_read_after_continue": {
+      "outcome": "COMPLETED",
+      "snapshot": {
+        "connect_seconds": 0.005,
+        "document_name": "Drawing1.dwg",
+        "circles": [
+          {
+            "handle": "2CE",
+            "center": [
+              100.0,
+              100.0,
+              0.0
+            ],
+            "radius": 3.0,
+            "layer": "0"
+          },
+          {
+            "handle": "2CF",
+            "center": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "radius": 99.0,
+            "layer": "0"
+          }
+        ],
+        "total_entities": 2,
+        "elapsed_seconds": 0.044,
+        "status": "OK"
+      }
+    }
+  },
+  "acad_pid": 38536,
+  "verdict": {
+    "main_thread_blocked_while_paused": true,
+    "live_read_possible_via_dap_lisp_channel": false,
+    "live_read_possible_via_com_or_commandmethod": false,
+    "summary": "Main thread is blocked and the paused LISP context could not read the drawing; T01-5 needs an owner decision."
+  },
+  "adapter_stderr": []
+}

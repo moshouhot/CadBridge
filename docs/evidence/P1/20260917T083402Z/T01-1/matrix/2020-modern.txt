@@ -1,0 +1,30 @@
+Redirect stdout (file: E:\360data\TEMP\accc275802).
+AcCoreConsole: StdOutConsoleMode: processed-output: disabled,auto
+AutoCAD Core Engine Console - Copyright 2019 Autodesk, Inc.  All rights reserved. (Q.172.0.0)
+
+Execution Path:
+D:\Program Files\Autodesk\AutoCAD 2020\accoreconsole.exe
+
+Version Number: Q.172.0.0 (UNICODE)
+CoreHeartBeat
+正在重生成模型。
+CoreHeartBeat
+
+**** 系统变量更改 ****
+已从首选值更改 1 个监视系统变量。使用 SYSVARMONITOR 命令以查看更改。
+
+
+命令:
+命令:
+
+命令:
+命令: NETLOAD
+程序集文件名: f:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Modern\bin\Release\net8.0-windows\CadBridge.Plugin.Modern.dll
+
+命令: CBBRIDGEINFO
+未知命令“CBBRIDGEINFO”。按 F1 查看帮助。
+
+命令: _.quit
+
+命令:
+**** 没有系统变量更改 ****

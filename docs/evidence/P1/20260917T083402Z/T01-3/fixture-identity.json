@@ -1,0 +1,12 @@
+{
+  "path": "F:\\CadBridge-run\\20260917T083402Z\\cb_debug_fixture.lsp",
+  "bytes": 208,
+  "sha256": "3123712cdcc47881b8ccce96ea88dc4218e7836e89ac37c3560412551f24d89e",
+  "encoding": "UTF-8",
+  "line_endings": "LF",
+  "line_count": 9,
+  "expected_semantics": {
+    "line_6": "enters cb-add from c:CBDBG (setq p (cb-add n))",
+    "line_8": "executes before princ CBDBG_DONE; circle r=3 already created by line 7"
+  }
+}

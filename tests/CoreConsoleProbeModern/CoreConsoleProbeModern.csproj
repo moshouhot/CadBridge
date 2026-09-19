@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Diagnostic probe for the Modern (net8) core engine. Not product code. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>CadBridge.Diagnostics.CoreConsoleProbe.Modern</AssemblyName>
+    <RootNamespace>CadBridge.Diagnostics.CoreConsoleProbe</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <CadBridgePlugin>true</CadBridgePlugin>
+    <CadBridgeRefSet>core</CadBridgeRefSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\CoreConsoleProbe\ProbeCommands.cs" LinkBase="Shared" />
+  </ItemGroup>
+</Project>

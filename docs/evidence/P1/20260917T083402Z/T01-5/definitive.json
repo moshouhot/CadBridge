@@ -1,0 +1,416 @@
+{
+  "checks": [
+    {
+      "name": "initialize",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "attach to live PID",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "breakpoints 6 and 8 verified",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 6,
+          "id": 0,
+          "line": 6,
+          "message": "",
+          "verified": true
+        },
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 1,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "name": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trigger (C:CBDBG)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stop 1 received",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stop 1 is at line 6",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 22,
+        "endLine": 6,
+        "id": 131,
+        "line": 6,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "continue to next breakpoint accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stop 2 received",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stop 2 is at line 8",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "CBDBG_DONE NOT yet printed at stop 2",
+      "ok": true,
+      "detail": [
+        "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+      ]
+    },
+    {
+      "name": "LIVE read: radius is 3.0 while paused at line 8",
+      "ok": true,
+      "detail": {
+        "expression": "(cdr (assoc 40 (entget (entlast))))",
+        "context": "hover",
+        "frameId": 131,
+        "success": true,
+        "result": "3.0",
+        "type": "REAL",
+        "seconds": 0.051
+      }
+    },
+    {
+      "name": "LIVE read: centre is (100.0 100.0 0.0) while paused",
+      "ok": true,
+      "detail": {
+        "expression": "(cdr (assoc 10 (entget (entlast))))",
+        "context": "hover",
+        "frameId": 131,
+        "success": true,
+        "result": "(100.0 100.0 0.0)",
+        "type": "LIST",
+        "seconds": 0.051
+      }
+    },
+    {
+      "name": "LIVE read: circle count is 1 while paused",
+      "ok": true,
+      "detail": {
+        "expression": "(sslength (ssget \"X\" (list (cons 0 \"CIRCLE\"))))",
+        "context": "hover",
+        "frameId": 131,
+        "success": true,
+        "result": "1",
+        "type": "INT",
+        "seconds": 0.051
+      }
+    },
+    {
+      "name": "LIVE read: local p=3 while paused",
+      "ok": true,
+      "detail": {
+        "expression": "p",
+        "context": "hover",
+        "frameId": 131,
+        "success": true,
+        "result": "3",
+        "type": "INT",
+        "seconds": 0.051
+      }
+    },
+    {
+      "name": "read is SYNCHRONOUS (no new stdout, answered in place)",
+      "ok": true,
+      "detail": {
+        "expression": "(cdr (assoc 40 (entget (entlast))))",
+        "context": "hover",
+        "frameId": 131,
+        "success": true,
+        "result": "3.0",
+        "type": "REAL",
+        "seconds": 0.051
+      }
+    },
+    {
+      "name": "STALENESS: radius at line 6 differs from radius at line 8",
+      "ok": true,
+      "detail": {
+        "at_line_6": "<*** ERROR ***>",
+        "at_line_8": "3.0"
+      }
+    },
+    {
+      "name": "COM/main-thread is blocked while paused (so Plugin cannot serve it)",
+      "ok": true,
+      "detail": {
+        "completed": false
+      }
+    },
+    {
+      "name": "step still works while paused",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped again after step",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "continue still works while paused",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "CBDBG_DONE printed after continue",
+      "ok": true,
+      "detail": [
+        "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+        "CBDBG_DONE",
+        "\r\n"
+      ]
+    },
+    {
+      "name": "control: COM read works again after continue",
+      "ok": true,
+      "detail": {
+        "circles": [
+          {
+            "handle": "2CE",
+            "center": [
+              100.0,
+              100.0,
+              0.0
+            ],
+            "radius": 3.0,
+            "layer": "0"
+          }
+        ],
+        "status": "OK"
+      }
+    },
+    {
+      "name": "control: drawing really contains the r=3 circle (independent of DAP)",
+      "ok": true,
+      "detail": [
+        {
+          "handle": "2CE",
+          "center": [
+            100.0,
+            100.0,
+            0.0
+          ],
+          "radius": 3.0,
+          "layer": "0"
+        }
+      ]
+    }
+  ],
+  "timeline": [
+    {
+      "t": 1789691451.296,
+      "what": "initialized"
+    },
+    {
+      "t": 1789691451.799,
+      "what": "attached",
+      "pid": 77308
+    },
+    {
+      "t": 1789691454.654,
+      "what": "stop1",
+      "line": 6,
+      "frameId": 131
+    },
+    {
+      "t": 1789691454.909,
+      "what": "stop2",
+      "line": 8,
+      "frameId": 131
+    }
+  ],
+  "stop_reads": {
+    "stop1": {
+      "line": 6,
+      "frameId": 131,
+      "reads": {
+        "radius_entlast": {
+          "expression": "(cdr (assoc 40 (entget (entlast))))",
+          "context": "hover",
+          "frameId": 131,
+          "success": true,
+          "result": "<*** ERROR ***>",
+          "type": "SYM",
+          "seconds": 0.051
+        },
+        "count_circles": {
+          "expression": "(sslength (ssget \"X\" (list (cons 0 \"CIRCLE\"))))",
+          "context": "hover",
+          "frameId": 131,
+          "success": true,
+          "result": "<*** ERROR ***>",
+          "type": "SYM",
+          "seconds": 0.051
+        },
+        "local_n": {
+          "expression": "n",
+          "context": "hover",
+          "frameId": 131,
+          "success": true,
+          "result": "2",
+          "type": "INT",
+          "seconds": 0.051
+        }
+      }
+    },
+    "stop2": {
+      "line": 8,
+      "frameId": 131,
+      "reads": {
+        "radius_entlast": {
+          "expression": "(cdr (assoc 40 (entget (entlast))))",
+          "context": "hover",
+          "frameId": 131,
+          "success": true,
+          "result": "3.0",
+          "type": "REAL",
+          "seconds": 0.051
+        },
+        "center_entlast": {
+          "expression": "(cdr (assoc 10 (entget (entlast))))",
+          "context": "hover",
+          "frameId": 131,
+          "success": true,
+          "result": "(100.0 100.0 0.0)",
+          "type": "LIST",
+          "seconds": 0.051
+        },
+        "count_circles": {
+          "expression": "(sslength (ssget \"X\" (list (cons 0 \"CIRCLE\"))))",
+          "context": "hover",
+          "frameId": 131,
+          "success": true,
+          "result": "1",
+          "type": "INT",
+          "seconds": 0.051
+        },
+        "local_n": {
+          "expression": "n",
+          "context": "hover",
+          "frameId": 131,
+          "success": true,
+          "result": "2",
+          "type": "INT",
+          "seconds": 0.051
+        },
+        "local_p": {
+          "expression": "p",
+          "context": "hover",
+          "frameId": 131,
+          "success": true,
+          "result": "3",
+          "type": "INT",
+          "seconds": 0.051
+        }
+      }
+    }
+  },
+  "acad_pid": 77308,
+  "output_at_stop1": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+  ],
+  "output_at_stop2": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+  ],
+  "com_while_paused": {
+    "completed": false,
+    "snapshot": {}
+  },
+  "output_after_continue": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+    "CBDBG_DONE",
+    "\r\n"
+  ],
+  "com_after_continue": {
+    "completed": true,
+    "snapshot": {
+      "circles": [
+        {
+          "handle": "2CE",
+          "center": [
+            100.0,
+            100.0,
+            0.0
+          ],
+          "radius": 3.0,
+          "layer": "0"
+        }
+      ],
+      "status": "OK"
+    }
+  },
+  "verdict": {
+    "t01_5_live_pause_query": "ACHIEVABLE",
+    "channel": "DAP evaluate, context hover (synchronous); watch/clipboard also answered synchronously",
+    "queued_channel_must_not_be_used": "DAP evaluate context repl (async injection)",
+    "blocked_channel": "Plugin CommandMethod and COM (AutoCAD main thread is inside the LISP debugger during a pause)",
+    "staleness": "not stale: same expression returned a different value at line 6 than at line 8",
+    "hazard": "DAP evaluate with context watch AND a frameId caused an ACCESS VIOLATION (0xC0000005) in AutoCAD",
+    "host_policy_implication": "Because the raw DAP channel does not refuse writes during a pause, DEBUG_BUSY must be enforced by CadBridge's own Host/dispatcher, not by the adapter."
+  },
+  "adapter_stderr": []
+}

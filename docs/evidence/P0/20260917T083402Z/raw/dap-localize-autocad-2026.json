@@ -1,0 +1,3650 @@
+{
+  "mode": "localize",
+  "root": "D:\\Program Files\\Autodesk\\AutoCAD 2026",
+  "files_scanned": 2367,
+  "files_skipped": 3,
+  "candidate_count": 143,
+  "candidates": [
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\vl_u.crx",
+      "size_bytes": 1193752,
+      "sha256": "51839174a844e3e6b9e5581cdbcdabd66ea41934256f4a0ae1bd8306feb284b8",
+      "engine_marker_score": 9,
+      "role": "full_dap_engine",
+      "findings": {
+        "handshake": [
+          "initialize(6)",
+          "initialized(1)",
+          "configurationDone(1)",
+          "attach(1)",
+          "launch(1)",
+          "disconnect(1)",
+          "terminate(7)"
+        ],
+        "requests": [
+          "setBreakpoints(1)",
+          "stackTrace(1)",
+          "scopes(2)",
+          "variables(3)",
+          "evaluate(4)",
+          "continue(4)",
+          "next(7)",
+          "stepIn(1)",
+          "stepOut(1)",
+          "threads(1)",
+          "source(20)",
+          "pause(1)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(15)",
+          "terminated(1)",
+          "breakpoint(3)",
+          "thread(4)"
+        ],
+        "fields": [
+          "variablesReference(1)",
+          "frameId(1)",
+          "threadId(1)",
+          "program(2)",
+          "processId(1)",
+          "Content-Length(1)"
+        ],
+        "autodesk": [
+          "runtimeerror(1)",
+          "vldebug(1)",
+          "VLISP(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Support\\ApplicationHome\\dist\\bundle.js",
+      "size_bytes": 4817006,
+      "sha256": "6592a19a56dfa769bb414f71b91ee2e92ab600c3f1c111aa3960939782288a07",
+      "engine_marker_score": 4,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(27)",
+          "initialized(13)",
+          "attach(25)",
+          "launch(8)",
+          "disconnect(32)",
+          "terminate(55)"
+        ],
+        "requests": [
+          "scopes(10)",
+          "variables(2)",
+          "evaluate(2)",
+          "continue(326)",
+          "next(1234)",
+          "stepIn(231)",
+          "source(163)",
+          "pause(11)"
+        ],
+        "events": [
+          "output(1)",
+          "terminated(1)",
+          "exited(27)",
+          "thread(2)"
+        ],
+        "fields": [
+          "program(38)",
+          "processId(4)",
+          "lines(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\DgnPlatform5.dll",
+      "size_bytes": 19243320,
+      "sha256": "506ec47ef643eaa678ad5da819e48c88111d8dfdf6059f8d14e55717d9ca02c6",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(15)",
+          "initialized(3)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(5)",
+          "evaluate(8)",
+          "continue(1)",
+          "next(1)",
+          "stepOut(1)",
+          "threads(2)",
+          "source(61)"
+        ],
+        "events": [
+          "output(17)",
+          "breakpoint(8)",
+          "thread(6)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(10)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Microsoft.CodeAnalysis.CSharp.dll",
+      "size_bytes": 6487328,
+      "sha256": "88485da52e3e80e7e3a345d56ea555f5dd6b0579b3f296e836432736e7d62f19",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(126)",
+          "initialized(20)",
+          "terminate(9)"
+        ],
+        "requests": [
+          "scopes(7)",
+          "variables(41)",
+          "continue(12)",
+          "next(15)",
+          "stepIn(1)",
+          "threads(1)",
+          "source(153)"
+        ],
+        "events": [
+          "output(31)",
+          "terminated(9)",
+          "thread(2)"
+        ],
+        "fields": [
+          "program(5)",
+          "lines(9)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Microsoft.CodeAnalysis.VisualBasic.dll",
+      "size_bytes": 4826904,
+      "sha256": "ab51077781bdb9d98abe7a811374042897dd84e14511f68542e6d9a81d17916d",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(67)",
+          "initialized(20)",
+          "terminate(3)"
+        ],
+        "requests": [
+          "scopes(1)",
+          "variables(19)",
+          "evaluate(10)",
+          "continue(12)",
+          "next(21)",
+          "threads(1)",
+          "source(158)"
+        ],
+        "events": [
+          "output(27)",
+          "terminated(3)",
+          "thread(2)"
+        ],
+        "fields": [
+          "program(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Microsoft.CodeAnalysis.dll",
+      "size_bytes": 2976544,
+      "sha256": "cb2130c19f5bfa71880843bf9ab025c6256ef4ca10ab5bdada6e5ca316d92d6b",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(16)",
+          "initialized(9)",
+          "attach(3)"
+        ],
+        "requests": [
+          "scopes(2)",
+          "variables(2)",
+          "continue(3)",
+          "next(18)",
+          "stepIn(3)",
+          "threads(1)",
+          "source(224)"
+        ],
+        "events": [
+          "output(22)",
+          "breakpoint(2)",
+          "thread(4)"
+        ],
+        "fields": [
+          "program(5)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Qt6Qml.dll",
+      "size_bytes": 5246104,
+      "sha256": "98e6cc1521f16f6c3b3238e7a04d2769df5aac2416996ad762dd4995bf456498",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(19)",
+          "initialized(3)",
+          "attach(10)",
+          "disconnect(15)",
+          "terminate(3)"
+        ],
+        "requests": [
+          "stackTrace(1)",
+          "variables(1)",
+          "evaluate(17)",
+          "continue(2)",
+          "next(14)",
+          "source(26)",
+          "pause(5)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(1)",
+          "terminated(3)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Support\\BlockOnBoarding\\OnBoardingGuideDlg\\dist\\bundle.js",
+      "size_bytes": 2732607,
+      "sha256": "5d36f469447598d5977d2a533b34f3db0d6e7a0eeae38f949703a0de5ada40be",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(28)",
+          "initialized(15)",
+          "attach(17)",
+          "launch(4)",
+          "disconnect(4)",
+          "terminate(90)"
+        ],
+        "requests": [
+          "variables(5)",
+          "evaluate(1)",
+          "continue(761)",
+          "next(931)",
+          "stepIn(99)",
+          "threads(1)",
+          "source(1707)",
+          "pause(15)"
+        ],
+        "events": [
+          "output(13)",
+          "terminated(1)",
+          "exited(4)",
+          "thread(47)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\d3dcompiler_v1\\d3dcompiler_47.dll",
+      "size_bytes": 4173928,
+      "sha256": "e994847e01a6f1e4cbdc5a864616ac262f67ee4f14db194984661a8d927ab7f4",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(52)",
+          "initialized(43)",
+          "terminate(7)"
+        ],
+        "requests": [
+          "scopes(1)",
+          "variables(20)",
+          "evaluate(7)",
+          "continue(23)",
+          "next(1)",
+          "threads(9)",
+          "source(316)"
+        ],
+        "events": [
+          "output(186)",
+          "terminated(3)",
+          "thread(21)"
+        ],
+        "fields": [
+          "program(13)",
+          "lines(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\d3dcompiler_v2\\d3dcompiler_47.dll",
+      "size_bytes": 4488896,
+      "sha256": "045a7f61f132351fd60c0d1f94779900ab200a5c0a16c0c296f69abf8e5a6223",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(52)",
+          "initialized(43)",
+          "terminate(7)"
+        ],
+        "requests": [
+          "scopes(1)",
+          "variables(20)",
+          "evaluate(7)",
+          "continue(23)",
+          "next(1)",
+          "threads(9)",
+          "source(325)"
+        ],
+        "events": [
+          "output(188)",
+          "terminated(3)",
+          "thread(21)"
+        ],
+        "fields": [
+          "program(13)",
+          "lines(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\rti.dll",
+      "size_bytes": 53274912,
+      "sha256": "f568ac6b4daa89d9885cd260e126e10f4d1490b5585dee4abf432fe345703066",
+      "engine_marker_score": 3,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(100)",
+          "initialized(63)",
+          "attach(36)",
+          "launch(3)",
+          "disconnect(1)",
+          "terminate(26)"
+        ],
+        "requests": [
+          "scopes(7)",
+          "variables(40)",
+          "evaluate(15)",
+          "continue(9)",
+          "next(54)",
+          "threads(7)",
+          "source(182)",
+          "pause(12)"
+        ],
+        "events": [
+          "output(49)",
+          "terminated(23)",
+          "exited(4)",
+          "thread(78)"
+        ],
+        "fields": [
+          "program(65)",
+          "lines(11)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcCalcEngine.crx",
+      "size_bytes": 211224,
+      "sha256": "7a7dfd3c3fe57e09519c9084a620cbce4d6c74a17c46787526f253b88eeeb603",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(2)",
+          "source(8)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcCalcUi.dll",
+      "size_bytes": 281888,
+      "sha256": "a7d84d08ef8fd989692b8e24a4995ee2f609adbc2607fda51873ac9ec04b6899",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(5)",
+          "evaluate(2)",
+          "source(105)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcCalcUi.xml",
+      "size_bytes": 11464,
+      "sha256": "a2c1c1cce36c36416b848600e3939333e22b1889f288517b25d250d7da9c78ab",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(1)",
+          "evaluate(1)"
+        ],
+        "fields": [
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcDialogToolTips.dll",
+      "size_bytes": 1444640,
+      "sha256": "b3e8a0886ee8a43826d3c599f9ee2bfaaaa176267c843bc26cb67d85e1767105",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "initialized(4)",
+          "attach(99)",
+          "launch(1)"
+        ],
+        "requests": [
+          "variables(19)",
+          "evaluate(1)",
+          "continue(2)",
+          "next(24)",
+          "source(104)",
+          "pause(2)"
+        ],
+        "events": [
+          "output(65)"
+        ],
+        "fields": [
+          "program(22)",
+          "lines(151)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcJsCoreStub.crx",
+      "size_bytes": 2870040,
+      "sha256": "09b6c6acac4e17c9d95a5b8ee31f964513ecaae7cfa3b1bd86d6873f496b9dc1",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(12)",
+          "initialized(2)",
+          "launch(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(3)",
+          "next(2)",
+          "source(14)"
+        ],
+        "events": [
+          "output(2)",
+          "thread(2)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcPublish.crx",
+      "size_bytes": 4240152,
+      "sha256": "907d807180fcb05f9eebc3c36b5355ce24a5a3ed3ea985b97f82cae76f585f33",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(18)",
+          "initialized(8)",
+          "attach(8)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "evaluate(1)",
+          "next(2)",
+          "threads(1)",
+          "source(426)"
+        ],
+        "events": [
+          "output(8)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\BentleyGeom5.dll",
+      "size_bytes": 6912824,
+      "sha256": "ef5ec09813191a50b4ae49a1fb0de6b66d6afdae3980a4acbc5d8144b01ca7b1",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(7)",
+          "initialized(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(66)",
+          "next(3)",
+          "stepOut(1)",
+          "source(1)"
+        ],
+        "events": [
+          "output(3)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(7)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\DL180pdfl.dll",
+      "size_bytes": 10928672,
+      "sha256": "1e1e035616e2a77c43379f87084f795da6824052838a790c259894cb6d56393d",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(21)",
+          "initialized(2)",
+          "attach(5)",
+          "launch(5)",
+          "terminate(9)"
+        ],
+        "requests": [
+          "variables(2)",
+          "evaluate(1)",
+          "continue(10)",
+          "next(8)",
+          "threads(1)",
+          "source(257)"
+        ],
+        "events": [
+          "stopped(21)",
+          "output(12)",
+          "terminated(4)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(11)",
+          "lines(24)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Design Automation\\Bin\\Das.Local.dll",
+      "size_bytes": 172320,
+      "sha256": "b65f5fefee6fa2caa7e6f6c5f1f25584a33c7523088292d1ccab547a42754daf",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "initialized(1)",
+          "attach(1)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(1)",
+          "next(1)",
+          "source(1)"
+        ],
+        "events": [
+          "output(2)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Express\\sysvdlg.dat",
+      "size_bytes": 414255,
+      "sha256": "6ca1de55a07cf654472202823204e137340eba91afd57b5e793ef069ca052bf2",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(1)",
+          "attach(40)",
+          "launch(5)"
+        ],
+        "requests": [
+          "variables(27)",
+          "evaluate(12)",
+          "continue(8)",
+          "next(14)",
+          "source(25)",
+          "pause(1)"
+        ],
+        "events": [
+          "output(12)"
+        ],
+        "fields": [
+          "program(21)",
+          "lines(139)"
+        ],
+        "autodesk": [
+          "VLISP(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Microsoft.CodeAnalysis.Scripting.dll",
+      "size_bytes": 138016,
+      "sha256": "e8681f4ad714fc230144753bc9dcaaea0f8d4a92a491a43fb66f4b2e1f46111d",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(1)",
+          "initialized(1)"
+        ],
+        "requests": [
+          "variables(2)",
+          "evaluate(1)",
+          "source(17)"
+        ],
+        "events": [
+          "output(3)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acdb25.dll",
+      "size_bytes": 19088152,
+      "sha256": "5907c8ba223844e16932b18fc235840bce7b9cff1dc5ed7423406dca4cf0c891",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(29)",
+          "attach(25)",
+          "launch(1)",
+          "disconnect(6)",
+          "terminate(7)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(118)",
+          "continue(3)",
+          "next(33)",
+          "threads(2)",
+          "source(58)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(15)",
+          "terminated(3)",
+          "thread(12)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(31)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acdbmgd.dll",
+      "size_bytes": 6754592,
+      "sha256": "cf74f78a3afbdf81301b11f3faa3067860d8529f320b8a73679cef5fdf93b88e",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(43)",
+          "initialized(13)",
+          "attach(7)",
+          "launch(1)",
+          "disconnect(2)",
+          "terminate(3)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(41)",
+          "continue(2)",
+          "next(9)",
+          "source(68)"
+        ],
+        "events": [
+          "output(3)",
+          "thread(7)"
+        ],
+        "fields": [
+          "program(5)",
+          "lines(34)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acmgd.dll",
+      "size_bytes": 3576096,
+      "sha256": "ac0bb730a3f2e70199c182e595405ae65203e8fbf057e20835034f093ff67864",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(169)",
+          "initialized(74)",
+          "attach(7)",
+          "launch(7)",
+          "terminate(8)"
+        ],
+        "requests": [
+          "scopes(1)",
+          "evaluate(2)",
+          "continue(6)",
+          "next(4)",
+          "source(77)"
+        ],
+        "events": [
+          "output(12)",
+          "thread(7)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(6)",
+          "Content-Length(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\dcu2d75.dll",
+      "size_bytes": 9070648,
+      "sha256": "0547d900032e14a3f55f6e5ad1e43fca8fec630ebe6d4db92f230a92aa100997",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "evaluate(72)",
+          "next(17)"
+        ],
+        "events": [
+          "output(11)",
+          "thread(2)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(12)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\en-US\\acdb25res.dll",
+      "size_bytes": 1052952,
+      "sha256": "b0b2d186edcbda57ea46214b91f78d603867609bbe0559c77f41a0de30bb3a40",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "attach(2)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(6)",
+          "continue(1)",
+          "source(483)"
+        ],
+        "events": [
+          "terminated(6)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(15)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\itextsharp.dll",
+      "size_bytes": 4079616,
+      "sha256": "5540be0821d8303dc945fd2bd1c62082cdba46260e5278985fa0866242deadd2",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "initialized(2)",
+          "attach(4)",
+          "launch(5)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(1)",
+          "next(25)",
+          "source(99)",
+          "pause(1)"
+        ],
+        "events": [
+          "output(76)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(13)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\opengl32sw.dll",
+      "size_bytes": 20639888,
+      "sha256": "b04de4541863bc7d8879040a78889c4849c1b1da2784c4630f734c146c2998ce",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(32)",
+          "initialized(8)",
+          "attach(28)",
+          "launch(2)",
+          "terminate(10)"
+        ],
+        "requests": [
+          "variables(27)",
+          "evaluate(5)",
+          "continue(7)",
+          "next(13)",
+          "threads(5)",
+          "source(81)",
+          "pause(8)"
+        ],
+        "events": [
+          "output(69)",
+          "terminated(9)",
+          "thread(34)"
+        ],
+        "fields": [
+          "program(102)",
+          "lines(26)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\resources\\v8_context_snapshot.bin",
+      "size_bytes": 679293,
+      "sha256": "deb61bf836a9e0ff5bb3ccd19281c4f3f85ecfdd9b3444e3598ce43da2a90dc3",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)"
+        ],
+        "requests": [
+          "stackTrace(1)",
+          "evaluate(2)",
+          "next(15)",
+          "source(5)",
+          "pause(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\vlide_u.dll",
+      "size_bytes": 424728,
+      "sha256": "85c68be0db331fb13ceb7aea2e870343e51a3c1fb88b99db9a1d6b47eb2b513d",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(1)",
+          "continue(1)",
+          "next(1)",
+          "source(39)"
+        ],
+        "events": [
+          "output(5)",
+          "terminated(1)",
+          "breakpoint(2)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ],
+        "autodesk": [
+          "VLISP(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\3S启动\\acdb25.dll",
+      "size_bytes": 19088152,
+      "sha256": "a61170752708c452cb1c3f2c5836f8bfd9c32371dc32b1f3186724f8c2a47a5d",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(29)",
+          "attach(25)",
+          "launch(1)",
+          "disconnect(6)",
+          "terminate(7)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(118)",
+          "continue(3)",
+          "next(33)",
+          "threads(2)",
+          "source(58)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(15)",
+          "terminated(3)",
+          "thread(12)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(31)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\原版\\acdb25.dll",
+      "size_bytes": 19088152,
+      "sha256": "5907c8ba223844e16932b18fc235840bce7b9cff1dc5ed7423406dca4cf0c891",
+      "engine_marker_score": 2,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(29)",
+          "attach(25)",
+          "launch(1)",
+          "disconnect(6)",
+          "terminate(7)"
+        ],
+        "requests": [
+          "variables(1)",
+          "evaluate(118)",
+          "continue(3)",
+          "next(33)",
+          "threads(2)",
+          "source(58)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(15)",
+          "terminated(3)",
+          "thread(12)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(31)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcArray.crx",
+      "size_bytes": 564512,
+      "sha256": "c9bb8edb13378b43faa7612b42551be420ec7e7baec662abe4b297aebf1bf27b",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(7)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcAuthEnviron.crx",
+      "size_bytes": 965912,
+      "sha256": "0ccf6b849e03d25e5c25f2d625dbfe4177ff58adf2cf80f4b442fca874af9cce",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "attach(1)",
+          "launch(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(4)",
+          "next(3)",
+          "source(10)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcBGPlot.crx",
+      "size_bytes": 195360,
+      "sha256": "5fc1ef7f04693e9efe2997d465c6c65afbbea7e4f5952340f0dd7b6348f9a19f",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "next(1)",
+          "source(3)"
+        ],
+        "events": [
+          "thread(2)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcBlockReplace.crx",
+      "size_bytes": 938776,
+      "sha256": "0c5452c1a2b3740d892fe9773288028114e797d0a988538452dadf9279022143",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "next(1)",
+          "source(8)"
+        ],
+        "events": [
+          "output(1)",
+          "thread(4)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcBlockSpot.crx",
+      "size_bytes": 921880,
+      "sha256": "e544242fec6ecaad8f1781d59f6a2b28544c9a8a2a40d5589354acda343a7eee",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "next(2)",
+          "source(8)"
+        ],
+        "events": [
+          "output(1)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcCmMgr.crx",
+      "size_bytes": 757016,
+      "sha256": "a7af06b4f7079bdeb5f94729a564091c368ffc771245fda325bd510cce434f23",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(3)",
+          "source(6)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcCommandToolTips.dll",
+      "size_bytes": 3259160,
+      "sha256": "ceb086eb119c7a37b30d3d60cd86b452723d36c6784853b20db0015d759dd3f1",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "attach(13)",
+          "launch(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "continue(2)",
+          "next(2)",
+          "threads(1)",
+          "source(16)",
+          "pause(2)"
+        ],
+        "events": [
+          "stopped(3)",
+          "output(3)",
+          "thread(1)"
+        ],
+        "fields": [
+          "program(7)",
+          "lines(59)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcCounting.crx",
+      "size_bytes": 1746712,
+      "sha256": "8d71f398dec712de4cc185e93e75abcddcc75e2539f426dcab9412a4f20c054f",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(16)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(92)",
+          "next(2)",
+          "source(6)"
+        ],
+        "events": [
+          "output(2)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcCustomize.dll",
+      "size_bytes": 1344280,
+      "sha256": "f304ce268dd5fd498d3c8e4808bbb5d23dd72ac442825d01beb98b39112e5bbc",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "initialized(1)",
+          "attach(1)",
+          "launch(1)",
+          "terminate(5)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "continue(1)",
+          "next(3)",
+          "source(329)"
+        ],
+        "fields": [
+          "program(7)",
+          "lines(5)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcDbSmartCenter.dbx",
+      "size_bytes": 784160,
+      "sha256": "52ebd2fc9f5ee2f32dd1c9eb8ab8ad0b257172a2f73548d20203a9b06c041372",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(8)",
+          "next(1)",
+          "source(6)"
+        ],
+        "events": [
+          "output(1)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcDgnIO.dbx",
+      "size_bytes": 3947800,
+      "sha256": "def5973600424671cb848901e0674bf5349e49e5c3b00998ca9637a11e3faf7a",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(5)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "source(9)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcDim.arx",
+      "size_bytes": 808728,
+      "sha256": "b406ddcdea2fdb19a06ecb9dcd3b7b2bb5853fbae25b092f6edca2234c34943f",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(3)",
+          "source(14)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcDwfMarkupCore.crx",
+      "size_bytes": 1296152,
+      "sha256": "f0931f41bf617d2a0e684f1f485fb076e25a6e032e730378784aaa307d5025a8",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "next(1)",
+          "threads(1)",
+          "source(19)"
+        ],
+        "events": [
+          "thread(9)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcDwfMarkupUi.arx",
+      "size_bytes": 3498264,
+      "sha256": "5d01ee36eb21db857ce4a59dbb875b78549cf0b6df59c6a3b722127b7ed4c528",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(53)",
+          "initialized(26)",
+          "attach(8)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(1)",
+          "threads(1)",
+          "source(391)"
+        ],
+        "events": [
+          "output(6)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcDxWizard.dll",
+      "size_bytes": 745752,
+      "sha256": "446687fb50b147bab5c9110820541b33a5d7c7631d744e658aef54a6c497dafd",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "evaluate(1)",
+          "continue(1)",
+          "next(20)",
+          "source(218)"
+        ],
+        "events": [
+          "output(6)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcETransmit.dll",
+      "size_bytes": 481056,
+      "sha256": "6f4b0d51a5f78a1a033d3b7c806566b276150f95ae86b4b040e086b5beb454f1",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(7)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcFdEval.crx",
+      "size_bytes": 316192,
+      "sha256": "ecadc833dbd03c3e9f04dd44a02089d51a4826e0dcec879b64e2f11e72c13902",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "source(8)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcFdUi.arx",
+      "size_bytes": 283936,
+      "sha256": "1b3f3e86a24033c460bf9deb897a679bf5116424024a812267b06d77b40685a4",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "source(6)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcField.arx",
+      "size_bytes": 224544,
+      "sha256": "9e090c50fe95f0288b2dfeb69822daba5d08331a0d5090c9357a7de982913f43",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(5)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcGeomUI.arx",
+      "size_bytes": 173344,
+      "sha256": "e06446a58bd0ba98058e84ed7713149f7a000a1c62a8f0e298ed65f0ea61bc3b",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "source(7)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcGeomentObj.dbx",
+      "size_bytes": 3921688,
+      "sha256": "feb18dc599b7e06934d2b93d3261c5329cabdd0d3adf1e2bf08f1d0e160b702c",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "attach(8)",
+          "disconnect(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(97)",
+          "next(4)",
+          "source(6)"
+        ],
+        "events": [
+          "output(1)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcLMVExport.crx",
+      "size_bytes": 3446040,
+      "sha256": "d6e9e905ac20a7071d323c37eac1363f33415884ad3a4d6d4670b99a09f29f37",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(6)",
+          "initialized(1)",
+          "attach(4)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(4)",
+          "threads(1)",
+          "source(48)"
+        ],
+        "events": [
+          "output(9)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcMPolygonObj25.dbx",
+      "size_bytes": 242456,
+      "sha256": "2456c823e8b70c869a7880c92a49af0c838aff1520e3f680722876c54bb2f61e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "source(4)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcModelDocObj.dbx",
+      "size_bytes": 2858272,
+      "sha256": "8bfb19acab2d44b15a0c855a38ff6cbf018e6546de2d879d078a5ddc920a779c",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(8)",
+          "attach(7)",
+          "disconnect(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(14)",
+          "source(34)"
+        ],
+        "events": [
+          "output(1)",
+          "thread(1)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcOpmExt.arx",
+      "size_bytes": 815896,
+      "sha256": "3effafaea1e5ddeee159b4c33164f3226c4c18d333a32b2fa089fede9000ecbb",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(3)",
+          "source(7)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcPersSubentNaming25.dll",
+      "size_bytes": 493848,
+      "sha256": "a4df28c2df2ddb63dcddf1a91e2122ffe6dbdcfc8c6eb1c9ae4f7f96942c9a53",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(14)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(67)"
+        ],
+        "events": [
+          "output(1)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcPlotGui.arx",
+      "size_bytes": 498464,
+      "sha256": "f5cac2985dac0eed5a64ec2f1c1ee1f5ee4e6a4c2053a1adbc3947382cc4268e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "initialized(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(7)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcShareViewPropsMgd.dll",
+      "size_bytes": 3395872,
+      "sha256": "5cd65ae564a7292b0b04ed266150c02074b453cc3420e43d477bcef5c8dac79e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(137)",
+          "initialized(92)",
+          "attach(6)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(4)",
+          "threads(1)",
+          "source(156)",
+          "pause(1)"
+        ],
+        "events": [
+          "output(17)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(10)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcSmComponents.dll",
+      "size_bytes": 847128,
+      "sha256": "6316e061f9c4125fec1d872b1f5c67d51d975478ab57fa20009142e4097e8996",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(21)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcSmNav.arx",
+      "size_bytes": 1316120,
+      "sha256": "482329e472bfaa0cfef1d728ba17d7bcf851cdc2a3a6c980621225009d705b08",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "source(22)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcSmartCenter.crx",
+      "size_bytes": 275744,
+      "sha256": "ef669fa0096a9eba80cea361a64c7b305d8f53035fe68d208541d116262dfcaf",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "next(1)",
+          "source(12)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcSpotService.crx",
+      "size_bytes": 970528,
+      "sha256": "7d33679d5104c4314b1646955ccd525561e62cbcd6de066a1d063a5c9460fb82",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(6)",
+          "next(1)",
+          "source(4)"
+        ],
+        "events": [
+          "output(1)",
+          "thread(4)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcTaskDialogs.dll",
+      "size_bytes": 379680,
+      "sha256": "7768e5e228c82ebf9f1895e9d6b76cb48e0154a4ae7913a8334b1052d90b9f8a",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "attach(12)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "continue(40)",
+          "next(6)",
+          "source(23)"
+        ],
+        "events": [
+          "output(7)",
+          "terminated(1)"
+        ],
+        "fields": [
+          "program(10)",
+          "lines(7)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcTcTools.arx",
+      "size_bytes": 1074968,
+      "sha256": "4fa86627a217cb9e54ee8981287296bf62a92002059984e8aa0b9036c6be01eb",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(3)",
+          "source(11)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AcWindows.dll",
+      "size_bytes": 8440096,
+      "sha256": "057d1327552dbb494d5bb102063a5e50107d3f68721a134d331f18773d1c4540",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(7)",
+          "initialized(2)",
+          "attach(12)",
+          "launch(3)",
+          "terminate(41)"
+        ],
+        "requests": [
+          "variables(18)",
+          "next(2)",
+          "source(1034)",
+          "pause(1)"
+        ],
+        "events": [
+          "output(10)",
+          "thread(5)"
+        ],
+        "fields": [
+          "program(3)",
+          "processId(1)",
+          "lines(33)"
+        ],
+        "autodesk": [
+          "VLISP(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AdDwfPdk.dll",
+      "size_bytes": 3578136,
+      "sha256": "103ad79818da691ce00e3b8a7d780e11852d381d0e1b0fddba7de246803a4f5b",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(10)",
+          "initialized(2)",
+          "attach(8)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(2)",
+          "threads(1)",
+          "source(272)"
+        ],
+        "events": [
+          "output(6)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AdDwfPdkEPlotCore.dll",
+      "size_bytes": 2677536,
+      "sha256": "57b093b6230e6df9509e3dc2fbaaef28dee06110f30647fdb00cdd8594a6efab",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(9)",
+          "initialized(2)",
+          "attach(9)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(1)",
+          "threads(1)",
+          "source(294)"
+        ],
+        "events": [
+          "output(5)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AdskLicensingSDK_9.dll",
+      "size_bytes": 2452760,
+      "sha256": "0bcfc3470840e2abf85790323da9ce34ffa954301df3f903acc0f5afd5ea89eb",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(10)",
+          "initialized(6)",
+          "launch(4)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "next(8)",
+          "source(28)"
+        ],
+        "events": [
+          "output(3)",
+          "thread(9)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\AdskRcImport.dll",
+      "size_bytes": 2760984,
+      "sha256": "d57345f9ad64fed378b8e4d9582d53511de1a23ef0c1d2a4c8306c70d367be2d",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(7)",
+          "attach(5)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(4)",
+          "next(5)",
+          "source(11)"
+        ],
+        "events": [
+          "output(5)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Battman.arx",
+      "size_bytes": 208672,
+      "sha256": "fb538c34faa64a286eb5cdc88febcd47a2621fb4485b58cfdbdd0680372d7d19",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(6)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\BeLibxml2.dll",
+      "size_bytes": 898360,
+      "sha256": "233c3f0e0b9abddca521913b50b77d37a88e97ee29f371484343178a67f7f752",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(8)",
+          "initialized(1)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "evaluate(5)",
+          "next(4)",
+          "source(9)"
+        ],
+        "events": [
+          "output(10)",
+          "terminated(6)",
+          "thread(1)"
+        ],
+        "fields": [
+          "program(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\BeOpenSSL.dll",
+      "size_bytes": 3417400,
+      "sha256": "14256208c6ddc6f4c03e703b7b33b98655df263a47dc3fc38aa7ac0efb8daa9f",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(11)",
+          "initialized(8)",
+          "attach(5)",
+          "disconnect(1)"
+        ],
+        "requests": [
+          "variables(1)",
+          "continue(1)",
+          "next(35)",
+          "threads(7)",
+          "source(16)",
+          "pause(3)"
+        ],
+        "events": [
+          "output(97)",
+          "thread(27)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)",
+          "Content-Length(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\BeSQLite2.dll",
+      "size_bytes": 1198904,
+      "sha256": "6633ca1cf97487a871169fea93d9e1e136c8c3db96e6b3d9fda1015188328e56",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "attach(4)",
+          "terminate(3)"
+        ],
+        "requests": [
+          "variables(2)",
+          "threads(1)",
+          "source(3)"
+        ],
+        "events": [
+          "output(1)",
+          "terminated(1)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\ClosedXML.dll",
+      "size_bytes": 1448216,
+      "sha256": "4fd6c2c4ad5a4fb0a38a76b1838bf3309737be8960b934b0e29f80520dc0000a",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "evaluate(2)",
+          "next(1)",
+          "source(17)"
+        ],
+        "events": [
+          "output(1)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(17)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Drv\\Dwfxplot17.hdi",
+      "size_bytes": 4024088,
+      "sha256": "2200ebfb5c436a6f50bcd87bfe10b7a9b5e3aeef97b86e17fbe12413cf72987b",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(10)",
+          "initialized(2)",
+          "attach(8)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(1)",
+          "threads(1)",
+          "source(418)"
+        ],
+        "events": [
+          "output(5)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Drv\\dwfplot17.hdi",
+      "size_bytes": 3317536,
+      "sha256": "105e9fddf92aa2a867d5db1cc19e19b5a2a9242c664aea16db05dbf5f2038b3c",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(8)",
+          "initialized(2)",
+          "attach(8)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(1)",
+          "threads(1)",
+          "source(281)"
+        ],
+        "events": [
+          "output(6)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\ECSchemas\\Dgn\\DgnContentRelationshipSchema.01.00.ecschema.xml",
+      "size_bytes": 75580,
+      "sha256": "1c3c39a634af149ceaa18c8386a7bb150d8e35b6e333d3c328d34e77cb296f7e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "attach(14)"
+        ],
+        "requests": [
+          "variables(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\ECSchemas\\Dgn\\DgnModelSchema.01.00.ecschema.xml",
+      "size_bytes": 132458,
+      "sha256": "9263b7384ddb05625a38ac0f010ddfd4500fbbf7f57b6b23866c4c70fdec66cf",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\ECSchemas\\Dgn\\MstnPropertyFormatter.01.00.ecschema.xml",
+      "size_bytes": 248796,
+      "sha256": "c58cc248c25213e7660faa0635da896311880fe45f8d1c2124bb09c4e6a595d0",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\ECSchemas\\Standard\\EditorCustomAttributes.01.03.ecschema.xml",
+      "size_bytes": 10555,
+      "sha256": "c1f6460b7737bd62adae330721d00e30e8f51f64df94bf883d24b894301d4aaf",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "evaluate(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Express\\alias.pgc",
+      "size_bytes": 24332,
+      "sha256": "d318e592149a3e88187860ea735c301ac47dc440ec2ecda6649b9f9c41febe80",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(1)"
+        ],
+        "autodesk": [
+          "VLISP(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Express\\breakl.lsp",
+      "size_bytes": 24530,
+      "sha256": "21f4dd97d894647f99f312a59eee7044821de9b604bf3c51e1cdf2deb4f48e7a",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)"
+        ],
+        "requests": [
+          "variables(1)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Express\\fastsel.lsp",
+      "size_bytes": 17723,
+      "sha256": "6fbb3017593415290390f20e2bdda06698a8e2ca9da526062962f984c798c987",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(1)"
+        ],
+        "fields": [
+          "program(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Express\\gatte.lsp",
+      "size_bytes": 11267,
+      "sha256": "12e963c0c7b77edf7850498de87b7d179a53345480bcfd7b257344337da3f310",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(1)",
+          "next(1)"
+        ],
+        "fields": [
+          "program(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Express\\sprhatch.lsp",
+      "size_bytes": 76231,
+      "sha256": "7f1753984695144b1397e3ab4ba9d5a5302f7cd64087a0aaa9a2a5f47cbe884e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "attach(2)"
+        ],
+        "requests": [
+          "variables(1)",
+          "next(10)",
+          "pause(4)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(16)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Express\\textmask.lsp",
+      "size_bytes": 44387,
+      "sha256": "185d75169a6883245b9c937576749aeb084836bb020ffc3ad10d1fb080b1605a",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(2)",
+          "continue(1)",
+          "next(2)",
+          "pause(3)"
+        ],
+        "fields": [
+          "program(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Microsoft.Diagnostics.Tracing.TraceEvent.dll",
+      "size_bytes": 3162912,
+      "sha256": "704160704e3abe049c80eb18ab10b8a4ec19d3832eb1019b1b618ac448c5337d",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "initialized(3)",
+          "attach(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(1)",
+          "continue(2)",
+          "next(13)",
+          "threads(1)",
+          "source(310)",
+          "pause(4)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(15)",
+          "terminated(1)",
+          "thread(27)"
+        ],
+        "fields": [
+          "frameId(3)",
+          "threadId(1)",
+          "program(1)",
+          "processId(3)",
+          "lines(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\OGSDeviceDX11.dll",
+      "size_bytes": 1406816,
+      "sha256": "e490aea997c0e6b751ab6290be20ade14ecab43cbc02c0260a11467690682879",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(34)",
+          "initialized(9)",
+          "attach(8)",
+          "disconnect(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(1)",
+          "source(218)"
+        ],
+        "events": [
+          "output(7)",
+          "thread(2)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\OGSDevices.dll",
+      "size_bytes": 10753376,
+      "sha256": "9d223cf8180ce516e5de0518b30015e7431a270875826d2a8086671d58501760",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(7)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "continue(3)",
+          "next(2)",
+          "threads(10)",
+          "source(707)"
+        ],
+        "events": [
+          "output(692)",
+          "thread(15)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(19)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\OGSGraphics.dll",
+      "size_bytes": 6868320,
+      "sha256": "ed0abcb87edb4ba9103eeb3bef259062127d1c14e05be10af4c8da38323aee86",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(11)",
+          "attach(1)",
+          "terminate(3)"
+        ],
+        "requests": [
+          "evaluate(14)",
+          "next(2)",
+          "source(389)"
+        ],
+        "events": [
+          "output(182)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(12)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\OGSMgStylization.dll",
+      "size_bytes": 581984,
+      "sha256": "734cddba4451f26c1a45cd86beb27863ae47a689708d5e1e559221953eef8af4",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(7)",
+          "source(3)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\OGSRapidRTShaderInterface.dll",
+      "size_bytes": 1923424,
+      "sha256": "1cd43be7c509a1703c9bf28541ce9dce21f4090f05589ba30f518117b1f74c44",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(5)",
+          "initialized(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)"
+        ],
+        "events": [
+          "thread(2)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Qt6Core.dll",
+      "size_bytes": 6095512,
+      "sha256": "130c6ef3c126e97aaec1a5cb1c638d7404473a3dda837d6e161c69db7a5bc339",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(11)",
+          "attach(4)",
+          "launch(1)",
+          "disconnect(21)",
+          "terminate(10)"
+        ],
+        "requests": [
+          "evaluate(3)",
+          "continue(2)",
+          "next(8)",
+          "threads(8)",
+          "source(111)",
+          "pause(11)"
+        ],
+        "events": [
+          "stopped(5)",
+          "output(4)",
+          "terminated(3)",
+          "exited(1)",
+          "thread(51)"
+        ],
+        "fields": [
+          "program(5)",
+          "processId(1)",
+          "lines(5)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Qt6QmlMeta.dll",
+      "size_bytes": 150168,
+      "sha256": "e0e2e2241e42cfe15cf75e7ed824bf207720c910c67930f0e3540082c3a4a5b9",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "attach(2)",
+          "disconnect(3)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(3)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Qt6QmlModels.dll",
+      "size_bytes": 738968,
+      "sha256": "b7aa75f7658a1bf57c151f3fe09bc046b939b7e8c72c18843f40393fc178bc6b",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "attach(3)",
+          "disconnect(4)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "next(3)",
+          "source(5)"
+        ],
+        "events": [
+          "thread(1)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Qt6QmlWorkerScript.dll",
+      "size_bytes": 75416,
+      "sha256": "9e87fee829c9e51635f8a2ce033c46a3289d3b7cb48b22250b14efadf12333d1",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "disconnect(1)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(7)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Qt6Quick.dll",
+      "size_bytes": 6278808,
+      "sha256": "5a9407ffe91548e0c6cdd36d2303e089c215e8a67fc747c741a2346bf7caf999",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(28)",
+          "initialized(4)",
+          "attach(32)",
+          "disconnect(9)"
+        ],
+        "requests": [
+          "evaluate(3)",
+          "continue(3)",
+          "next(31)",
+          "source(224)",
+          "pause(21)"
+        ],
+        "events": [
+          "stopped(4)",
+          "output(3)",
+          "exited(4)",
+          "thread(40)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Qt6Widgets.dll",
+      "size_bytes": 6496408,
+      "sha256": "0d07a57f8fb298bc57fb66e49c6580094f8fe979d9f5deafcfc87fe1ed2e9f0f",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(19)",
+          "attach(1)",
+          "disconnect(7)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "next(21)",
+          "source(55)",
+          "pause(5)"
+        ],
+        "events": [
+          "thread(2)"
+        ],
+        "fields": [
+          "program(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Support\\zh-CN\\3d.lsp",
+      "size_bytes": 31141,
+      "sha256": "68a08ab6802e499fe4f5af89356384b330e623210e84e1f1dc570b270314c0b7",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(1)",
+          "next(8)",
+          "pause(2)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Support\\zh-CN\\3darray.lsp",
+      "size_bytes": 13312,
+      "sha256": "a2859cf8a51794fdc07ff9059cf5b85d927764cbf35fc7bfc04a5c8fd9422ffd",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(2)",
+          "next(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Support\\zh-CN\\acad2026doc.lsp",
+      "size_bytes": 33755,
+      "sha256": "b52f932d9efbd42682884df542d7bd27ad08a7acd713c18ba837ea2a6c2535cd",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(1)",
+          "attach(2)",
+          "launch(1)"
+        ],
+        "requests": [
+          "variables(2)",
+          "continue(1)",
+          "next(1)",
+          "pause(1)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\Support\\zh-CN\\mvsetup.lsp",
+      "size_bytes": 120666,
+      "sha256": "a7223892d9a41da575e78d9111f6e213c7cc7c89ed587857cf100b85b1410c38",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "terminate(1)"
+        ],
+        "requests": [
+          "variables(1)",
+          "continue(1)",
+          "next(3)",
+          "source(1)"
+        ],
+        "events": [
+          "terminated(1)"
+        ],
+        "fields": [
+          "program(6)",
+          "lines(15)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acDcHatch.arx",
+      "size_bytes": 196896,
+      "sha256": "ed85131123cb96ffb9db3cfbdc36456522080d05fafa8419c3fdafc8a93d6110",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(9)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acDim.crx",
+      "size_bytes": 1543448,
+      "sha256": "0230636f972af38bcdc5e92e60c439dbd13913abd72372257e9e223f3655a72e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "next(1)",
+          "source(8)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acad.exe",
+      "size_bytes": 5872920,
+      "sha256": "6bd7eb81f2d94074bd9e2a984d5463f316b59b50f67a967f08017f5a02256c71",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(16)",
+          "attach(3)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "continue(2)",
+          "next(6)",
+          "source(43)"
+        ],
+        "events": [
+          "terminated(1)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acbr25.dbx",
+      "size_bytes": 269600,
+      "sha256": "ff2db05f093e94cee230daa663abc2fb9f9159f7d2d1f0d6fac15c7282b5c069",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(2)",
+          "next(2)"
+        ],
+        "events": [
+          "output(7)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\accore.dll",
+      "size_bytes": 14702368,
+      "sha256": "ca1657606b3d91e134b771d8995ef9a88c810eab0a71e17bd731762d2e995eb8",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(46)",
+          "initialized(1)",
+          "attach(22)",
+          "disconnect(2)",
+          "terminate(9)"
+        ],
+        "requests": [
+          "evaluate(7)",
+          "continue(3)",
+          "next(15)",
+          "source(84)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(3)",
+          "terminated(3)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(4)",
+          "lines(59)",
+          "Content-Length(1)"
+        ],
+        "autodesk": [
+          "VLISP(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\aceTransmitui.arx",
+      "size_bytes": 657184,
+      "sha256": "78774408d081fc7efb23342488211d67ba4396e687ea5900df4a1e0c5ece490e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(11)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\aceplotx.crx",
+      "size_bytes": 2486040,
+      "sha256": "9e5720da5c5580984c20cb28577dcd4dda9d82c0a2e4b5726f6a81aaa332dcf9",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(8)",
+          "initialized(2)",
+          "attach(8)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(1)",
+          "threads(1)",
+          "source(240)"
+        ],
+        "events": [
+          "output(5)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acge231.dll",
+      "size_bytes": 1390600,
+      "sha256": "68fe350798a28e0c30f395c084149cd15f6aeb998a5d162ebe914ebfec48245e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(8)",
+          "next(2)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acge25.dll",
+      "size_bytes": 1517848,
+      "sha256": "98493aad0bf0b799427b5db69f9ce3765dabcd22c6f6c738bd58652b69d7a707",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(5)",
+          "next(2)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acgex25.dll",
+      "size_bytes": 299800,
+      "sha256": "8064654f0fae7729ea20992f7c654e0bc791cc4d1db2f21603457c89d5fb730a",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(13)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acgsn.dll",
+      "size_bytes": 3256088,
+      "sha256": "9b31ab320afa1960338a7de4be9ed705a95c373119402865db44532feff36f1e",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(9)",
+          "initialized(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(8)",
+          "threads(1)",
+          "source(55)",
+          "pause(1)"
+        ],
+        "events": [
+          "output(3)",
+          "thread(11)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(7)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acmatch.crx",
+      "size_bytes": 148768,
+      "sha256": "a5496abca1fc6e596ad7b828c50fbe1d33a6c9203b3c4c2f444f4c4dea8458e5",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "attach(1)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "next(1)",
+          "source(5)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acmted.arx",
+      "size_bytes": 377112,
+      "sha256": "6210517b4856a88dbf358d3216f24ba458c133ea4f4d9b17dc46b38e69950608",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(4)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acmted.crx",
+      "size_bytes": 470816,
+      "sha256": "196718eb9b75aa1fb5e3c775a1e78ec8eff998bc8bec433c4507d37b1e1a2754",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(5)",
+          "attach(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(5)"
+        ],
+        "events": [
+          "output(1)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acmted2.arx",
+      "size_bytes": 349472,
+      "sha256": "d718498a41f8a0c3f6a6dab65da340e61839ef5de5d0b520f914220ac6a6c10d",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(5)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\acpal.dll",
+      "size_bytes": 3409176,
+      "sha256": "9c49985d00960269d74af328eadb216943c3019a35869b55148968ef94420cae",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(18)",
+          "attach(4)",
+          "launch(3)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "variables(2)",
+          "next(1)",
+          "threads(1)",
+          "source(66)"
+        ],
+        "events": [
+          "output(2)",
+          "terminated(1)",
+          "thread(8)"
+        ],
+        "fields": [
+          "program(6)",
+          "Content-Length(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\atlast.dxt",
+      "size_bytes": 91752,
+      "sha256": "7693fcd2e2f39377413aed30bd2c9bdeca3451fa5ef9beb59e7ac5fa9df7c440",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(7)",
+          "next(19)"
+        ],
+        "events": [
+          "output(5)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\attedit.arx",
+      "size_bytes": 148248,
+      "sha256": "6ddd5e06dc58cce34d4c2dab0f8b7c9664948894a3980c3443abe6aa215d7ed5",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(5)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\axdb.dll",
+      "size_bytes": 5677848,
+      "sha256": "36997ba173d34ccb6c9206001f14a78a9e754ee26891dee64278ab4999c91d77",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "attach(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(3)",
+          "next(1)",
+          "source(12)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\cao20.dll",
+      "size_bytes": 264480,
+      "sha256": "cc37d8d9b822ae50d5011e9cc744b334cbb2c8306b23370ba5fd6e16f597b6ff",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(6)",
+          "initialized(2)",
+          "attach(1)",
+          "disconnect(1)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(5)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\en-US\\AecArchBaseRes.dll",
+      "size_bytes": 291616,
+      "sha256": "feb9586f8f5bf81ff5c8ab0397e7464d9fc08ed0e69ca529211773b3e8ee9630",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "attach(17)",
+          "launch(1)"
+        ],
+        "requests": [
+          "variables(1)",
+          "source(1)"
+        ],
+        "events": [
+          "output(2)"
+        ],
+        "fields": [
+          "program(3)",
+          "lines(5)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\en-US\\AecBaseExRes.dll",
+      "size_bytes": 47384,
+      "sha256": "28a7241bbe2b11ba6d598b51995ec3b1903660c7245393a67e2170c670c5aad8",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "launch(1)"
+        ],
+        "requests": [
+          "evaluate(4)",
+          "source(1)"
+        ],
+        "fields": [
+          "program(3)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\libxml2.dll",
+      "size_bytes": 1280288,
+      "sha256": "153c9504bb9b57fd9669701fd9ffa947a4ca0056ba5e40283229fd0197a03333",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "initialized(1)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "evaluate(5)",
+          "next(4)",
+          "source(11)"
+        ],
+        "events": [
+          "output(6)",
+          "terminated(6)",
+          "thread(1)"
+        ],
+        "fields": [
+          "program(5)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\modlr25.dll",
+      "size_bytes": 1102624,
+      "sha256": "6cdec406b4a17350a2369112a9a722cf886ca4265ea332af475a9e383f356732",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(4)",
+          "attach(2)",
+          "terminate(3)"
+        ],
+        "requests": [
+          "evaluate(28)",
+          "next(4)",
+          "source(4)"
+        ],
+        "events": [
+          "output(11)",
+          "thread(3)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(10)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\nwcore.dll",
+      "size_bytes": 6371096,
+      "sha256": "acacb217796581a7735e58f573baa767b5d91eeb2e54d474848f0ad43bf92f89",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(6)",
+          "initialized(2)",
+          "attach(4)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "variables(2)",
+          "continue(2)",
+          "next(2)",
+          "threads(1)",
+          "source(12)"
+        ],
+        "events": [
+          "output(3)",
+          "thread(9)"
+        ],
+        "fields": [
+          "program(5)",
+          "lines(4)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\opencv_features2d4100.dll",
+      "size_bytes": 942360,
+      "sha256": "1e0e615ec477b11ea8624fce899a17d79187b83e77899c6126b1a4c1b589119f",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(3)",
+          "next(1)",
+          "source(1)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\pugixml.dll",
+      "size_bytes": 199968,
+      "sha256": "585285d6e31d73b66556434b879b5c6f0d151455139f3bdb501eaedd05150df7",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(2)",
+          "terminate(2)"
+        ],
+        "requests": [
+          "evaluate(7)",
+          "next(3)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\textfind.arx",
+      "size_bytes": 308512,
+      "sha256": "4fda2a72a9f3ebf3182c085be600a48433458183b45f1c7e945eb427c66e4e9d",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(3)",
+          "attach(2)",
+          "terminate(1)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "source(11)"
+        ],
+        "fields": [
+          "program(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\translations\\qtwebengine_locales\\fr.pak",
+      "size_bytes": 577786,
+      "sha256": "2b58ece24e9cb988cffaefdafa58fde70f464d09c1bff08bdec64205a129c3ea",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "launch(2)"
+        ],
+        "requests": [
+          "scopes(1)",
+          "continue(33)",
+          "next(1)",
+          "source(32)",
+          "pause(7)"
+        ],
+        "fields": [
+          "program(39)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\zh-CN\\AcCalcUi.resources.dll",
+      "size_bytes": 149280,
+      "sha256": "c6f07e9949bdcfc0eae7e0fa5a80e8e9b5882015b9db36df0b3c4ac6586de7fe",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "requests": [
+          "variables(2)",
+          "source(101)"
+        ],
+        "fields": [
+          "program(1)",
+          "lines(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\3S启动\\AcWindows.dll",
+      "size_bytes": 8440096,
+      "sha256": "057d1327552dbb494d5bb102063a5e50107d3f68721a134d331f18773d1c4540",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(7)",
+          "initialized(2)",
+          "attach(12)",
+          "launch(3)",
+          "terminate(41)"
+        ],
+        "requests": [
+          "variables(18)",
+          "next(2)",
+          "source(1034)",
+          "pause(1)"
+        ],
+        "events": [
+          "output(10)",
+          "thread(5)"
+        ],
+        "fields": [
+          "program(3)",
+          "processId(1)",
+          "lines(33)"
+        ],
+        "autodesk": [
+          "VLISP(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\3S启动\\acad.exe",
+      "size_bytes": 5872920,
+      "sha256": "6f7dbe43dcb5c0fea1a21ab7f64df14baabf03645813ae0f9a5ed353545a4d40",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(16)",
+          "attach(3)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "continue(2)",
+          "next(6)",
+          "source(43)"
+        ],
+        "events": [
+          "terminated(1)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\3S启动\\accore.dll",
+      "size_bytes": 14702368,
+      "sha256": "7a71c31fb69a28430d2476f28cf84a5c8a7e5fe10fc6d3bb00309908171c14b3",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(46)",
+          "initialized(1)",
+          "attach(22)",
+          "disconnect(2)",
+          "terminate(9)"
+        ],
+        "requests": [
+          "evaluate(7)",
+          "continue(3)",
+          "next(15)",
+          "source(84)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(3)",
+          "terminated(3)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(4)",
+          "lines(59)",
+          "Content-Length(1)"
+        ],
+        "autodesk": [
+          "VLISP(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\原版\\AcWindows.dll",
+      "size_bytes": 8440096,
+      "sha256": "783e6891ddd7d9c4bcebea0ae99d11dbe239ec30b28b90b588ae277f8833d268",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(7)",
+          "initialized(2)",
+          "attach(12)",
+          "launch(3)",
+          "terminate(41)"
+        ],
+        "requests": [
+          "variables(18)",
+          "next(2)",
+          "source(1034)",
+          "pause(1)"
+        ],
+        "events": [
+          "output(10)",
+          "thread(5)"
+        ],
+        "fields": [
+          "program(3)",
+          "processId(1)",
+          "lines(33)"
+        ],
+        "autodesk": [
+          "VLISP(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\原版\\acad.exe",
+      "size_bytes": 5872920,
+      "sha256": "6bd7eb81f2d94074bd9e2a984d5463f316b59b50f67a967f08017f5a02256c71",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(16)",
+          "attach(3)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "continue(2)",
+          "next(6)",
+          "source(43)"
+        ],
+        "events": [
+          "terminated(1)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\原版\\accore.dll",
+      "size_bytes": 14702368,
+      "sha256": "ca1657606b3d91e134b771d8995ef9a88c810eab0a71e17bd731762d2e995eb8",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(46)",
+          "initialized(1)",
+          "attach(22)",
+          "disconnect(2)",
+          "terminate(9)"
+        ],
+        "requests": [
+          "evaluate(7)",
+          "continue(3)",
+          "next(15)",
+          "source(84)"
+        ],
+        "events": [
+          "stopped(1)",
+          "output(3)",
+          "terminated(3)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(4)",
+          "lines(59)",
+          "Content-Length(1)"
+        ],
+        "autodesk": [
+          "VLISP(1)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\无启动画面\\acad.exe",
+      "size_bytes": 5872920,
+      "sha256": "a2f83eeb891b11aeb874e6d5dafc2195a4c05ab5ef241156e46215692131ce6a",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(16)",
+          "attach(3)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "continue(2)",
+          "next(6)",
+          "source(43)"
+        ],
+        "events": [
+          "terminated(1)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(2)"
+        ]
+      }
+    },
+    {
+      "path": "D:\\Program Files\\Autodesk\\AutoCAD 2026\\破解补丁\\有启动画面\\acad.exe",
+      "size_bytes": 5872920,
+      "sha256": "218a6489a72d18ca3603144f522e79fcf3ce3f2dd1b15ed206f9d1c0dd1d5f12",
+      "engine_marker_score": 1,
+      "role": "partial",
+      "findings": {
+        "handshake": [
+          "initialize(16)",
+          "attach(3)",
+          "terminate(6)"
+        ],
+        "requests": [
+          "evaluate(1)",
+          "continue(2)",
+          "next(6)",
+          "source(43)"
+        ],
+        "events": [
+          "terminated(1)",
+          "thread(10)"
+        ],
+        "fields": [
+          "program(2)",
+          "lines(2)"
+        ]
+      }
+    }
+  ],
+  "conclusion": "The full DAP request vocabulary is located in the highest-scoring candidate. In AutoCAD 2022/2024/2026 this is vl_u.crx (in-process VLISP module); AutoLispDebugAdapter.exe carries only handshake + processId/program.",
+  "evidence_level": "STATIC_BINARY_STRINGS_ONLY"
+}

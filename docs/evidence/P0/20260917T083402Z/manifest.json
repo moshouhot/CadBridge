@@ -1,0 +1,274 @@
+{
+  "phase": "P0",
+  "run_id": "20260917T083402Z",
+  "generated_at_utc": "2026-09-17T16:28:37Z",
+  "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P0\\20260917T083402Z",
+  "artifact_count": 15,
+  "artifacts": [
+    {
+      "path": "raw/acl-2024-host.json",
+      "bytes": 905,
+      "sha256": "16dcac6db682aa60940d9316801e656d689de3c93d9f53d8784699672338e0c9",
+      "json_parses": true
+    },
+    {
+      "path": "raw/autocad-inventory.json",
+      "bytes": 108374,
+      "sha256": "b81e095da4b17c95613b4edb85e0f261c8040ee79cf51b8710fd4b78c064afd9",
+      "json_parses": true
+    },
+    {
+      "path": "raw/cad-security-baseline.json",
+      "bytes": 31230,
+      "sha256": "2648206164b3b844635855d0a29b5abf781d18c52698225395fa749170b7bed3",
+      "json_parses": true
+    },
+    {
+      "path": "raw/dap-localize-autocad-2026.json",
+      "bytes": 94504,
+      "sha256": "12c980bdc8aea47256bb42cc8c85c87f7c47cdaa400c5b141fd496e19b01ace3",
+      "json_parses": true
+    },
+    {
+      "path": "raw/documents.json",
+      "bytes": 885,
+      "sha256": "ba3c98148586ecfe4627884b3c5d5f0abf2b2c3473ff461267b0813f38f51abd",
+      "json_parses": true
+    },
+    {
+      "path": "raw/dotnet-framework.json",
+      "bytes": 76,
+      "sha256": "a27f23c9d58b5368f36d9fa271532dc7b5ad7d150f07108f2d39255ec93cd06d",
+      "json_parses": true
+    },
+    {
+      "path": "raw/dotnet-info.txt",
+      "bytes": 3565,
+      "sha256": "f14b44917cab99d735cd5bf6d0641703519d0bbcf42278668984d72d0aab14bf"
+    },
+    {
+      "path": "raw/objectarx-assemblies.json",
+      "bytes": 36586,
+      "sha256": "73c4bd6bc6b633040ffd1bd46e772c521077f85183bfea1fb166135ed5dc493b",
+      "json_parses": true
+    },
+    {
+      "path": "raw/objectarx-sdk-roots.json",
+      "bytes": 327,
+      "sha256": "352f6ed986a6fbfd5a258841e6c077ff7e695fda1613b9f69f9fab4ebb28e0e7",
+      "json_parses": true
+    },
+    {
+      "path": "raw/os.json",
+      "bytes": 204,
+      "sha256": "655b531f8632bde81405a80316853c72e7a9ff3b8b2ce8fbfda243c48475e3f3",
+      "json_parses": true
+    },
+    {
+      "path": "raw/running-cad-processes.json",
+      "bytes": 4,
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+      "json_parses": true
+    },
+    {
+      "path": "raw/source-register-summary.md",
+      "bytes": 9119,
+      "sha256": "640bcafe9edc54096c94a3942a0ca7078aa182746b995b111061b026151d490a"
+    },
+    {
+      "path": "raw/source-register.json",
+      "bytes": 225996,
+      "sha256": "e259787b1796b07c5b32ca5b3b865749b25d9bc4c638599fd55f2e21a4dfd4b9",
+      "json_parses": true
+    },
+    {
+      "path": "report.md",
+      "bytes": 11013,
+      "sha256": "b4ef1677d1dcfda16cd4b0607adc4a691b0e02c46cc5b198a0f285c4a8ff71b1"
+    },
+    {
+      "path": "status.json",
+      "bytes": 8839,
+      "sha256": "2f7389f59d0d0305fa9c5a2f49cfeb857633e1eb2b85e5fc83c9cd0daf4541f0",
+      "json_parses": true
+    }
+  ],
+  "tests": [
+    {
+      "id": "T00-1",
+      "name": "只读盘点 OS / .NET SDK+Framework / 已安装 AutoCAD 年份-补丁-语言 / 现有 CAD 会话",
+      "expected": "列出全部已安装完整 AutoCAD 宿主及精确 build；不启动或关闭用户 CAD",
+      "actual": "15 个独立安装 + 6 个嵌套/补丁目录命中；.NET Framework 4.8.09037；SDK 10.0.400/9.0.314；盘点期间观察到 PID 3836 用户会话，未做任何操作，其后由用户自行关闭",
+      "status": "PASS",
+      "evidence": [
+        "raw/autocad-inventory.json",
+        "raw/dotnet-info.txt",
+        "raw/dotnet-framework.json",
+        "raw/os.json",
+        "raw/running-cad-processes.json",
+        "raw/cad-security-baseline.json"
+      ]
+    },
+    {
+      "id": "T00-2",
+      "name": "锁定官方 MCP SDK / Host LTS / Schema / CLI / 日志 / 检索 / DAP 候选库",
+      "expected": "读取实际版本、许可证、依赖；记录选择理由与不采用项；不引入 Python/Node 生产进程",
+      "actual": "Host=net10.0, Legacy=net48, Modern=net8.0-windows established from real host runtimeconfig evidence. MCP C# SDK 2.2.0 confirmed to exist. Schema/search/logging selections remain unlocked. Rejected: shipping Autodesk DLLs; Python/Node production processes.",
+      "status": "BLOCKED",
+      "evidence": [
+        "raw/autocad-inventory.json",
+        "raw/objectarx-assemblies.json",
+        "../../../design/build-baseline.json",
+        "raw/source-register.json"
+      ],
+      "blocked_reason": "Schema validation library, local search library and logging library are NOT yet locked. MCP SDK 2.2.0 version existence is confirmed but its metadata/dependencies/licence are only partly verified. Per the implementation plan, P0 exit requires every selection to have a source and a licence decision, so this item is not PASS."
+    },
+    {
+      "id": "T00-3",
+      "name": "锁定 DESIGN Sxx 来源到 tag/commit/file hash，逐项登记 LICENSE/NOTICE，厂商二进制不入包",
+      "expected": "每个来源有可复算的 commit 与许可证据；未查清许可不复制",
+      "actual": "由独立只读审计子代理执行，产出 source-register.json / source-register-summary.md；本地 Autodesk ObjectARX SDK 许可文件存在性一并登记",
+      "status": "PASS",
+      "evidence": [
+        "raw/source-register.json",
+        "raw/source-register-summary.md"
+      ],
+      "progress_note": "Source/licence audit completed by an independent read-only subagent; outputs in raw/source-register.json and raw/source-register-summary.md. Result was reviewed, and two of its conclusions were corrected in docs/design/dependency-lock.md (net48 asset reasoning, and Autodesk redistribution framing)."
+    },
+    {
+      "id": "T00-4",
+      "name": "建立代码目录建议、测试框架与证据布局；保留并审查非空工作树",
+      "expected": "目录规划与证据路径约定建立；不擅自初始化仓库或提交用户改动",
+      "actual": "建立 src/ tests/ tools/ docs/design/ docs/evidence/ 骨架与 .gitignore；未初始化 git；原工作树仅含 5 个文档，已全部 hash 记录",
+      "status": "PASS",
+      "evidence": [
+        "raw/documents.json",
+        "../../../../.gitignore",
+        "../../../design/p1-test-plan.md"
+      ]
+    },
+    {
+      "id": "T00-5",
+      "name": "确定真机矩阵实际可用组合；缺失版本记 BLOCKED 不标 unsupported",
+      "expected": "逐版本记录实际 install/build/runtime/adapter；缺失者明确 BLOCKED",
+      "actual": "12 个支持范围内独立安装；2015/2019/2021 记 BLOCKED_NO_LOCAL_INSTALL；2026 UPDATE 级别未定记 BLOCKED；2025 adapter 缺失记待查；产出兼容矩阵初稿",
+      "status": "PASS",
+      "evidence": [
+        "raw/autocad-inventory.json",
+        "../../../design/compatibility-matrix.md"
+      ]
+    },
+    {
+      "id": "P0-EXTRA-1",
+      "name": "DAP 端点定位（工程性补充探查）",
+      "expected": "在写调试客户端前确定真正提供 DAP 请求处理的进程/模块",
+      "actual": "vl_u.crx engine_score=9/9 为唯一完整 DAP 引擎；AutoLispDebugAdapter.exe 仅含握手与 processId/program。全目录扫描 2367 文件，其余高分命中为 Roslyn/Qt/JS 噪声",
+      "status": "PASS",
+      "evidence": [
+        "raw/dap-localize-autocad-2026.json"
+      ]
+    },
+    {
+      "id": "P0-EXTRA-2",
+      "name": "A01 前置安全基线快照（before）",
+      "expected": "记录 SECURELOAD/TRUSTEDPATHS/LISPSYS 等启动前后可比对基线",
+      "actual": "19 个 profile 已记录；SECURELOAD 既存为 0 于多个 profile；发现历史 agent 创建的 Codex* profile；本项目未修改任何值。据此 A01 的 SECURELOAD 阻挡负例记为 BLOCKED",
+      "status": "PASS",
+      "evidence": [
+        "raw/cad-security-baseline.json"
+      ]
+    },
+    {
+      "id": "BLOCKED-1",
+      "name": "2015 / 2019 / 2021 真机验证",
+      "expected": "该年份真机加载、查询、写、Lisp、调试",
+      "actual": "本机未安装该年份宿主",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_NO_LOCAL_INSTALL — 执行 AI 不自行安装 CAD；处置待项目所有者裁决（Q-2）",
+      "evidence": [
+        "raw/autocad-inventory.json"
+      ]
+    },
+    {
+      "id": "BLOCKED-2",
+      "name": "SECURELOAD 策略阻挡加载负例（A01/A18）",
+      "expected": "SECURELOAD=1 且未受信任路径时返回 LOAD_BLOCKED_BY_POLICY，且不修改设置",
+      "actual": "现场 SECURELOAD 已为 0；本项目禁止为制造负例而修改该设置",
+      "status": "BLOCKED",
+      "blocked_reason": "需在独立受控机器/账户上验证，或在授权下临时调整后再恢复；不得伪造",
+      "evidence": [
+        "raw/cad-security-baseline.json"
+      ]
+    },
+    {
+      "id": "BLOCKED-3",
+      "name": "2025 官方调试能力判定",
+      "expected": "确定 2025 是否具备受支持的 AutoLISP 调试路径",
+      "actual": "2025 宿主目录无 AutoLispDebugAdapter.exe，但同为 Modern 宿主",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_PENDING_INVESTIGATION — 需确认官方分发/安装前提，不能由文件缺失推断'不支持'",
+      "evidence": [
+        "raw/autocad-inventory.json"
+      ]
+    },
+    {
+      "id": "BLOCKED-4",
+      "name": "2026 Update 1.1 / 1.2 分列",
+      "expected": "区分 2026 ≤Update1.1 与 ≥Update1.2 的宿主 Runtime 与调试行为",
+      "actual": "现场 2026 product version R25.1.74.0.0；runtimeconfig 仍为 net8.0，未观察到 .NET 10 变化；UPDATE 级别未取得",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_PENDING_UPDATE_LEVEL",
+      "evidence": [
+        "raw/autocad-inventory.json"
+      ]
+    },
+    {
+      "id": "BLOCKED-5",
+      "name": "宿主许可可用于 Gate 验收证据",
+      "expected": "至少一个 Legacy 与一个 Modern 宿主的许可经确认可用于本项目验收",
+      "actual": "全部宿主 license_provenance=unverified；AutoCAD_2024.1.5 安装树下存在第三方补丁目录 crack/",
+      "status": "BLOCKED",
+      "blocked_reason": "需项目所有者确认（Q-1）。未确认前 P1 证据一律标 LICENSE_UNVERIFIED，不得作为 Gate 放行依据",
+      "evidence": [
+        "raw/autocad-inventory.json"
+      ]
+    },
+    {
+      "id": "A01-A24",
+      "name": "全部产品验收项",
+      "expected": "真机功能/调试/性能/Agent E2E",
+      "actual": "未执行",
+      "status": "NOT_RUN",
+      "evidence": []
+    }
+  ],
+  "validation": {
+    "problems": [],
+    "ok": true
+  },
+  "notes": [
+    "sha256 covers the stored artifact bytes, not the upstream source it describes.",
+    "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
+    "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is.",
+    "REDACTION: some artifact hashes were recomputed after removing a local username from machine paths. See the `redactions` block for original vs stored hashes."
+  ],
+  "redactions": {
+    "applied_at_utc": "2026-09-19T15:18:31Z",
+    "reason": "Remove local machine/username path from artifacts before public release.",
+    "scope": "Only the account name inside machine-local paths was replaced. No finding, measurement, exit code, CAD output or conclusion was altered.",
+    "replacement": "local account name -> <REDACTED-USER>",
+    "recoverable_from": "pre-audit backup MANIFEST.sha256 + original files (outside the repo)",
+    "artifacts": [
+      {
+        "path": "raw/dotnet-info.txt",
+        "original_sha256": "a7150beae3eeb72ab176c73a0521f02a0b6f806868b9862efa52f253cc64dd7f",
+        "original_bytes": 3579,
+        "stored_sha256": "f14b44917cab99d735cd5bf6d0641703519d0bbcf42278668984d72d0aab14bf",
+        "stored_bytes": 3565,
+        "replacement": "local account name -> <REDACTED-USER>"
+      }
+    ],
+    "identifier_policy": "The literal account/machine identifier is intentionally NOT reproduced anywhere in this repository, including in this provenance block, because this repo is public. Original artifact bytes and their original hashes are preserved outside the repository in the pre-audit backup; see docs/evidence/PUBLICATION.md."
+  }
+}

@@ -1,0 +1,27 @@
+CBBRIDGEINFO BEGIN
+  compiled_target=net8.0-windows; clr=8.0.22; runtime_framework=.NET 8.0.22; framework_clr=False; arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Modern\bin\Release\net8.0-windows\CadBridge.Plugin.Modern.dll; asmver=0.1.0.0
+  acad_application_version: 25.1.0.0
+  acad_product_version: R25.1.74.0.0
+  document_name: Drawing1.dwg
+  lock_and_transaction: OK
+  model_space_entities: 0
+  drawing_insunits: Millimeters
+CBBRIDGEINFO END
+
+CBBRIDGECIRCLE OK handle=2CE layer=0 center=100,100,0 r=10
+CBBRIDGEINFO BEGIN
+  compiled_target=net8.0-windows; clr=8.0.22; runtime_framework=.NET 8.0.22; framework_clr=False; arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Modern\bin\Release\net8.0-windows\CadBridge.Plugin.Modern.dll; asmver=0.1.0.0
+  acad_application_version: 25.1.0.0
+  acad_product_version: R25.1.74.0.0
+  document_name: Drawing1.dwg
+  lock_and_transaction: OK
+  model_space_entities: 1
+  drawing_insunits: Millimeters
+CBBRIDGEINFO END
+
+CBBRIDGELISTCIRCLES BEGIN
+  drawing: Drawing1.dwg
+  CIRCLE handle=2CE layer=0 center=100,100,0 r=10 normal=0,0,1
+  circle_count: 1
+CBBRIDGELISTCIRCLES END
+

@@ -1,0 +1,21 @@
+host	shell	accoreconsole	loaded	runtime	circle_ok	entities_after	note
+2016	legacy	YES	NO	-	-	-	host-abort-dialog
+2016	modern	YES	NO	-	-	-	host-abort-dialog
+2017	legacy	YES	YES	shell=net48; clr=4.0.30319.42000; framework=.NET Framework (compiled for net48); arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll; asmver=0.1.0.0	YES	1	
+2017	modern	YES	NO	-	-	-	command-not-registered
+2018	legacy	YES	YES	shell=net48; clr=4.0.30319.42000; framework=.NET Framework (compiled for net48); arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll; asmver=0.1.0.0	YES	1	
+2018	modern	YES	NO	-	-	-	command-not-registered
+2020	legacy	YES	YES	shell=net48; clr=4.0.30319.42000; framework=.NET Framework (compiled for net48); arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll; asmver=0.1.0.0	YES	1	
+2020	modern	YES	NO	-	-	-	command-not-registered
+2022	legacy	YES	NO	-	-	-	host-errorstatus-53
+2022	modern	YES	NO	-	-	-	host-errorstatus-53
+2023	legacy	NO	NOT_RUN	-	-	-	accoreconsole.exe absent
+2023	modern	NO	NOT_RUN	-	-	-	accoreconsole.exe absent
+2024.1.5	legacy	YES	YES	shell=net48; clr=4.0.30319.42000; framework=.NET Framework (compiled for net48); arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll; asmver=0.1.0.0	YES	1	
+2024.1.5	modern	YES	NO	-	-	-	command-not-registered
+2024.1.7	legacy	YES	YES	shell=net48; clr=4.0.30319.42000; framework=.NET Framework (compiled for net48); arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll; asmver=0.1.0.0	YES	1	
+2024.1.7	modern	YES	NO	-	-	-	command-not-registered
+2025	legacy	NO	NOT_RUN	-	-	-	accoreconsole.exe absent
+2025	modern	NO	NOT_RUN	-	-	-	accoreconsole.exe absent
+2026	legacy	YES	YES	shell=net48; clr=8.0.22; framework=.NET Framework (compiled for net48); arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll; asmver=0.1.0.0	YES	1	
+2026	modern	YES	YES	shell=net8.0-windows; clr=8.0.22; framework=.NET 8.0.22; arch=x64; asm=F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Modern\bin\Release\net8.0-windows\CadBridge.Plugin.Modern.dll; asmver=0.1.0.0	YES	1	

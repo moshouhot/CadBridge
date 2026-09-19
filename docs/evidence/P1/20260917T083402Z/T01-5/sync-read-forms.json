@@ -1,0 +1,204 @@
+{
+  "checks": [
+    {
+      "name": "initialize",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "attach to live PID",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "breakpoint line 8 verified",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 0,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "name": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trigger (C:CBDBG)",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped at line 8",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stop frame has an id",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "at least one evaluate form answers synchronously while paused",
+      "ok": false,
+      "detail": []
+    },
+    {
+      "name": "continue accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "CBDBG_DONE printed after continue",
+      "ok": false,
+      "detail": null
+    }
+  ],
+  "evaluate_matrix": [
+    {
+      "label": "repl",
+      "context": "repl",
+      "frameId": null,
+      "success": true,
+      "result": "",
+      "type": null,
+      "message": null,
+      "seconds": 0.051,
+      "new_output": [
+        "3.0\r\n"
+      ]
+    },
+    {
+      "label": "repl+frame",
+      "context": "repl",
+      "frameId": 131,
+      "success": true,
+      "result": "",
+      "type": null,
+      "message": null,
+      "seconds": 0.051,
+      "new_output": []
+    },
+    {
+      "label": "watch+frame",
+      "context": "watch",
+      "frameId": 131,
+      "success": null,
+      "result": null,
+      "type": null,
+      "message": null,
+      "seconds": 20.043,
+      "new_output": [
+        "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+        "; 警告: 忽略展开 ",
+        "异常",
+        "\r\n",
+        "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+        "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+        "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+        "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n"
+      ]
+    },
+    {
+      "label": "hover+frame",
+      "context": "hover",
+      "frameId": 131,
+      "success": true,
+      "result": "3.0",
+      "type": "REAL",
+      "message": null,
+      "seconds": 0.303,
+      "new_output": []
+    },
+    {
+      "label": "watch",
+      "context": "watch",
+      "frameId": null,
+      "success": true,
+      "result": "3.0",
+      "type": "REAL",
+      "message": null,
+      "seconds": 0.101,
+      "new_output": []
+    },
+    {
+      "label": "hover",
+      "context": "hover",
+      "frameId": null,
+      "success": true,
+      "result": "3.0",
+      "type": "REAL",
+      "message": null,
+      "seconds": 0.102,
+      "new_output": []
+    },
+    {
+      "label": "clipboard+frame",
+      "context": "clipboard",
+      "frameId": 131,
+      "success": true,
+      "result": "3.0",
+      "type": "REAL",
+      "message": null,
+      "seconds": 0.051,
+      "new_output": []
+    }
+  ],
+  "acad_pid": 72592,
+  "stop_frame_id": 131,
+  "synchronous_read_forms": [],
+  "write_while_paused": {
+    "expression": "(entmakex (list (cons 0 \"CIRCLE\") (cons 10 (list 5.0 5.0 0.0)) (cons 40 77.0)))",
+    "success": true,
+    "result": "",
+    "count_probe_before_continue": null,
+    "new_output": [
+      "<图元名: 1eff3a35c70>\r\n"
+    ]
+  },
+  "output_after_continue": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+    "3.0\r\n",
+    "3.0\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "; 警告: 忽略展开 ",
+    "异常",
+    "\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "; 错误: 出现异常: 0xC0000005 (访问冲突)\r\n",
+    "<图元名: 1eff3a35c70>\r\n"
+  ],
+  "paused_write_was_applied": true,
+  "adapter_stderr": []
+}

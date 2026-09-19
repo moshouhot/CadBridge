@@ -1,0 +1,38 @@
+# CadBridge byte-integrity rules.
+#
+# WHY THIS FILE EXISTS
+# --------------------
+# Evidence artifacts carry SHA-256 hashes recorded in docs/evidence/**/manifest.json.
+# With core.autocrlf=true (the Windows default, and what this repo was created under),
+# Git rewrites CRLF -> LF when storing a blob, so a fresh clone gets DIFFERENT bytes than
+# the ones the manifest hashed. The manifest then appears to fail verification for no
+# reason, and "verify the evidence" becomes meaningless.
+#
+# Therefore: evidence and tooling are stored EXACTLY as produced. No EOL conversion.
+# Text normalization is only safe where the byte identity is not itself the evidence.
+
+# Evidence bytes are the evidence. Never normalize.
+docs/evidence/**  -text
+*.jsonl           -text
+
+# Command scripts fed verbatim to AutoCAD/accoreconsole (NETLOAD + command lines).
+# A trailing newline and exact line endings are load-bearing here.
+*.scr             -text
+
+# Windows-native scripts.
+*.ps1             text eol=crlf
+*.cmd             text eol=crlf
+*.bat             text eol=crlf
+
+# Shell scripts must stay LF to run under Git Bash / MSYS.
+*.sh              text eol=lf
+
+# C# and project files: normal text handling is fine.
+*.cs              text
+*.csproj          text
+*.props           text
+
+# Binary artifacts.
+*.dll             binary
+*.pdb             binary
+*.dwg             binary

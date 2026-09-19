@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "note": "CadBridge build baseline. Populated and locked during P0. Do not use floating versions.",
+  "captured_at_utc": "2026-09-17T08:34:02Z",
+  "host": {
+    "tfm": "net10.0",
+    "reason": "Host is not constrained by the CAD process runtime. .NET 8 support ends 2026-11-10 (DESIGN S02). .NET 10 is the current LTS.",
+    "sdk_version": "10.0.400",
+    "runtimes_available": ["Microsoft.NETCore.App 10.0.11", "Microsoft.NETCore.App 9.0.16", "Microsoft.NETCore.App 8.0.27"],
+    "release": "self-contained win-x64 (planned)"
+  },
+  "plugin": {
+    "legacy": {
+      "tfm": "net48",
+      "reason": "AutoCAD 2015-2024 hosts run on .NET Framework; verified by acad.exe.config bindingRedirects and absence of acdbmgd.runtimeconfig.json",
+      "runtime_on_machine": "4.8.09037 (release 533325)"
+    },
+    "modern": {
+      "tfm": "net8.0-windows",
+      "reason": "AutoCAD 2025 and 2026 ship acdbmgd.runtimeconfig.json with tfm net8.0; verified on this machine",
+      "verified_hosts": [
+        { "product_version": "R25.0.154.0.0", "dir": "D:\\Program Files\\Autodesk\\AutoCAD_2025.1.1\\AutoCAD 2025" },
+        { "product_version": "R25.1.74.0.0", "dir": "D:\\Program Files\\Autodesk\\AutoCAD 2026" }
+      ]
+    },
+    "boundary": "2025 is the first Modern host on this machine. AutoCAD 2026 <= Update 1.1 vs >= Update 1.2 remains to be verified separately (ACCEPTANCE A19)."
+  },
+  "packages": {
+    "status": "PENDING_PIN",
+    "note": "Exact versions, licenses and dependency graphs are recorded in docs/evidence/P0/<run>/raw/source-register.json by the P0 source audit."
+  },
+  "reference_assemblies": {
+    "policy": "Autodesk managed assemblies are HINT-PATH compile references only and are never copied into the green package.",
+    "selected": []
+  }
+}

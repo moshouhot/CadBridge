@@ -1,0 +1,19 @@
+Redirect stdout (file: E:\360data\TEMP\accc285762).
+AutoCAD Core Engine Console - Copyright Autodesk, Inc 2009-2013.
+
+************************MessageBox****************************
+AutoCAD 错误中断
+
+
+致命错误:  无效的配置路径/文件名: C:\Users\<REDACTED-USER>\AppData\Local\Autodesk\AutoCAD 2016\R20.1\chs\
+
+
+
+>>>Responding: OK.
+**************************************************************
+
+************************MessageBox****************************
+AutoCAD Error-abort
+Error handler re-entered.  Exiting now.
+>>>Responding: OK.
+**************************************************************

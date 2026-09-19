@@ -1,0 +1,3 @@
+[09/18/26 00:43:12] error    The set senddmp exe does not exist, D:\Program Files\Autodesk\AutoCAD 2026\CER\senddmp.exe
+[09/18/26 00:43:12] error    Cannot find upi exe at D:\Program Files\Autodesk\AutoCAD 2026\upi.exe or ..\upi.exe
+[09/18/26 00:43:12] error    failed to launch  "D:\Program Files\Autodesk\AutoCAD 2026\zh-CN\UPI\upiconfig.xml" E:\360data\TEMP\upi_info.xml, cannot launch  "D:\Program Files\Autodesk\AutoCAD 2026\zh-CN\UPI\upiconfig.xml" E:\360data\TEMP\upi_info.xml, 87

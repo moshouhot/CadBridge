@@ -1,0 +1,8 @@
+{"t": 1789689730.6299, "dir": "out", "payload": {"seq": 1, "type": "request", "command": "initialize", "arguments": {"clientID": "cadbridge-attach", "clientName": "CadBridge Attach", "adapterID": "autolisp", "pathFormat": "path", "linesStartAt1": true, "columnsStartAt1": true}}}
+{"t": 1789689730.6479, "dir": "in", "payload": {"body": {"supportsConfigurationDoneRequest": true, "supportsEvaluateForHovers": true}, "command": "initialize", "request_seq": 1, "seq": 1, "success": true, "type": "response"}}
+{"t": 1789689730.6479, "dir": "in", "payload": {"body": {"supportsConfigurationDoneRequest": true, "supportsEvaluateForHovers": true}, "event": "initialized", "seq": 1, "type": "event"}}
+{"t": 1789689730.6819, "dir": "out", "payload": {"seq": 2, "type": "request", "command": "attach", "arguments": {"processId": "67904", "request": "attach", "type": "autolisp", "program": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"}}}
+{"t": 1789689730.6819, "dir": "in", "payload": {"body": {"category": "stderr", "output": "此 AutoCAD 实例当前用于调试其他文件"}, "event": "dgbfatalerr", "seq": 1, "type": "event"}}
+{"t": 1789689730.6829, "dir": "in", "payload": {"body": {"category": "stderr", "output": "此 AutoCAD 实例当前用于调试其他文件"}, "event": "output", "seq": 1, "type": "event"}}
+{"t": 1789689730.6829, "dir": "in", "payload": {"body": null, "event": "clearcache", "seq": 1, "type": "event"}}
+{"t": 1789689730.6829, "dir": "in", "payload": {"body": null, "event": "terminated", "seq": 1, "type": "event"}}

@@ -1,0 +1,11 @@
+=== safety gate refuses live harness by default 2026-09-18T06:41:54Z ===
+command: python tools/t01-5-repl-plugin-read.py --adapter X --acad <acad> --program Y --plugin-dll Z --out /tmp/o.json --transcript /tmp/t.jsonl
+expected: SafetyReviewNotPassed; NO CAD launched; NO override accepted
+
+  File "F:\Nextcloud\project\CadBridge\tools\safe_process.py", line 485, in require_safety_review_passed
+    raise SafetyReviewNotPassed(
+safe_process.SafetyReviewNotPassed: t01-5-repl-plugin-read.py is DISABLED: the safety review has not passed. Outstanding items: (1) mandatory HWND->owned-PID verification before drawing access; (2) a bounded worker process instead of abandoned worker threads; (3) plugin callback context checked against Autodesk's supported documentation; (4) an idle command-context thread baseline for the plugin callback. See docs/evidence/P1/<run>/REVIEW-REMEDIATION-round2.md. This gate cannot be bypassed by an environment variable by design.
+
+=== the removed override no longer works ===
+    raise SafetyReviewNotPassed(
+safe_process.SafetyReviewNotPassed: t01-5-repl-plugin-read.py is DISABLED: the safety review has not passed. Outstanding items: (1) mandatory HWND->owned-PID verification before drawing access; (2) a bounded worker process instead of abandoned worker threads; (3) plugin callback context checked against Autodesk's supported documentation; (4) an idle command-context thread baseline for the plugin callback. See docs/evidence/P1/<run>/REVIEW-REMEDIATION-round2.md. This gate cannot be bypassed by an environment variable by design.

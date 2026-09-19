@@ -1,0 +1,991 @@
+{
+  "phase": "P1",
+  "run_id": "20260917T083402Z",
+  "generated_at_utc": "2026-09-18T07:39:10Z",
+  "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P1\\20260917T083402Z",
+  "artifact_count": 132,
+  "artifacts": [
+    {
+      "path": "report.md",
+      "bytes": 8967,
+      "sha256": "7a1f2a06c364fc9785df9a41eb2b510167abb92266b9596d54ef8b8f995f3955"
+    },
+    {
+      "path": "REVIEW-REMEDIATION-round2.md",
+      "bytes": 18283,
+      "sha256": "0f1dcf41d7b6eed1ebaf28abc35554c38eae68331687f04e6487b92709c15ffb"
+    },
+    {
+      "path": "SAFETY-INCIDENT-process-cleanup.md",
+      "bytes": 5517,
+      "sha256": "efdff5bce381b617a7e8d2188133015591e96fd04d76b750a85fb61db5cba9fc"
+    },
+    {
+      "path": "status.json",
+      "bytes": 19878,
+      "sha256": "f9b4fd0d1cb70fdb4f4f05f5c82d551aa66a25b288a8c303ab338e9d09ae7dd7",
+      "json_parses": true
+    },
+    {
+      "path": "T01-1/accoreconsole/cross-net48-plugin-in-acad2026.raw",
+      "bytes": 2420,
+      "sha256": "f87258700b70b22557932f1bbf1526fe410457f0bf93dacc8ee39ffff49d52d8"
+    },
+    {
+      "path": "T01-1/accoreconsole/cross-net48-plugin-in-acad2026.scr",
+      "bytes": 126,
+      "sha256": "ca68d283fd93bd5452bf687b1f2afb72e18633d708f604a5124d467ac50da600"
+    },
+    {
+      "path": "T01-1/accoreconsole/cross-net48-plugin-in-acad2026.txt",
+      "bytes": 1412,
+      "sha256": "a56439a135b12836152f02e2b288670b9c5ea60245a3185f8e96963575ca0359"
+    },
+    {
+      "path": "T01-1/accoreconsole/cross-net8-plugin-in-acad2024.raw",
+      "bytes": 1598,
+      "sha256": "5485b74890df80d8064ea8d970c08002296c0540e02f2d8139d4b3da57bc4375"
+    },
+    {
+      "path": "T01-1/accoreconsole/cross-net8-plugin-in-acad2024.scr",
+      "bytes": 135,
+      "sha256": "f684b5d0b45b2c620831ac0a668fa1d8cf816d795c978eb9a8d56c7c83bd5117"
+    },
+    {
+      "path": "T01-1/accoreconsole/cross-net8-plugin-in-acad2024.txt",
+      "bytes": 992,
+      "sha256": "0d478e37e31c38401db1ac894dafd333345cc44170fff6baf021f17eae99ea50"
+    },
+    {
+      "path": "T01-1/accoreconsole/legacy-net48-acad2024.1.7.raw",
+      "bytes": 2478,
+      "sha256": "1894ad8184c5758821a7bad002803103b428fe3a26d65186285b7b75a783054c"
+    },
+    {
+      "path": "T01-1/accoreconsole/legacy-net48-acad2024.1.7.scr",
+      "bytes": 126,
+      "sha256": "ca68d283fd93bd5452bf687b1f2afb72e18633d708f604a5124d467ac50da600"
+    },
+    {
+      "path": "T01-1/accoreconsole/legacy-net48-acad2024.1.7.txt",
+      "bytes": 1417,
+      "sha256": "82f5995287ff4ee8ca706774176ae847dbe77f39a3c07084b17517e9fda93702"
+    },
+    {
+      "path": "T01-1/accoreconsole/modern-net8-acad2026.raw",
+      "bytes": 3548,
+      "sha256": "f7f6a6413290d1fbbf0e76752313f51778124241e475aeb19155a5f86a92fae8"
+    },
+    {
+      "path": "T01-1/accoreconsole/modern-net8-acad2026.scr",
+      "bytes": 167,
+      "sha256": "be5d27ddfabbbf34beb928f307232bf48ea1879392e75f80f5dd19f0a85ed1c8"
+    },
+    {
+      "path": "T01-1/accoreconsole/modern-net8-acad2026.txt",
+      "bytes": 2001,
+      "sha256": "e8775f524e8e79c2d618119a68659c8e853fdf3fe0881727cd41ca81af8be8ea"
+    },
+    {
+      "path": "T01-1/build/legacy-build.log",
+      "bytes": 790,
+      "sha256": "bf38917cf2954090111b539566029ccd3a426466c6119514f5d1a4c38e698935"
+    },
+    {
+      "path": "T01-1/build/modern-build.log",
+      "bytes": 55025,
+      "sha256": "70f709842ade3ff64f2bf157a7ffe98f02d3459b09936c9fb95e53b1df07935b"
+    },
+    {
+      "path": "T01-1/independent/step1-create-and-save.raw",
+      "bytes": 3954,
+      "sha256": "8507e972ba2a656ebae70acd81fbd6999897a8327cdd2523545857073b9b4b13"
+    },
+    {
+      "path": "T01-1/independent/step1-create-and-save.scr",
+      "bytes": 173,
+      "sha256": "146e18cc480cadeb0c98574590046df6518602b244251432ac245e3b0c063138"
+    },
+    {
+      "path": "T01-1/independent/step1-create-and-save.txt",
+      "bytes": 2188,
+      "sha256": "8eb6e29a40d96e48c10e149d037f9eb688f13dfa8ec5afc95c66ef6bb6902a3c"
+    },
+    {
+      "path": "T01-1/independent/step2-reopen-and-verify.raw",
+      "bytes": 2178,
+      "sha256": "27a5d68eaeeda2a8f93199c77b88432d6b9ee27df9e54bc57a95d6d36c470343"
+    },
+    {
+      "path": "T01-1/independent/step2-reopen-and-verify.scr",
+      "bytes": 152,
+      "sha256": "cb96440017dacdbab5dc20113b6582d0887561c38ce3dcbf1da0a03b73181cbf"
+    },
+    {
+      "path": "T01-1/independent/step2-reopen-and-verify.txt",
+      "bytes": 1275,
+      "sha256": "74bd2f2c4c4959c9e428a64001c678bc128336bef0ab257d2a2cc26c3c51dd94"
+    },
+    {
+      "path": "T01-1/independent/step3-reject-radius-0.raw",
+      "bytes": 2124,
+      "sha256": "37e648b6e3e8d56aedba9affcdbf1aeb2283d7330fbf031c77d12919ddbc310a"
+    },
+    {
+      "path": "T01-1/independent/step3-reject-radius-0.scr",
+      "bytes": 150,
+      "sha256": "9168b88ed3e351754ecb6495711aa42f67948807d261fbbbf633f2c33e94e5a5"
+    },
+    {
+      "path": "T01-1/independent/step3-reject-radius-0.txt",
+      "bytes": 1246,
+      "sha256": "067f6ad0e7d35ecf6180e912f3362fe97150a9e8ee5b54b3e94cd17184e8c941"
+    },
+    {
+      "path": "T01-1/independent/step4-reject-radius-negative.raw",
+      "bytes": 2128,
+      "sha256": "de5bf520a9e3204eaeca0b7f8cab1af544b5efe95f6d6c14fc5e98757c284347"
+    },
+    {
+      "path": "T01-1/independent/step4-reject-radius-negative.scr",
+      "bytes": 151,
+      "sha256": "e6e8ef1932ae3697dd490aefd3f179706344475e94ef1672185561d4150c0a41"
+    },
+    {
+      "path": "T01-1/independent/step4-reject-radius-negative.txt",
+      "bytes": 1248,
+      "sha256": "394b861af5afdf7b96f58f18f72cbdef6af2eca4f112ece4bfd610f1d176151b"
+    },
+    {
+      "path": "T01-1/independent/step5-accept-radius-50.raw",
+      "bytes": 2290,
+      "sha256": "6854c939426b36d51692dbc7b75592a6243522196e59ea3959eb582cd54e885d"
+    },
+    {
+      "path": "T01-1/independent/step5-accept-radius-50.scr",
+      "bytes": 151,
+      "sha256": "649a839fa850f9f14cf61df0e1c33b6d556e74865ae09903ac2faaf22e7af5e7"
+    },
+    {
+      "path": "T01-1/independent/step5-accept-radius-50.txt",
+      "bytes": 1330,
+      "sha256": "538c603d234173d871737278f74b863d0cd9420b0fb724636521a80b56555345"
+    },
+    {
+      "path": "T01-1/matrix/2016-legacy.raw",
+      "bytes": 1224,
+      "sha256": "418d07f8b8344d5f77b27ed4dc39cf1bd0d0f1cc98944c90cd1489ead452a3d6"
+    },
+    {
+      "path": "T01-1/matrix/2016-legacy.scr",
+      "bytes": 158,
+      "sha256": "d97d5845ca1f83c222b8ba6a66fe0d665b0991081baface17f97c5818a1d3a04"
+    },
+    {
+      "path": "T01-1/matrix/2016-legacy.txt",
+      "bytes": 653,
+      "sha256": "abe3a6d03df8070e47a83db297a52d3dfae97cab117d6a5cb6b5cf97f0f9cc63"
+    },
+    {
+      "path": "T01-1/matrix/2016-modern.raw",
+      "bytes": 1224,
+      "sha256": "c41042ceecde8aae53f35a357f52dc36e551a92c6c833018c169f596fef46a42"
+    },
+    {
+      "path": "T01-1/matrix/2016-modern.scr",
+      "bytes": 167,
+      "sha256": "8fa0d6e6e6edc4e90d8d9f5a8a6ad663ecbea26c89018e021b44529d32c8b8ea"
+    },
+    {
+      "path": "T01-1/matrix/2016-modern.txt",
+      "bytes": 653,
+      "sha256": "50a1d0d5bcaaa47377dc11ac4fe9436a1f8b86619b0e7bf4a18c2a451f1b341f"
+    },
+    {
+      "path": "T01-1/matrix/2017-legacy.raw",
+      "bytes": 2936,
+      "sha256": "5fc97ed79f5c07bfc6b925bf59a952f416c803639b9ea7e43b055f926cf6e1aa"
+    },
+    {
+      "path": "T01-1/matrix/2017-legacy.scr",
+      "bytes": 158,
+      "sha256": "d97d5845ca1f83c222b8ba6a66fe0d665b0991081baface17f97c5818a1d3a04"
+    },
+    {
+      "path": "T01-1/matrix/2017-legacy.txt",
+      "bytes": 1661,
+      "sha256": "617001d50e2f1750c6a1bc8ee2dd3b17f3319fc3f74cf384c2e140ff3ffb3809"
+    },
+    {
+      "path": "T01-1/matrix/2017-modern.raw",
+      "bytes": 936,
+      "sha256": "c4e0aa18a74c1be481c4f0a98ad4d14cb6f31434d9d479d922ae0aa0056035a4"
+    },
+    {
+      "path": "T01-1/matrix/2017-modern.scr",
+      "bytes": 167,
+      "sha256": "8fa0d6e6e6edc4e90d8d9f5a8a6ad663ecbea26c89018e021b44529d32c8b8ea"
+    },
+    {
+      "path": "T01-1/matrix/2017-modern.txt",
+      "bytes": 652,
+      "sha256": "64ecc45c4aaa35b23785171ba67fe3ab8cd9b350b8bf51d1fd90bf11ef650939"
+    },
+    {
+      "path": "T01-1/matrix/2018-legacy.raw",
+      "bytes": 3324,
+      "sha256": "60121f28f4c06a4464e062c3ed45ad221b206564e320d3d9ba8d53c92cafab60"
+    },
+    {
+      "path": "T01-1/matrix/2018-legacy.scr",
+      "bytes": 158,
+      "sha256": "d97d5845ca1f83c222b8ba6a66fe0d665b0991081baface17f97c5818a1d3a04"
+    },
+    {
+      "path": "T01-1/matrix/2018-legacy.txt",
+      "bytes": 1839,
+      "sha256": "e5847b000a873f246e1ffd75e1aa738f1fa5e7a673ad0d1c9d018efefd4b9b90"
+    },
+    {
+      "path": "T01-1/matrix/2018-modern.raw",
+      "bytes": 1318,
+      "sha256": "6114ada40e1eeed79cbd44628b4c6abd82b2a2457c6195aa2ede096ad1ef54c8"
+    },
+    {
+      "path": "T01-1/matrix/2018-modern.scr",
+      "bytes": 167,
+      "sha256": "8fa0d6e6e6edc4e90d8d9f5a8a6ad663ecbea26c89018e021b44529d32c8b8ea"
+    },
+    {
+      "path": "T01-1/matrix/2018-modern.txt",
+      "bytes": 827,
+      "sha256": "b748d082db2e8df91aa893f58e48ff82aaf1f9479b140e8f2e7c63017cd95a49"
+    },
+    {
+      "path": "T01-1/matrix/2020-legacy.raw",
+      "bytes": 3374,
+      "sha256": "81bce6f157bf9bd092939df44895937f83dee5748c06785bcd5bb0a888513e40"
+    },
+    {
+      "path": "T01-1/matrix/2020-legacy.scr",
+      "bytes": 158,
+      "sha256": "d97d5845ca1f83c222b8ba6a66fe0d665b0991081baface17f97c5818a1d3a04"
+    },
+    {
+      "path": "T01-1/matrix/2020-legacy.txt",
+      "bytes": 1886,
+      "sha256": "13b76e49bad9353e1f82638d02df8a24f41eab670087f48a6baf12ce5ec26f68"
+    },
+    {
+      "path": "T01-1/matrix/2020-modern.raw",
+      "bytes": 1370,
+      "sha256": "eec31a00956d7f963988bcda87400a1de74acb58ac010a51c881eb9b5f9df5c8"
+    },
+    {
+      "path": "T01-1/matrix/2020-modern.scr",
+      "bytes": 167,
+      "sha256": "8fa0d6e6e6edc4e90d8d9f5a8a6ad663ecbea26c89018e021b44529d32c8b8ea"
+    },
+    {
+      "path": "T01-1/matrix/2020-modern.txt",
+      "bytes": 875,
+      "sha256": "0ce91f78393fb459ea6461e829859cbe8ca02ffb4fe252f8516e4e909ba50dd1"
+    },
+    {
+      "path": "T01-1/matrix/2022-legacy.raw",
+      "bytes": 1068,
+      "sha256": "ae249f13b7cfb3ec593ac2f38c729c5d62fafd83598c955a971c6f98c955d293"
+    },
+    {
+      "path": "T01-1/matrix/2022-legacy.scr",
+      "bytes": 158,
+      "sha256": "d97d5845ca1f83c222b8ba6a66fe0d665b0991081baface17f97c5818a1d3a04"
+    },
+    {
+      "path": "T01-1/matrix/2022-legacy.txt",
+      "bytes": 547,
+      "sha256": "0da87963159b8ab9e6d4745c19c24dbfb6744affa67b97d9b1d208f21450096a"
+    },
+    {
+      "path": "T01-1/matrix/2022-modern.raw",
+      "bytes": 1068,
+      "sha256": "6c16df103f07aae65933cb855ffdd3d66fd00230df4d53faec7d0df146da5dd7"
+    },
+    {
+      "path": "T01-1/matrix/2022-modern.scr",
+      "bytes": 167,
+      "sha256": "8fa0d6e6e6edc4e90d8d9f5a8a6ad663ecbea26c89018e021b44529d32c8b8ea"
+    },
+    {
+      "path": "T01-1/matrix/2022-modern.txt",
+      "bytes": 547,
+      "sha256": "31d66863d98ace7e3882e9164e7e58149fd7cf915b1ba738f4da21046f8b3874"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.5-legacy.raw",
+      "bytes": 3632,
+      "sha256": "f0f6db5c11e3693ae73aa9191ecc0851122a428b349e73df41433b0af5c8c4b0"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.5-legacy.scr",
+      "bytes": 158,
+      "sha256": "d97d5845ca1f83c222b8ba6a66fe0d665b0991081baface17f97c5818a1d3a04"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.5-legacy.txt",
+      "bytes": 2019,
+      "sha256": "ea6ff09fbdde89d139ec20a3a28fd3379a0be8e95a82ab9b1c629f4df486c4ae"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.5-modern.raw",
+      "bytes": 1628,
+      "sha256": "67fb853659cb13702c5da753a52e976d3417e352e3d75826eb654cc94aba9d3c"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.5-modern.scr",
+      "bytes": 167,
+      "sha256": "8fa0d6e6e6edc4e90d8d9f5a8a6ad663ecbea26c89018e021b44529d32c8b8ea"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.5-modern.txt",
+      "bytes": 1008,
+      "sha256": "06b7c207300376055087a5f27cfece56664720a25426f407df329c074234a290"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.7-legacy.raw",
+      "bytes": 3632,
+      "sha256": "1bdd9a3872e79c399fe2601ea4d533e91d55ea0c3cfccab460b24a8d74d91d6d"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.7-legacy.scr",
+      "bytes": 158,
+      "sha256": "d97d5845ca1f83c222b8ba6a66fe0d665b0991081baface17f97c5818a1d3a04"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.7-legacy.txt",
+      "bytes": 2019,
+      "sha256": "5169e6e626351525320ab2d346372fcbcdf447ed118f6ab3847ee4b446d15d4d"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.7-modern.raw",
+      "bytes": 1628,
+      "sha256": "b213c18195bc20b19b8e8a92299d00123b1690bf6c9b25286759ad875278b940"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.7-modern.scr",
+      "bytes": 167,
+      "sha256": "8fa0d6e6e6edc4e90d8d9f5a8a6ad663ecbea26c89018e021b44529d32c8b8ea"
+    },
+    {
+      "path": "T01-1/matrix/2024.1.7-modern.txt",
+      "bytes": 1008,
+      "sha256": "3fcdeb078e6acf3170e77bbe36744cc57f3da3b2e2e72a69fd849713ee296566"
+    },
+    {
+      "path": "T01-1/matrix/2026-legacy.raw",
+      "bytes": 3582,
+      "sha256": "2886db438d51b24a82259cf9f84b02df1471124160fc57f75da1429aed50d30d"
+    },
+    {
+      "path": "T01-1/matrix/2026-legacy.scr",
+      "bytes": 158,
+      "sha256": "d97d5845ca1f83c222b8ba6a66fe0d665b0991081baface17f97c5818a1d3a04"
+    },
+    {
+      "path": "T01-1/matrix/2026-legacy.txt",
+      "bytes": 2019,
+      "sha256": "e43831986d27390e1001280854c1706f32644bb994dfe19b7f184576da1162ea"
+    },
+    {
+      "path": "T01-1/matrix/2026-modern.raw",
+      "bytes": 3578,
+      "sha256": "6501082937faff927b626beeebbc1d3d1e3297855f36b8f53e30da428ea41289"
+    },
+    {
+      "path": "T01-1/matrix/2026-modern.scr",
+      "bytes": 167,
+      "sha256": "8fa0d6e6e6edc4e90d8d9f5a8a6ad663ecbea26c89018e021b44529d32c8b8ea"
+    },
+    {
+      "path": "T01-1/matrix/2026-modern.txt",
+      "bytes": 2017,
+      "sha256": "eda9c2c419adae81884a30df25926712abe0dedb0969a7c08d879b072c63c813"
+    },
+    {
+      "path": "T01-1/matrix/matrix-summary.tsv",
+      "bytes": 2395,
+      "sha256": "9a382452f7a073a78fe9ddf9101c31e07a50db845a5dfdabfed64184bd3a8abc"
+    },
+    {
+      "path": "T01-1/report.md",
+      "bytes": 10116,
+      "sha256": "4b305445a4fcdfff7d66ce77227031281b816b44e9d20ba2e89ea24a30d03260"
+    },
+    {
+      "path": "T01-2-gui/cad-security-baseline-AFTER.json",
+      "bytes": 32847,
+      "sha256": "953ea3a066ce5003be82452fb75fb0eb1da54a6dbcecbe6119a50ec440133443",
+      "json_parses": true
+    },
+    {
+      "path": "T01-2-gui/ENVIRONMENT-FINDINGS.md",
+      "bytes": 4498,
+      "sha256": "92676480fcebee1e4ec92df631e92e710ed7b53c52a253a836c7febe4811629d"
+    },
+    {
+      "path": "T01-2-gui/gui-legacy-net48-acad2024.1.7-evidence.txt",
+      "bytes": 1188,
+      "sha256": "3cde2a38510bb39cb940a904ec17b193990702ac05784c867ebb8edbeeead3e1"
+    },
+    {
+      "path": "T01-2-gui/gui-legacy-net48-acad2024.1.7.scr",
+      "bytes": 185,
+      "sha256": "184874c45abfdafce55b4349449b0c80214f607e3225d399bf70d501350936d6"
+    },
+    {
+      "path": "T01-2-gui/gui-modern-net8-acad2026-evidence.txt",
+      "bytes": 1178,
+      "sha256": "452879f4422bf26ac0cebcf7e49599b401240bb3946d31d56d85f02de640bd94"
+    },
+    {
+      "path": "T01-2-gui/gui-modern-net8-acad2026.scr",
+      "bytes": 194,
+      "sha256": "103a704f0bb110ff5e0c2585075c1aa5b6b7140ad1a72da2499675ffa7966500"
+    },
+    {
+      "path": "T01-2-gui/security-baseline-diff.txt",
+      "bytes": 2033,
+      "sha256": "c63ebf2b7a8470ac7eabfc60187cd2dfb7dce005c12352835df1c2800f7e3efd"
+    },
+    {
+      "path": "T01-3/a14-sequence.jsonl",
+      "bytes": 18624,
+      "sha256": "9de6979c79f0723ac6501fdcc7592641d9a0e493e5c3b0f1251928e3c94dd543"
+    },
+    {
+      "path": "T01-3/a14-sequence.summary.json",
+      "bytes": 17802,
+      "sha256": "6158d671e78adb5c04d7b82ec03d49f43d1f03d93a1489cbd7f1c905914e6610",
+      "json_parses": true
+    },
+    {
+      "path": "T01-3/acad-launch-2026.out",
+      "bytes": 491,
+      "sha256": "0fba93bd19dc71bafd7d1d54aef2d077189118d94b6fadcdb8228822b4583fe0"
+    },
+    {
+      "path": "T01-3/attach-a14.jsonl",
+      "bytes": 16826,
+      "sha256": "b887217a04668486e301e6d60162147d9ec07344db06a5480b5a4eb7f49237a8"
+    },
+    {
+      "path": "T01-3/attach-a14.summary.json",
+      "bytes": 16017,
+      "sha256": "2d1e7a4e500a8e89452f6696157a0ab284108ef4ef31701b40fafe2b6d814ff9",
+      "json_parses": true
+    },
+    {
+      "path": "T01-3/attach-matrix/A_exact_extension_shape.jsonl",
+      "bytes": 946,
+      "sha256": "c4d941836cfd1dce90fb87fd217fea704ed19d356cc5c14cbe2f7e8a0dc8268d"
+    },
+    {
+      "path": "T01-3/attach-matrix/B_no_program.jsonl",
+      "bytes": 1490,
+      "sha256": "b536e888eb968e0962f069312b412682acd472629614ee0ca409dc1d6608ac0f"
+    },
+    {
+      "path": "T01-3/attach-matrix/C_type_autolisp.jsonl",
+      "bytes": 1557,
+      "sha256": "03d12311b5c0a4605b7aa4510eb8fa66092db0cb3dcd97bbdd60faa430b098be"
+    },
+    {
+      "path": "T01-3/attach-matrix/D_integer_pid.jsonl",
+      "bytes": 1557,
+      "sha256": "533238024265489fb1715c71d150736fd47da703f191173ae4afd86bafbd1627"
+    },
+    {
+      "path": "T01-3/attach-matrix/E_no_type.jsonl",
+      "bytes": 1537,
+      "sha256": "37be127af7374af2670c910d2a29ec4b2d98e36df904c35e7b78efe83b37ae46"
+    },
+    {
+      "path": "T01-3/attach-matrix.json",
+      "bytes": 5683,
+      "sha256": "5e6b9b6d23fb1882b40a4ba36c9b549cca441106e0e4ba30f4d79cfa3267d477",
+      "json_parses": true
+    },
+    {
+      "path": "T01-3/attach-ordering/no_wait_ordering.jsonl",
+      "bytes": 2154,
+      "sha256": "7037986da7625500aa31bfcb00d5cc455ba4ad50fa283af83f096a7e36d9b8fe"
+    },
+    {
+      "path": "T01-3/attach-ordering/wait_control.jsonl",
+      "bytes": 1094,
+      "sha256": "edc599a8254163413cba869f797dd5cac21489e033bd8ea17c51ed6c1a892187"
+    },
+    {
+      "path": "T01-3/attach-ordering.json",
+      "bytes": 2194,
+      "sha256": "1054a337e1e1e766fcd5a51062b59c3f14d82a2aebe455d8512f9c76c3702711",
+      "json_parses": true
+    },
+    {
+      "path": "T01-3/fixture-identity.json",
+      "bytes": 430,
+      "sha256": "9b3b6eb7fa5d5cd00c203dd2dc5011d96858b51f3e0c4f0346465bf9eb0ec865",
+      "json_parses": true
+    },
+    {
+      "path": "T01-3/probe-attach-live.jsonl",
+      "bytes": 1741,
+      "sha256": "3ec68a3bfa54348547e33ba317f47e8636f5304d515c1d3863a94ae1eae5a8a1"
+    },
+    {
+      "path": "T01-3/probe-badpid.jsonl",
+      "bytes": 1055,
+      "sha256": "c69a01656a0d1de4437847891e03a8872ade77f22258d57fbd51df1b1ab55a63"
+    },
+    {
+      "path": "T01-3/probe-bare.jsonl",
+      "bytes": 979,
+      "sha256": "050db307dae943fb5918b9e8509b51b723ab43b62197be645b16020562f7683f"
+    },
+    {
+      "path": "T01-3/probe-launchform.jsonl",
+      "bytes": 2477,
+      "sha256": "3c3abad6cba3c48da25c4f6ecd45c49994af88b919b3bb5e5bebe1fdf8ea7679"
+    },
+    {
+      "path": "T01-3/report.md",
+      "bytes": 10716,
+      "sha256": "cc27e7fd59a94c74fdc88cf4b21276918a0cfaf2e08929167d29a1f6e42f24b8"
+    },
+    {
+      "path": "T01-3/session-full.jsonl",
+      "bytes": 6298,
+      "sha256": "6e4bf1c7ad1db6614d03b79016fa11588a70113e7f49b15651e81d358ab2503a"
+    },
+    {
+      "path": "T01-3/session-full.summary.json",
+      "bytes": 7083,
+      "sha256": "509539a8bfd9ca6bfe60338864d3197ab96799a73ee8c6d70560b62a650ad0d7",
+      "json_parses": true
+    },
+    {
+      "path": "T01-5/definitive.json",
+      "bytes": 10406,
+      "sha256": "d275208b38f68dc26c505c28a2bd6064613144cbcd4cf3da50358969a8ea1ec2",
+      "json_parses": true
+    },
+    {
+      "path": "T01-5/definitive.jsonl",
+      "bytes": 10118,
+      "sha256": "03a49c3aa510e2c6c2e19d1c7f71734e20bb20bf53bf2c42c18cb7f9b1e517ea"
+    },
+    {
+      "path": "T01-5/pause-live-query.json",
+      "bytes": 10992,
+      "sha256": "f74908ebb850b558015060e3a254d84c8047547114a1568fd62c469c44597aa6",
+      "json_parses": true
+    },
+    {
+      "path": "T01-5/pause-live-query.jsonl",
+      "bytes": 9856,
+      "sha256": "c38268b63337c32d2e3593d635399f0007abb026a7985708ab05a0be0d22c8b4"
+    },
+    {
+      "path": "T01-5/pause-live-query.second.jsonl",
+      "bytes": 686,
+      "sha256": "660b2118bf8ac0e41e6e1008b43b09f3f1f0b73df441f786d69738c38f822681"
+    },
+    {
+      "path": "T01-5/pause-query.json",
+      "bytes": 4757,
+      "sha256": "774a2a3c1c108ba0285e6b48630f78d07d11a999eef44b0a82fb0f6ddc268fd2",
+      "json_parses": true
+    },
+    {
+      "path": "T01-5/pause-query.jsonl",
+      "bytes": 4533,
+      "sha256": "f2b7547c06f27f85d564176a7b55844bd895ea8c8b425f66f73bde5010f1c216"
+    },
+    {
+      "path": "T01-5/plugin-pause-read.json",
+      "bytes": 5981,
+      "sha256": "2127771cb2f8022d41a4cafe5b30aba56c3fc8c4be6d4b9e402a07e428499e63",
+      "json_parses": true
+    },
+    {
+      "path": "T01-5/plugin-pause-read.jsonl",
+      "bytes": 5349,
+      "sha256": "8d42023771261f09523b007dc8a93dc85b06e4969a87724bf087f0ca9198b38f"
+    },
+    {
+      "path": "T01-5/repl-plugin-read.json",
+      "bytes": 5576,
+      "sha256": "8a7e732b36fc66e74c8f3aeeda7c695d281ef9c626440686591186ecb85a32df",
+      "json_parses": true
+    },
+    {
+      "path": "T01-5/repl-plugin-read.jsonl",
+      "bytes": 5283,
+      "sha256": "c41f19fdf3fc1f89642f0bf48069359f93345e7e45d4d0956013af3389f85fc0"
+    },
+    {
+      "path": "T01-5/report.md",
+      "bytes": 9633,
+      "sha256": "aff7633144a6e7ae22f95ebd72ff68d5ae3fb6c448550926611eacf9b75c6e0b"
+    },
+    {
+      "path": "T01-5/sync-read-forms.json",
+      "bytes": 4850,
+      "sha256": "0c52947c0974d0d5ee03cec630d802ae9596de3f2bddcbb5e0f7829c1d205d4a",
+      "json_parses": true
+    },
+    {
+      "path": "T01-5/sync-read-forms.jsonl",
+      "bytes": 9017,
+      "sha256": "c3a3829108bb8a665535236cfd1f76f8e5abe999d809a65f17f0ca6b38e6a5af"
+    },
+    {
+      "path": "THIRD-AUDIT-LIVE-SAFETY.md",
+      "bytes": 10067,
+      "sha256": "92b13cecc141b70126965a2e73eba67a8b327c01d4ab89c63a7496b79f6ad8a2"
+    },
+    {
+      "path": "tooling/repl-probe-offline-tests.txt",
+      "bytes": 3445,
+      "sha256": "87011af5e0f6f801fb33223f85aa43cf78810304d6e27665e0a9a649d1a64023"
+    },
+    {
+      "path": "tooling/safe-process-selftest.txt",
+      "bytes": 3669,
+      "sha256": "a7f1e9f879020ebf46a11b78ddd2001418d1244d9c51a4fe3e7ae771839fd87f"
+    },
+    {
+      "path": "tooling/safety-gate-refusal.txt",
+      "bytes": 1578,
+      "sha256": "2ff9973d51fbbe28c4bc613b45d893a3905cff59557e79ea5f0bbf47cb9f7b12"
+    },
+    {
+      "path": "tooling/selftest-output.txt",
+      "bytes": 1287,
+      "sha256": "1e9656543a50fc4ceee10f0b650f311dc77b1bbab8c70ea20ca475c6b1090eaf"
+    },
+    {
+      "path": "tooling/selftest.sh",
+      "bytes": 5116,
+      "sha256": "e1ee2e83f630699d37a41ef3fef0a5261611223dd1535ac1205abff19cb5d083"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T01-1a",
+      "name": "同一共享源码编译出 Legacy(net48) 与 Modern(net8.0-windows) 两个 Shell",
+      "expected": "两 TFM 均编译成功；引用来自明确锁定的 Autodesk 参考目录；输出不含任何 Autodesk 程序集",
+      "actual": "Legacy 引用 ObjectARX-2014/inc（19.1，最旧可用代，保守下限）；Modern 引用 ObjectARX-2025/inc（25.0）。两者 0 错误。构建目标在发现 ReferenceCopyLocalPaths 含 acdbmgd/accoremgd/acmgd 时直接 Error，当前未触发。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/build/legacy-build.log",
+        "T01-1/build/modern-build.log"
+      ]
+    },
+    {
+      "id": "T01-1b",
+      "name": "两 Shell 在真实 AutoCAD 内核进程中 NETLOAD 并被调用",
+      "expected": "命令注册成功，在合法主线程执行，DocumentLock/Transaction 边界成立",
+      "actual": "accoreconsole.exe（真实 AutoCAD 内核，非模拟）中两 Shell 均加载并执行；lock_and_transaction: OK。矩阵覆盖 2017/2018/2020/2024.1.5/2024.1.7/2026。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/matrix/matrix-summary.tsv",
+        "T01-1/matrix/2024.1.7-legacy.txt",
+        "T01-1/matrix/2026-modern.txt",
+        "T01-1/matrix/2026-legacy.txt"
+      ]
+    },
+    {
+      "id": "T01-1c",
+      "name": "报告真实运行时而非编译常量",
+      "expected": "分别报告 compiled_target（构建常量，须标注）与实际 CLR/Framework（须实测）",
+      "actual": "Legacy 在 2024.1.7：clr=4.0.30319.42000, runtime_framework=.NET Framework 4.8.9261.0, framework_clr=True。Modern 在 2026：clr=8.0.22, runtime_framework=.NET 8.0.22, framework_clr=False。Legacy 在 2026：clr=8.0.22, framework_clr=True。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/independent/step1-create-and-save.txt",
+        "T01-1/matrix/2026-modern.txt",
+        "T01-1/matrix/2026-legacy.txt"
+      ]
+    },
+    {
+      "id": "T01-1d",
+      "name": "受控写入的真实提交 + 跨进程独立读回",
+      "expected": "写入后由另一进程重新打开保存的 DWG 读回几何，而非同进程自读",
+      "actual": "进程 A 建圆 r=10 handle=2B8 并 SaveAs；进程 B 独立启动、打开该 DWG、读回 CIRCLE handle=2B8 center=100,100,0 r=10 normal=0,0,1，circle_count=1。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/independent/step1-create-and-save.txt",
+        "T01-1/independent/step2-reopen-and-verify.txt"
+      ]
+    },
+    {
+      "id": "T01-1e",
+      "name": "非法输入的负例：拒绝且无半成品实体",
+      "expected": "radius=0 / 负数被拒；拒绝后实体数不增加；正对照必须成功",
+      "actual": "radius=0 -> REJECTED，count 保持 1；radius=-5 -> REJECTED，count 保持 1；radius=50 -> OK handle=2C9，count 变 2。",
+      "status": "PASS",
+      "evidence": [
+        "T01-1/independent/step3-reject-radius-0.txt",
+        "T01-1/independent/step4-reject-radius-negative.txt",
+        "T01-1/independent/step5-accept-radius-50.txt"
+      ]
+    },
+    {
+      "id": "T01-1f",
+      "name": "完整 T01-1：Pipe 后台收发与正式 CAD 调度器",
+      "expected": "Named Pipe 双工后台读写、request_id 关联、串行 CAD 调度、DocumentLock 不跨 await",
+      "actual": "未实现、未执行。当前 PoC 仅证明进程内 CAD API 调用，不含任何跨进程传输。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "T01-2",
+      "name": "绿色 Bootstrap 与准确目标（PID/启动时间/HWND 核验、重复 attach、ATTACH_AMBIGUOUS、显式 launch）",
+      "expected": "仅目标 PID 被 NETLOAD；无法证明归属时 ATTACH_AMBIGUOUS；不新建隐藏实例",
+      "actual": "未执行。需完整 AutoCAD 会话与 COM；本轮全部运行均为 headless 内核，不涉及 attach。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "T01-3",
+      "name": "官方 DAP 独立 Client（无 VS Code）",
+      "expected": "真实 attach/断点/单步/栈/变量，含 adapter verified 位置与源码 hash",
+      "actual": "PARTIAL。attach 拓扑在 AutoCAD 2026 上实测通过 23/23：裸启动适配器后 attach{type:'attachlisp', processId:'<字符串>', program}，断点 6/8 均 verified，stopped(reason=breakpoint)，stackTrace 得到真实源帧 C:CBDBG，scopes/variables 得到 N=2/X=2/Y=3，stepIn/next/stepOut/continue 均可用并命中第 8 行断点。launch 拓扑（adapter -- acad.exe + launch）同样可用（27/28）。纠正：早前『attach 无响应』是探针缺陷（processId 传整数、type 传 autolisp、超时过短、分帧解析器遇游离 LF 即 return），不是产品限制。未覆盖：runtimeerror 异常策略、错误 PID/多实例行为、源码 hash 校验。归因限度：type/processId/超时三项同时改动，各自必要性未单独证明。",
+      "status": "NOT_RUN",
+      "evidence": [
+        "T01-3/attach-a14.jsonl",
+        "T01-3/attach-a14.summary.json",
+        "T01-3/a14-sequence.summary.json",
+        "T01-3/attach-ordering.json",
+        "T01-3/report.md"
+      ]
+    },
+    {
+      "id": "T01-4",
+      "name": "LSP 结果、中文路径与交互状态",
+      "expected": "真实返回值、类型保持、提交/完成回执分离、编码拒绝、reload 语义",
+      "actual": "NOT_RUN。但 T01-5 已发现一条对本项有约束的事实：repl 求值的响应 result 恒为空，真实值经 stdout 送达；因此『提交/完成』必须建模为两个独立回执，否则会实现出假同步语义。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "T01-5",
+      "name": "暂停点图面 live query 与防死锁（核心不可降级项）",
+      "expected": "同一 stop_id 下合法读取已创建实体且不死锁；普通写返回 DEBUG_BUSY",
+      "actual": "NOT_RUN（核心机制有可行性证据，但未达验收）。已观测：AutoLISP 停在第 8 行时，经 DAP evaluate context='repl' 调用插件自身的 managed [LispFunction(\"CBLIVEREAD\")]，其返回字符串经 DAP **output 事件**在客户端发出 continue **之前**到达，内容为 'CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction'。**该结论仅限上述观测**，尚未证明：stop 世代未变、期间无内部 resume/再停止、回调线程身份、可安全重入。成功取得锁/事务本身不证明这些性质。另：以 hover/watch/clipboard 求值该用户自定义函数时，适配器返回中文拒绝消息『无法在监视窗口中计算用户定义的函数』——但**仅测了 hover 与该函数**，不得推广为『所有上下文』或『唯一可能的插件通道』。repl 响应 result 为空是本机观测，不是普遍保证。未实现：DEBUG_BUSY（适配器不拒绝暂停期写入）、STALE_DEBUG_HANDLE、控制租约；本轮用 frame id 定位，frame/thread id 不等于 stop_id。**更正**：早前称『受保护表达式 -1→1 已用于陈旧性反证』——该改动是在那次运行**之后**写入脚本的，**并未实际运行**，故撤回该测量声明。",
+      "status": "NOT_RUN",
+      "evidence": [
+        "T01-5/repl-plugin-read.json",
+        "T01-5/repl-plugin-read.jsonl",
+        "T01-5/plugin-pause-read.json",
+        "T01-5/definitive.json",
+        "T01-5/report.md"
+      ]
+    },
+    {
+      "id": "T01-6",
+      "name": "版本边界与 2015-2020 调试探索",
+      "expected": "2022/2024/2026 调试端点结论；2025 缺失原因；2015-2020 探索结论",
+      "actual": "未执行真实 DAP。静态层：2022/2024/2026 存在 AutoLispDebugAdapter.exe，2025 不存在，2016-2020 不存在（文件缺失不等于官方不支持）。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "BLOCKED-2016",
+      "name": "AutoCAD 2016 内核加载",
+      "expected": "NETLOAD 并执行 CBBRIDGEINFO",
+      "actual": "宿主启动阶段失败：无效的配置路径/文件夹 C:\\Users\\...\\AppData\\Local\\Autodesk\\AutoCAD 2016\\R20.1\\chs\\，随后 Error handler re-entered. Exiting now.",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_HOST_ENV — 启动即失败，未到达 NETLOAD，与插件无关。需修复宿主安装/配置。",
+      "evidence": [
+        "T01-1/matrix/2016-legacy.txt"
+      ]
+    },
+    {
+      "id": "BLOCKED-2022",
+      "name": "AutoCAD 2022 内核加载",
+      "expected": "NETLOAD 并执行 CBBRIDGEINFO",
+      "actual": "宿主启动阶段失败：ERROR: Something went wrong. ErrorStatus=53.；LogFilePath has been restored to ''.",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_HOST_ENV — 启动阶段失败，未到达 NETLOAD。",
+      "evidence": [
+        "T01-1/matrix/2022-legacy.txt"
+      ]
+    },
+    {
+      "id": "NOTRUN-2023-2025",
+      "name": "AutoCAD 2023 / 2025 内核加载",
+      "expected": "NETLOAD 并执行 CBBRIDGEINFO",
+      "actual": "这两个安装目录不含 accoreconsole.exe，本方法不适用。",
+      "status": "NOT_RUN",
+      "blocked_reason": "NOT_RUN_METHOD_UNAVAILABLE — 缺 accoreconsole 不等于该年份不可测或不受支持；必须由完整 acad.exe 会话覆盖。",
+      "evidence": [
+        "T01-1/matrix/matrix-summary.tsv"
+      ]
+    },
+    {
+      "id": "A01-A24",
+      "name": "全部产品验收项",
+      "expected": "真机功能/调试/性能/Agent E2E",
+      "actual": "未执行",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "T01-1g",
+      "name": "完整 GUI acad.exe 会话中的加载与执行（Legacy + Modern）",
+      "expected": "在真实完整 AutoCAD GUI 进程中 NETLOAD 并执行命令，实测运行时与宿主版本",
+      "actual": "Legacy(net48) 载入 AutoCAD 2024.1.7 GUI：clr=4.0.30319.42000, runtime_framework=.NET Framework 4.8.9261.0, product=R24.3.212.0.0，建圆 handle=2B8 r=10 并读回。Modern(net8) 载入 AutoCAD 2026 GUI：clr=8.0.22, runtime_framework=.NET 8.0.22, product=R25.1.74.0.0，建圆 handle=2CE r=10 并读回。GUI 宿主不向 stdout 输出，故插件通过 CB_LOG_PATH 写证据文件。",
+      "status": "PASS",
+      "evidence": [
+        "T01-2-gui/gui-legacy-net48-acad2024.1.7-evidence.txt",
+        "T01-2-gui/gui-modern-net8-acad2026-evidence.txt"
+      ]
+    },
+    {
+      "id": "T01-2-partial",
+      "name": "历史 GUI 隔离启动观测（第三审计后不再作为 ownership PASS）",
+      "expected": "只启动自己的实例；不 attach/关闭既有会话；超时只终止可证明归属的宿主",
+      "actual": "历史运行曾观测到 2024/2026 GUI 测试实例启动并退出；但第三审计发现当时使用的 tools/run-acad-gui-test.sh 在 launch 后按安装目录重新扫描并选择 acad.exe PID，存在并发用户进程被误归属/超时误终止的竞态。该 shell 已永久退休。旧结果只能保留为历史行为观测，不能证明『只终止自己实例』；安全 ownership 必须由新的可证明 GUI harness 重新实测。",
+      "status": "NOT_RUN",
+      "evidence": [
+        "T01-2-gui/gui-legacy-net48-acad2024.1.7.scr",
+        "T01-2-gui/gui-modern-net8-acad2026.scr",
+        "THIRD-AUDIT-LIVE-SAFETY.md"
+      ]
+    },
+    {
+      "id": "T01-2b",
+      "name": "T01-2 核心：COM/HWND 核验、指定 PID 附加、ATTACH_AMBIGUOUS、重复 attach",
+      "expected": "PID+启动时间+HWND 核验后才 NETLOAD；同版本双实例只影响目标；无法证明时 ATTACH_AMBIGUOUS",
+      "actual": "未实现、未执行。本轮只是隔离启动 + /b 脚本加载，不含 COM 目标选择逻辑。",
+      "status": "NOT_RUN",
+      "evidence": []
+    },
+    {
+      "id": "A01-PARTIAL",
+      "name": "A01 前置：测试前后 AutoCAD 配置比对",
+      "expected": "测试不降低 SECURELOAD、不新增 TRUSTEDPATHS、不修改 LISPSYS",
+      "actual": "比对 19 个 profile：CadBridge 未写入任何 TRUSTEDPATHS（新增 20 条全部是第三方 E:ðdata\\TEMP\\hosttest-* 路径，时间戳 2026-09-17 17:50–21:57，非本项目）。但 R24.3 profile 的 SECURELOAD 由“未落盘”变为 '0'——最可能是首次以该 profile 启动 GUI 时 AutoCAD 物化了既有默认值（该机多 profile 既存为 0），无法事后区分。CadBridge 未主动降低该值，也不会为“修复”它而写注册表。",
+      "status": "BLOCKED",
+      "blocked_reason": "无法事后区分“AutoCAD 物化既有默认值”与“更早的第三方设置”；且本机 SECURELOAD 既存为 0，使 A01/A18 要求的“策略阻挡加载”负例无法自然复现。需项目所有者在受控环境确认。",
+      "evidence": [
+        "T01-2-gui/security-baseline-diff.txt",
+        "T01-2-gui/cad-security-baseline-AFTER.json",
+        "T01-2-gui/ENVIRONMENT-FINDINGS.md"
+      ]
+    },
+    {
+      "id": "ENV-CONCURRENT-ACTIVITY",
+      "name": "环境风险：检测到并发第三方 AutoCAD 活动",
+      "expected": "受控环境：仅 CadBridge 操作目标宿主",
+      "actual": "AutoCAD 2023(R24.2) 的 TRUSTEDPATHS 在 P0 与 P1 两次快照之间被追加 20 条 E:ðdata\\TEMP\\hosttest-* 路径，时间戳 2026-09-17 17:50–21:57，非 CadBridge 所为。表明另一进程/代理正在同一机器上做 AutoCAD 加载实验。",
+      "status": "BLOCKED",
+      "blocked_reason": "并发第三方写入破坏独占性，影响 G01/G03 可复现性。需项目所有者确认在独占阶段前停止其他代理。",
+      "evidence": [
+        "T01-2-gui/ENVIRONMENT-FINDINGS.md",
+        "T01-2-gui/security-baseline-diff.txt"
+      ]
+    },
+    {
+      "id": "TOOLING-SELFTEST",
+      "name": "证据工具链自检",
+      "expected": "路径转换/解码/脚本生成/清单校验在异常时必须非零退出，不得静默产生空证据",
+      "actual": "15 项自检全部通过：未知模式、缺失输入、缺失参数、脚本末行换行、非法状态枚举、缺失证据路径、空 JSON 均被正确拒绝。",
+      "status": "PASS",
+      "evidence": [
+        "tooling/selftest-output.txt"
+      ]
+    },
+    {
+      "id": "SAFETY-INCIDENT-CLEANUP",
+      "name": "安全事件：早期按进程名清理 CAD（已自纠）",
+      "expected": "不得关闭用户 CAD；清理必须可验证归属（过程记录，非 ACCEPTANCE 验收项）",
+      "actual": "在 T01-3/T01-5 试跑之间，交互式命令中多次使用以进程名为条件的终止（`Get-Process acad,AutoLispDebugAdapter | Stop-Process -Force`），不校验归属。**实际影响未能核实**：历史进程归属与是否曾影响用户会话**无法事后确证**，因此**不声称『未造成实际损害』，也不声称具体次数**。已采取的整改（截至本记录）：新增 tools/safe_process.py 与 tools/selftest.sh 检查。**但该 harness 本身尚未通过审查**（见 §整改未完成），故不声称『安全已修复』。",
+      "status": "N/A",
+      "evidence": [
+        "SAFETY-INCIDENT-process-cleanup.md",
+        "tooling/safe-process-selftest.txt"
+      ]
+    },
+    {
+      "id": "TOOLING-VALIDITY-FIXES",
+      "name": "测试有效性缺陷：硬编码判定、假断言、非零退出缺失",
+      "expected": "判定必须由检查结果派生；失败必须非零退出；不得使用非受控基线（过程记录，非 ACCEPTANCE 验收项）",
+      "actual": "发现并部分修正：t01-5-definitive.py 曾硬编码 'ACHIEVABLE' 判定；曾断言不存在的 queued 字段；陈旧性曾用『错误串 vs 值』比较；失败时曾仍返回 0；曾用 win32com Dispatch 回退。**仍未完成**：poll_for 按累积字符串去重而非按事件序号游标消费、未用请求 nonce 关联回调结果、未重组被拆分的输出块、未断言源码/hash/行号与『期间无 continued/意外 stopped/终止』、几何比较用子串（'r=3' 也会匹配 'r=30'）、finally 中的 SystemExit 可能掩盖异常。",
+      "status": "N/A",
+      "evidence": [
+        "tooling/selftest-output.txt",
+        "T01-5/report.md"
+      ]
+    },
+    {
+      "id": "SAFETY-REVIEW-REQUIRED",
+      "name": "Live Safety Gate：第三方审计后仍 BLOCKED",
+      "expected": "恢复任何真机实验前：所有 live 入口默认冻结；进程 ownership/enumeration/worker fail-closed；COM 在文档访问前完成 owned PID + creation + exe + HWND→PID 校验；执行上下文按官方规则检查；GUI launcher ownership 可证明；所有者确认独占授权环境。",
+      "actual": "第三审计离线层已收敛：safe_process 43/43、bounded worker 6/6、repl probe 32/32、targeted pyflakes 0；旧 GUI shell 退休；通用 dap-probe live mode 补闸；进程 JSON 严格 fail-closed；T01-5 COM daemon thread 已迁移为 bounded subprocess；ExecutionContextBaseline 使用 IsApplicationContext，纯读 LispFunction 不再显式 LockDocument。仍未完成真机验证；用户尚未确认独占授权环境；新 GUI harness 尚未解决 launcher-stub/child handoff ownership。",
+      "status": "BLOCKED",
+      "blocked_reason": "BLOCKED_LIVE_SAFETY — 离线代码审计通过部分不等于真机批准。必须先得到项目所有者独占/授权确认，并完成 ownership-preserving GUI harness 与最小 live revalidation；当前任何 live harness 仍未 allowlist。",
+      "evidence": [
+        "SAFETY-INCIDENT-process-cleanup.md",
+        "REVIEW-REMEDIATION-round2.md",
+        "THIRD-AUDIT-LIVE-SAFETY.md"
+      ]
+    }
+  ],
+  "validation": {
+    "problems": [],
+    "ok": true
+  },
+  "notes": [
+    "sha256 covers the stored artifact bytes, not the upstream source it describes.",
+    "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
+    "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is.",
+    "REDACTION: some artifact hashes were recomputed after removing a local username from machine paths. See the `redactions` block for original vs stored hashes."
+  ],
+  "redactions": {
+    "applied_at_utc": "2026-09-19T15:18:31Z",
+    "reason": "Remove local machine/username path from artifacts before public release.",
+    "scope": "Only the account name inside machine-local paths was replaced. No finding, measurement, exit code, CAD output or conclusion was altered.",
+    "replacement": "local account name -> <REDACTED-USER>",
+    "recoverable_from": "pre-audit backup MANIFEST.sha256 + original files (outside the repo)",
+    "artifacts": [
+      {
+        "path": "T01-1/build/modern-build.log",
+        "original_sha256": "30a20825f31f70a338f9aa2d103c44cfd72ee0d7b6587fc98781a45f86f12f19",
+        "original_bytes": 55361,
+        "stored_sha256": "70f709842ade3ff64f2bf157a7ffe98f02d3459b09936c9fb95e53b1df07935b",
+        "stored_bytes": 55025,
+        "replacement": "local account name -> <REDACTED-USER>"
+      },
+      {
+        "path": "T01-1/matrix/2016-legacy.txt",
+        "original_sha256": "c80641c10c4c163d9ae98fe781fbc0631dd105798393979584dc040d5e60a823",
+        "original_bytes": 667,
+        "stored_sha256": "abe3a6d03df8070e47a83db297a52d3dfae97cab117d6a5cb6b5cf97f0f9cc63",
+        "stored_bytes": 653,
+        "replacement": "local account name -> <REDACTED-USER>"
+      },
+      {
+        "path": "T01-1/matrix/2016-modern.txt",
+        "original_sha256": "b8d307109394181a34f8ad9ca1761cdc46ff00e422106427a4d43ef68f18e871",
+        "original_bytes": 667,
+        "stored_sha256": "50a1d0d5bcaaa47377dc11ac4fe9436a1f8b86619b0e7bf4a18c2a451f1b341f",
+        "stored_bytes": 653,
+        "replacement": "local account name -> <REDACTED-USER>"
+      }
+    ],
+    "identifier_policy": "The literal account/machine identifier is intentionally NOT reproduced anywhere in this repository, including in this provenance block, because this repo is public. Original artifact bytes and their original hashes are preserved outside the repository in the pre-audit backup; see docs/evidence/PUBLICATION.md."
+  }
+}

@@ -1,0 +1,13 @@
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+  CadBridge[net48] AutoCAD refs resolved from: D:\Program Files\Autodesk\AutoCAD_2024.1.7\AutoCAD 2024
+  CadBridge[net48] referenced AutoCAD assembly: accoremgd = D:\Program Files\Autodesk\AutoCAD_2024.1.7\AutoCAD 2024\accoremgd.dll
+  CadBridge[net48] referenced AutoCAD assembly: acdbmgd = D:\Program Files\Autodesk\AutoCAD_2024.1.7\AutoCAD 2024\acdbmgd.dll
+  CadBridge[net48] referenced AutoCAD assembly: acmgd = D:\Program Files\Autodesk\AutoCAD_2024.1.7\AutoCAD 2024\acmgd.dll
+  CadBridge.Plugin.Legacy -> F:\Nextcloud\project\CadBridge\src\CadBridge.Plugin.Legacy\bin\Release\net48\CadBridge.Plugin.Legacy.dll
+
+已成功生成。
+    0 个警告
+    0 个错误
+
+已用时间 00:00:01.00

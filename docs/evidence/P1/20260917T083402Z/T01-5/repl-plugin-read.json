@@ -1,0 +1,180 @@
+{
+  "checks": [
+    {
+      "name": "initialize",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "attach",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "breakpoint line 8 verified",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 0,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "name": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "trigger (C:CBDBG) accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "stopped at line 8",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "name": "stopped in real source frame at line 8",
+      "ok": true,
+      "detail": {
+        "column": 3,
+        "endColumn": 23,
+        "endLine": 8,
+        "id": 131,
+        "line": 8,
+        "moduleId": "",
+        "name": "C:CBDBG",
+        "source": {
+          "name": "cb_debug_fixture.lsp",
+          "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+        }
+      }
+    },
+    {
+      "name": "PLUGIN function ran via repl (marker produced)",
+      "ok": true,
+      "detail": {
+        "immediate": [
+          "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+          "\"\r\n"
+        ],
+        "polled": [
+          "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+          "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+          "\"\r\n"
+        ]
+      }
+    },
+    {
+      "name": "PLUGIN read reported circles=1",
+      "ok": true,
+      "detail": {
+        "immediate": [
+          "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+          "\"\r\n"
+        ],
+        "polled": [
+          "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+          "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+          "\"\r\n"
+        ]
+      }
+    },
+    {
+      "name": "PLUGIN read reported r=3",
+      "ok": true,
+      "detail": {
+        "immediate": [
+          "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+          "\"\r\n"
+        ],
+        "polled": [
+          "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+          "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+          "\"\r\n"
+        ]
+      }
+    },
+    {
+      "name": "PLUGIN value was delivered BEFORE any continue (still paused)",
+      "ok": true,
+      "detail": {
+        "waited": 0.0
+      }
+    },
+    {
+      "name": "continue accepted",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "CBDBG_DONE printed after continue",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "timing": {
+    "repl_response": {
+      "returned": true,
+      "success": true,
+      "result": "",
+      "type": null,
+      "seconds": 0.051
+    },
+    "immediate_stdout": [
+      "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+      "\"\r\n"
+    ],
+    "while_paused": {
+      "marker_found": true,
+      "waited_seconds": 0.0,
+      "output": [
+        "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+        "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+        "\"\r\n"
+      ]
+    }
+  },
+  "acad_pid": 17672,
+  "output_after_continue": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n",
+    "\"CBLIVEREAD_OK entities=1 circles=1 last_circle=handle=2CE center=100,100,0 r=3 src=CadBridge.Plugin.Shared.LiveReadLispFunction",
+    "\"\r\n",
+    "CBDBG_DONE",
+    "\r\n"
+  ],
+  "verdict": {
+    "derived_from_checks": true,
+    "checks_total": 14,
+    "checks_failed": 0,
+    "failed_names": [],
+    "hover_refuses_user_functions": "authoritative product message: 无法在监视窗口中计算用户定义的函数 ('cannot evaluate a user-defined function in the watch window')",
+    "repl_can_invoke_user_functions": "yes -- (C:CBDBG) itself runs this way",
+    "plugin_mediated_pause_read": "DEMONSTRATED via repl+stdout",
+    "delivery_channel": "stdout (the repl response result field is empty)",
+    "explicitly_not_claimed": [
+      "that the repl response `result` field carries the value -- it does not",
+      "that DEBUG_BUSY / STALE_DEBUG_HANDLE / control leases are implemented",
+      "that ACAD_USERPROFILE isolates the user profile -- not demonstrated",
+      "that this generalises to other AutoCAD versions"
+    ]
+  },
+  "adapter_stderr": []
+}

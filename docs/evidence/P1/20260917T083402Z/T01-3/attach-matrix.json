@@ -1,0 +1,219 @@
+{
+  "install_dir": "D:\\Program Files\\Autodesk\\AutoCAD 2026",
+  "attempts": [
+    {
+      "case": "A_exact_extension_shape",
+      "type": "attachlisp",
+      "request": "attach",
+      "pid_value": "67904",
+      "pid_is_string": true,
+      "with_program": true,
+      "initialize_success": true,
+      "capabilities": {
+        "supportsConfigurationDoneRequest": true,
+        "supportsEvaluateForHovers": true
+      },
+      "attach": "NO_RESPONSE",
+      "events": [
+        {
+          "event": "initialized",
+          "body": {
+            "supportsConfigurationDoneRequest": true,
+            "supportsEvaluateForHovers": true
+          }
+        }
+      ],
+      "adapter_alive": true,
+      "adapter_stderr": []
+    },
+    {
+      "case": "B_no_program",
+      "type": "attachlisp",
+      "request": "attach",
+      "pid_value": "67904",
+      "pid_is_string": true,
+      "with_program": false,
+      "initialize_success": true,
+      "capabilities": {
+        "supportsConfigurationDoneRequest": true,
+        "supportsEvaluateForHovers": true
+      },
+      "attach": "NO_RESPONSE",
+      "events": [
+        {
+          "event": "initialized",
+          "body": {
+            "supportsConfigurationDoneRequest": true,
+            "supportsEvaluateForHovers": true
+          }
+        },
+        {
+          "event": "dgbfatalerr",
+          "body": {
+            "category": "stderr",
+            "output": "此 AutoCAD 实例当前用于调试其他文件"
+          }
+        },
+        {
+          "event": "output",
+          "body": {
+            "category": "stderr",
+            "output": "此 AutoCAD 实例当前用于调试其他文件"
+          }
+        },
+        {
+          "event": "clearcache",
+          "body": null
+        },
+        {
+          "event": "terminated",
+          "body": null
+        }
+      ],
+      "adapter_alive": true,
+      "adapter_stderr": []
+    },
+    {
+      "case": "C_type_autolisp",
+      "type": "autolisp",
+      "request": "attach",
+      "pid_value": "67904",
+      "pid_is_string": true,
+      "with_program": true,
+      "initialize_success": true,
+      "capabilities": {
+        "supportsConfigurationDoneRequest": true,
+        "supportsEvaluateForHovers": true
+      },
+      "attach": "NO_RESPONSE",
+      "events": [
+        {
+          "event": "initialized",
+          "body": {
+            "supportsConfigurationDoneRequest": true,
+            "supportsEvaluateForHovers": true
+          }
+        },
+        {
+          "event": "dgbfatalerr",
+          "body": {
+            "category": "stderr",
+            "output": "此 AutoCAD 实例当前用于调试其他文件"
+          }
+        },
+        {
+          "event": "output",
+          "body": {
+            "category": "stderr",
+            "output": "此 AutoCAD 实例当前用于调试其他文件"
+          }
+        },
+        {
+          "event": "clearcache",
+          "body": null
+        },
+        {
+          "event": "terminated",
+          "body": null
+        }
+      ],
+      "adapter_alive": true,
+      "adapter_stderr": []
+    },
+    {
+      "case": "D_integer_pid",
+      "type": "attachlisp",
+      "request": "attach",
+      "pid_value": 67904,
+      "pid_is_string": false,
+      "with_program": true,
+      "initialize_success": true,
+      "capabilities": {
+        "supportsConfigurationDoneRequest": true,
+        "supportsEvaluateForHovers": true
+      },
+      "attach": "NO_RESPONSE",
+      "events": [
+        {
+          "event": "initialized",
+          "body": {
+            "supportsConfigurationDoneRequest": true,
+            "supportsEvaluateForHovers": true
+          }
+        },
+        {
+          "event": "dgbfatalerr",
+          "body": {
+            "category": "stderr",
+            "output": "此 AutoCAD 实例当前用于调试其他文件"
+          }
+        },
+        {
+          "event": "output",
+          "body": {
+            "category": "stderr",
+            "output": "此 AutoCAD 实例当前用于调试其他文件"
+          }
+        },
+        {
+          "event": "clearcache",
+          "body": null
+        },
+        {
+          "event": "terminated",
+          "body": null
+        }
+      ],
+      "adapter_alive": true,
+      "adapter_stderr": []
+    },
+    {
+      "case": "E_no_type",
+      "type": null,
+      "request": "attach",
+      "pid_value": "67904",
+      "pid_is_string": true,
+      "with_program": true,
+      "initialize_success": true,
+      "capabilities": {
+        "supportsConfigurationDoneRequest": true,
+        "supportsEvaluateForHovers": true
+      },
+      "attach": "NO_RESPONSE",
+      "events": [
+        {
+          "event": "initialized",
+          "body": {
+            "supportsConfigurationDoneRequest": true,
+            "supportsEvaluateForHovers": true
+          }
+        },
+        {
+          "event": "dgbfatalerr",
+          "body": {
+            "category": "stderr",
+            "output": "此 AutoCAD 实例当前用于调试其他文件"
+          }
+        },
+        {
+          "event": "output",
+          "body": {
+            "category": "stderr",
+            "output": "此 AutoCAD 实例当前用于调试其他文件"
+          }
+        },
+        {
+          "event": "clearcache",
+          "body": null
+        },
+        {
+          "event": "terminated",
+          "body": null
+        }
+      ],
+      "adapter_alive": true,
+      "adapter_stderr": []
+    }
+  ],
+  "acad_pid": 67904
+}

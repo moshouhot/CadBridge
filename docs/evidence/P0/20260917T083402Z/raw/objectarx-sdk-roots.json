@@ -1,0 +1,11 @@
+{
+    "versions":  [
+                     "ObjectARX-2014",
+                     "ObjectARX-2017",
+                     "ObjectARX-2018",
+                     "ObjectARX-2019",
+                     "ObjectARX-2021",
+                     "ObjectARX-2025"
+                 ],
+    "root":  "D:\\CAD APPLOAD\\ObjectARX"
+}

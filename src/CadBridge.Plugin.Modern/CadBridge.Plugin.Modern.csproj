@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    CadBridge Modern plugin shell.
+
+    Modern = AutoCAD 2025-2026, which ship acdbmgd.runtimeconfig.json with tfm "net8.0".
+    Verified locally on:
+      D:\Program Files\Autodesk\AutoCAD_2025.1.1\AutoCAD 2025
+      D:\Program Files\Autodesk\AutoCAD 2026
+
+    Shared source is the SAME files as the Legacy shell; the only differences are the
+    target framework and the reference-assembly directory. No per-year business code.
+
+    Autodesk assemblies remain HintPath compile references with Private=false.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>CadBridge.Plugin.Modern</AssemblyName>
+    <RootNamespace>CadBridge.Plugin</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <UseWindowsForms>false</UseWindowsForms>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Version>0.1.0</Version>
+    <Product>CadBridge Plugin (Modern)</Product>
+    <Company>CadBridge</Company>
+
+    <!-- Opt in to AutoCAD references. Directory.Build.props only acts when this is true. -->
+    <CadBridgePlugin>true</CadBridgePlugin>
+    <!-- Modern floor: ObjectARX 2025 (assembly 25.0), the first .NET 8 AutoCAD generation. -->
+    <CadBridgeRefSet>core</CadBridgeRefSet>
+
+  </PropertyGroup>
+
+  <!-- One shared source tree, compiled into both shells. No per-year business code. -->
+  <ItemGroup>
+    <Compile Include="..\Plugin.Shared\**\*.cs" LinkBase="Shared" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,340 @@
+{
+  "steps": [
+    {
+      "step": "initialize",
+      "ok": true,
+      "detail": {
+        "supportsConfigurationDoneRequest": true,
+        "supportsEvaluateForHovers": true
+      }
+    },
+    {
+      "step": "initialized event",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "step": "launch",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "step": "setBreakpoints F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp:6",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 6,
+          "id": 0,
+          "line": 6,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "step": "setBreakpoints F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp:8",
+      "ok": true,
+      "detail": [
+        {
+          "column": 3,
+          "endColumn": 3,
+          "endLine": 8,
+          "id": 1,
+          "line": 8,
+          "message": "",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "step": "configurationDone",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "step": "threads",
+      "ok": true,
+      "detail": {
+        "threads": [
+          {
+            "id": 1,
+            "name": "main"
+          }
+        ]
+      }
+    },
+    {
+      "step": "evaluate to trigger command",
+      "ok": true,
+      "detail": {
+        "result": ""
+      }
+    },
+    {
+      "step": "stopped event",
+      "ok": true,
+      "detail": {
+        "description": "",
+        "reason": "breakpoint",
+        "text": "",
+        "threadId": 1
+      }
+    },
+    {
+      "step": "stackTrace",
+      "ok": true,
+      "detail": [
+        {
+          "column": 0,
+          "endColumn": 0,
+          "endLine": 0,
+          "id": 0,
+          "line": 0,
+          "moduleId": "",
+          "name": ":BREAK-POINT"
+        },
+        {
+          "column": 3,
+          "endColumn": 23,
+          "endLine": 8,
+          "id": 131,
+          "line": 8,
+          "moduleId": "",
+          "name": "C:CBDBG",
+          "source": {
+            "name": "cb_debug_fixture.lsp",
+            "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+          }
+        },
+        {
+          "column": 0,
+          "endColumn": 0,
+          "endLine": 0,
+          "id": 126,
+          "line": 0,
+          "moduleId": "",
+          "name": "#<USUBR @0000023e190fc188 -top->"
+        },
+        {
+          "column": 0,
+          "endColumn": 0,
+          "endLine": 0,
+          "id": 0,
+          "line": 0,
+          "moduleId": "",
+          "name": ":USER-INPUT"
+        },
+        {
+          "column": 0,
+          "endColumn": 0,
+          "endLine": 0,
+          "id": 0,
+          "line": 0,
+          "moduleId": "",
+          "name": ":CALLBACK-ENTRY"
+        },
+        {
+          "column": 0,
+          "endColumn": 0,
+          "endLine": 0,
+          "id": 0,
+          "line": 0,
+          "moduleId": "",
+          "name": "C:VLDEBUG"
+        },
+        {
+          "column": 0,
+          "endColumn": 0,
+          "endLine": 0,
+          "id": 0,
+          "line": 0,
+          "moduleId": "",
+          "name": ":CALLBACK-ENTRY"
+        },
+        {
+          "column": 0,
+          "endColumn": 0,
+          "endLine": 0,
+          "id": 0,
+          "line": 0,
+          "moduleId": "",
+          "name": ":ARQ-SUBR-CALLBACK"
+        }
+      ]
+    },
+    {
+      "step": "scopes",
+      "ok": true,
+      "detail": [
+        {
+          "name": "Locals",
+          "variablesReference": 0
+        },
+        {
+          "indexedVariables": 1,
+          "name": "Last Value",
+          "namedVariables": 0,
+          "variablesReference": 60001
+        }
+      ]
+    },
+    {
+      "step": "variables",
+      "ok": true,
+      "detail": [
+        {
+          "scope": "Last Value",
+          "variables": [
+            {
+              "evaluateName": "*LAST-VALUE*",
+              "name": "*LAST-VALUE*",
+              "type": "SYM",
+              "value": "",
+              "variablesReference": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "step": "stepIn",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "capabilities": {
+    "supportsConfigurationDoneRequest": true,
+    "supportsEvaluateForHovers": true
+  },
+  "startup_output": [
+    "; 2 表格 从 \"F:/CADBRIDGE-RUN/20260917T083402Z/CB_DEBUG_FIXTURE.LSP\" 加载\r\n"
+  ],
+  "stopped": {
+    "description": "",
+    "reason": "breakpoint",
+    "text": "",
+    "threadId": 1
+  },
+  "stack_frames": [
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":BREAK-POINT"
+    },
+    {
+      "column": 3,
+      "endColumn": 23,
+      "endLine": 8,
+      "id": 131,
+      "line": 8,
+      "moduleId": "",
+      "name": "C:CBDBG",
+      "source": {
+        "name": "cb_debug_fixture.lsp",
+        "path": "F:/CadBridge-run/20260917T083402Z/cb_debug_fixture.lsp"
+      }
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 126,
+      "line": 0,
+      "moduleId": "",
+      "name": "#<USUBR @0000023e190fc188 -top->"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":USER-INPUT"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":CALLBACK-ENTRY"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": "C:VLDEBUG"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":CALLBACK-ENTRY"
+    },
+    {
+      "column": 0,
+      "endColumn": 0,
+      "endLine": 0,
+      "id": 0,
+      "line": 0,
+      "moduleId": "",
+      "name": ":ARQ-SUBR-CALLBACK"
+    }
+  ],
+  "scopes": [
+    {
+      "name": "Locals",
+      "variablesReference": 0
+    },
+    {
+      "indexedVariables": 1,
+      "name": "Last Value",
+      "namedVariables": 0,
+      "variablesReference": 60001
+    }
+  ],
+  "variables": [
+    {
+      "scope": "Last Value",
+      "variables": [
+        {
+          "evaluateName": "*LAST-VALUE*",
+          "name": "*LAST-VALUE*",
+          "type": "SYM",
+          "value": "",
+          "variablesReference": 0
+        }
+      ]
+    }
+  ],
+  "stopped_events": [
+    {
+      "description": "",
+      "reason": "breakpoint",
+      "text": "",
+      "threadId": 1
+    },
+    {
+      "description": "",
+      "reason": "breakpoint",
+      "text": "",
+      "threadId": 1
+    }
+  ],
+  "adapter_alive": true,
+  "adapter_stderr": []
+}

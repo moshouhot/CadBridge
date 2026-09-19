@@ -1,0 +1,922 @@
+[
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcCoreMgd.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  359936,
+        "Sha256":  "DFC0A87390CBF14AF165EDF8C6D36C09DAEE43ADB85C041E4C42F0E3776C1DFF",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AcCoreMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcCui.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  208896,
+        "Sha256":  "C29D85C7F6C1ED2CDB44524BF984DF8B1F65E287F3211A4E2C9A56A419ACE13D",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AcCui.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcDbMgd.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  2248192,
+        "Sha256":  "1FF4DCA5FE55FD3A2176E4994DA867AA59E82791749F5B25E91A4430BEC4C133",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AcDbMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "acdbmgdbrep.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  56320,
+        "Sha256":  "664550636AB8D4C25E89592E26504BCF699D6734EFBDAE03DA00DDE731465F3D",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\acdbmgdbrep.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcDx.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  196608,
+        "Sha256":  "96AD23EF1CCA454510D868337914FE20FFD090BEE75D218413551AD260977F99",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AcDx.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcMgd.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  701952,
+        "Sha256":  "F75CD8CCFE66E104AFAD68D40AA6E6457F1083B28585C36AFE5ADFA9646F3AD0",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcMr.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  233616,
+        "Sha256":  "AF968AFD08B5A35800F7D6FD9F49415AEE807C443CFBB2D0EC3570123EC4D5D9",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AcMr.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcTcMgd.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  51712,
+        "Sha256":  "DB7F10AA60B08A50571C637E916D12AA7FCCB187B5246D26F5395807862AF698",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AcTcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcWindows.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  2461840,
+        "Sha256":  "5F68524EB1C861D8B9308E5B6CB1B99DD72AA3E8E640B3CD4BBC3D4594DC4D93",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AcWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AdWindows.dll",
+        "AsmVersion":  "4.0.24.0",
+        "FileVersion":  "4.0.24.0",
+        "Product":  "4.0.24.0",
+        "Size":  2230664,
+        "Sha256":  "F3BA1200D66118A9DE5EEA8F880F1CBC1FD83C1154E3EA14DFFF1BB24786CD62",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc\\AdWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "AcAxDb19res.dll",
+        "AsmVersion":  "NOT_MANAGED",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  478024,
+        "Sha256":  "6C5A21ACBAD3D59625C5DB8B1D6AA15593B35E73DAEB1DFD15670C305C4E3BD5",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc-x64\\AcAxDb19res.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "Autodesk.AutoCAD.Interop.Common.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  1110016,
+        "Sha256":  "A4FB5DD0D9C7C40936C56D8F44F61803D1883F372FF828D7CD39737A3F78D548",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc-x64\\Autodesk.AutoCAD.Interop.Common.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2014",
+        "File":  "Autodesk.AutoCAD.Interop.dll",
+        "AsmVersion":  "19.1.0.0",
+        "FileVersion":  "19.1.18.0.0",
+        "Product":  "19.1.18.0.0",
+        "Size":  136192,
+        "Sha256":  "20269465B04C73F2806B1DBDC4E34605443D6B2E7E5FF1A3A202CFCE8053812D",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2014\\inc-x64\\Autodesk.AutoCAD.Interop.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcCoreMgd.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  372224,
+        "Sha256":  "6F8FF6F09D189F129C494875CCA9CC2B2AD2690E5C44B983221EE5581446C6E3",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcCoreMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcCui.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  208896,
+        "Sha256":  "A86367B15C6828E849CC706F96D4D16CB70E083D4D23FD6188A4EC8997308C8D",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcCui.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcDbMgd.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  2200576,
+        "Sha256":  "B336193325FDEC247B2A6B6AE736B00D473B8246FCA1483BB5F260527D226035",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcDbMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "acdbmgdbrep.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  54272,
+        "Sha256":  "1CC4F2BC7FDE8AC6065A7ACD1487A7F36B1D1D28065AE488CBC81C2FAE4E04B4",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\acdbmgdbrep.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcDx.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  196608,
+        "Sha256":  "9D959522C2CC9C8A4C175718013E4BE301BB1919B5C9A0A8F1404322EFED1DFA",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcDx.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcMgd.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  705536,
+        "Sha256":  "0286D4F351E91BA7E010CE039C553C3E05536381C5D07B9A3372986FA871577C",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcMr.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  266240,
+        "Sha256":  "8DF6B2A6DB878F844A660FA5384400FAFA6A0AECC0536CEDD2E678474871249E",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcMr.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcSeamless.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  84448,
+        "Sha256":  "FCD6FC55A689F098AAA57DF79C641669FD4AB5B55FE16D80A572D050CF3F8AA1",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcSeamless.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcTcMgd.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  50176,
+        "Sha256":  "93B1BE1A721B42ABAC02F88A020A55E6403FFBF98A32319E414952F60FC4481B",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcTcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcWindows.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  3657728,
+        "Sha256":  "0EC4390BCB760D85915BAD5557AC304FDDAE8C73B0695B096A697BE4E137E1E6",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AcWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AdWindows.dll",
+        "AsmVersion":  "2015.11.2.0",
+        "FileVersion":  "2015.11.2.0",
+        "Product":  "2015.11.2.0",
+        "Size":  2238400,
+        "Sha256":  "9680D19A36434395870D6CA3738FEAD6153F5DA2D8A762DDEB2AE78B7F99EB96",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc\\AdWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AcAxDb21res.dll",
+        "AsmVersion":  "NOT_MANAGED",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  487392,
+        "Sha256":  "24C2AB30135794DA5A4A6CEFA04668E4AD893E3477CFAF881E4626C3B72B244A",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc-x64\\AcAxDb21res.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "AdUiPalettes.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  606208,
+        "Sha256":  "12E9493B788CBFB0AFD064DBA893EE395ECBD8947403C394AAE4721008981189",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc-x64\\AdUiPalettes.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "Autodesk.AutoCAD.Interop.Common.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  1100288,
+        "Sha256":  "3469A2599B94B6C9F324945FEC07F4F92B9474492BBB2DF77EA68E4229D76797",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc-x64\\Autodesk.AutoCAD.Interop.Common.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2017",
+        "File":  "Autodesk.AutoCAD.Interop.dll",
+        "AsmVersion":  "21.0.0.0",
+        "FileVersion":  "21.0.52.0.0",
+        "Product":  "21.0.52.0.0",
+        "Size":  132096,
+        "Sha256":  "3DF75668F33FAE3CAEBE79E183EAFAC86346080C544B5073FD3CED21FFD63EB5",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2017\\inc-x64\\Autodesk.AutoCAD.Interop.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcCoreMgd.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  379352,
+        "Sha256":  "992D402416660EC66CEFD5661E001091984A399A995ECE97B886C68C023A25B3",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcCoreMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcCui.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  215512,
+        "Sha256":  "2462883C3B7F940325F913786BA88C36505809CD65C2FE12B39AC4888AB638CA",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcCui.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcDbMgd.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  2207192,
+        "Sha256":  "84DF8A7C65A82C61A5E85E93AF32BEA62069A8A671C75C7A81679DCCB840AC51",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcDbMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "acdbmgdbrep.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  61400,
+        "Sha256":  "AA84D5C745CA6E02F7635307DEED2C9FF852474AA0DC72BC948FDE8D4D5A9E86",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\acdbmgdbrep.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcDx.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  203224,
+        "Sha256":  "13232A43F6EA1E8E0061981BAC6F3DD0FFD187AC2132DC433ABEED8581DD63DC",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcDx.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcMgd.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  716248,
+        "Sha256":  "9AC4DF1F61D0A2AB2C95BDD06585D8B6FACCF6EEC3FEDF385000BB6EEC40CDDD",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcMr.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  272856,
+        "Sha256":  "2E725D42F975E6FA22E7833CBB36041D12E27757E1E2F0D1AD8F51F4D06FB61A",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcMr.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcSeamless.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  129496,
+        "Sha256":  "D6808BE9A4F1F5202C46FEDBCA59466C802FBC8E9EA4F086FF3BD2B0E91D7331",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcSeamless.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcTcMgd.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  56792,
+        "Sha256":  "79B72BF84BD193BC2C48FCD93125D53571EDE36C55FCEFE3F33CB5EC569A87DC",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcTcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcWindows.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  3725784,
+        "Sha256":  "F3E3C4D0CBC9DB83A985C82ADCDB214C696F64D105082BDEEC845E3D707017A9",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AcWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AdUIMgd.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  51672,
+        "Sha256":  "ABADE59EA8BF70CB3D5EB41BBF72E493BF9E75C707DA092892005F3A56DE60A3",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AdUIMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AdUiPalettes.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  629208,
+        "Sha256":  "D1F93DEE5C417C66FC9ED9F4E34C1A4F948D32FDEFB01D55CA47251244883113",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AdUiPalettes.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AdWindows.dll",
+        "AsmVersion":  "2016.11.2.0",
+        "FileVersion":  "2016.11.2.0",
+        "Product":  "2016.11.2.0",
+        "Size":  2787800,
+        "Sha256":  "8DCB04204B6CEA4206F1AD53A1D802951C9C1D7A92126D0CAE48639EEC037E5A",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc\\AdWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "AcAxDb22res.dll",
+        "AsmVersion":  "NOT_MANAGED",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  487384,
+        "Sha256":  "833F3EFF01EFEF98AA6C9604110A7235626FB8D2E46B6A86670C0FAF188CF6D8",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc-x64\\AcAxDb22res.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "Autodesk.AutoCAD.Interop.Common.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  1103320,
+        "Sha256":  "F38887701A725CA79E7FB6792A23D3CF2B2E54A9BB35B3043A1549F414668490",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc-x64\\Autodesk.AutoCAD.Interop.Common.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2018",
+        "File":  "Autodesk.AutoCAD.Interop.dll",
+        "AsmVersion":  "22.0.0.0",
+        "FileVersion":  "22.0.49.0.0",
+        "Product":  "22.0.49.0.0",
+        "Size":  138200,
+        "Sha256":  "FCF4A239ED6BE6F7011BD28D2469DE10FEFAF65C7409BDC0C6653B54FC033894",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2018\\inc-x64\\Autodesk.AutoCAD.Interop.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcCoreMgd.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  390576,
+        "Sha256":  "26B1E6D0A38173A2F21FDD68801B421C2A227A3479225D605C4C35238D403EB7",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcCoreMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcCui.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  215472,
+        "Sha256":  "CF2364D6EBA0AC0F5454777653BED9810EEC6ED0FA0A3F7F999FF8168F487265",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcCui.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcDbMgd.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  2231216,
+        "Sha256":  "F73D603AF26D0E22A8BCAF8731AF4CAAC17D8B4AB82FF48E77E7973E9C107B78",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcDbMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "acdbmgdbrep.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  61872,
+        "Sha256":  "F6EE662990E98F0BDBD191751C418510D6E3E159D124BF010C6BA49686F67844",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\acdbmgdbrep.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcDx.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  203184,
+        "Sha256":  "60F09A225DCA111D1B5F1EC1F9F90C04F128829D51221868A53CA64F2507850E",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcDx.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcMgd.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  733104,
+        "Sha256":  "0A7C8C701421010C56EC503EBEAECFE59E175CA069B11C35ED0EB631F5391A4F",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcMr.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  272816,
+        "Sha256":  "D6A854F6D8C09549537895D1D1BB1C097943421A8AE72FDB28D1ACC4D3C7D7C8",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcMr.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcSeamless.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  133552,
+        "Sha256":  "1D5E03AEF69D3FC3BB8458792016A2E5AA14C2F18EF0D80680957F10569D99EF",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcSeamless.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcTcMgd.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  56752,
+        "Sha256":  "E666117A944E44EF9E803966F89D1D1FBD15F0AA79013AD2F7A73574C82B44B1",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcTcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcWindows.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  3803568,
+        "Sha256":  "486C5886C90BA16D53E336CFC5E9A91999CEC8B06DA848EB0DA5428468ECEAB8",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AcWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AdUIMgd.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  80304,
+        "Sha256":  "AED4BB44E750441F46ECAC66EE91C94AEC2E6E7FEB48FF67FC8B09A2BDA0A446",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AdUIMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AdUiPalettes.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  629168,
+        "Sha256":  "9F93E9E8341A2FEEB89B29321D1214600621F75441AF76AC4E87FFA001FEE708",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AdUiPalettes.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AdWindows.dll",
+        "AsmVersion":  "2017.11.2.0",
+        "FileVersion":  "2017.11.2.0",
+        "Product":  "2017.11.2.0",
+        "Size":  2263536,
+        "Sha256":  "AAEB4164E70EE8E753BFA7492C6DEA9DA3876DC2CB1CE4D2E02CDB99E2D4F58A",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc\\AdWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "AcAxDb23res.dll",
+        "AsmVersion":  "NOT_MANAGED",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  487856,
+        "Sha256":  "5F75A12BABA952CDF00A02CD679445F70B6CB409424A167E18A88328D1929CC9",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc-x64\\AcAxDb23res.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "Autodesk.AutoCAD.Interop.Common.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  1103280,
+        "Sha256":  "558F27C72B4D90782F0DD717159A7C227399116EA645EBFB9839B0ED6A7A0A98",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc-x64\\Autodesk.AutoCAD.Interop.Common.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2019",
+        "File":  "Autodesk.AutoCAD.Interop.dll",
+        "AsmVersion":  "23.0.0.0",
+        "FileVersion":  "23.0.46.0.0",
+        "Product":  "23.0.46.0.0",
+        "Size":  138160,
+        "Sha256":  "1E44245049BB19D89F8CB41584606E694D3C8C55F58930A7AE0B362F7648F5BA",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2019\\inc-x64\\Autodesk.AutoCAD.Interop.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcCoreMgd.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  391040,
+        "Sha256":  "68BBE136DC66C936ADAC9648465D79D746C0093141B6A1D41B0D10EE44A8AC65",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcCoreMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcCui.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  215424,
+        "Sha256":  "DDA942FEB7C4488DD9C06909185C12F871B92DA5BBDABB6988DC30DCD7547BD5",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcCui.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcDbMgd.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  2229120,
+        "Sha256":  "E6A6058E89B4AF5D2EB1373E641254529FE57460594B46F02297219AF3C7C527",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcDbMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "acdbmgdbrep.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  60800,
+        "Sha256":  "745CA126C49640CD75FB2114CF3A649785BB1C5043866E9FB3D201967022A429",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\acdbmgdbrep.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcDx.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  203136,
+        "Sha256":  "1ACED80C49EDD49DC1EC5C2FC1BC3DED3F5806379D83C5512A78A449308BB8BB",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcDx.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcMgd.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  813952,
+        "Sha256":  "9E33A7A91030F36CA340859F48E25C0F5FA396E5F173D717ABFBD898186A9901",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcMr.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  268672,
+        "Sha256":  "E965FC50F9C01AEDC9A032173B3B6E7B3BA29441C2D94B0D5F1EE0BB88002E1F",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcMr.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcSeamless.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  133504,
+        "Sha256":  "CFC80BFE40B59028B5DF6B5CD342EA4DB7A00DE6EEC426954A693D54CF88CA81",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcSeamless.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcTcMgd.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  57728,
+        "Sha256":  "AF008FF6B82D053CA28A4765F6E4978A363B26E5C2A94A3251BB8DAC81307508",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcTcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcWindows.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  4819328,
+        "Sha256":  "4D2FF9E254B6DC6AB659AFCF821AE44CE00CC8DD78D9F45C9A7C5B3A83CF38BA",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AcWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AdUIMgd.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  84352,
+        "Sha256":  "750668CD08DE229D36E1B26F9DE78CAFE9BB66AF44FFC46F55BB497497E363EA",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AdUIMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AdUiPalettes.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  973184,
+        "Sha256":  "3DBCF4DF0740383FB0D2E46BB99ED807C66C121C2DF94E02D9A4D7986E9D88A2",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AdUiPalettes.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AdWindows.dll",
+        "AsmVersion":  "3.0.2.0",
+        "FileVersion":  "3.0.2.0",
+        "Product":  "3.0.2.0",
+        "Size":  2321280,
+        "Sha256":  "E0447A70CF3A7A81CF9BBEE965C6FC2A7B5C27B375E63CC243A6DB358D8DF14E",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc\\AdWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "AcAxDb24res.dll",
+        "AsmVersion":  "NOT_MANAGED",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  487296,
+        "Sha256":  "4B408B195E789350A33FB32A76A36C204B288E4F73478720108C5D6AE1515FC1",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc-x64\\AcAxDb24res.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "Autodesk.AutoCAD.Interop.Common.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  1113984,
+        "Sha256":  "E4B2E66BCB3C6027A8D05BD712A00E2FECCBC44E720287EB1756C16629BFAFE8",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc-x64\\Autodesk.AutoCAD.Interop.Common.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2021",
+        "File":  "Autodesk.AutoCAD.Interop.dll",
+        "AsmVersion":  "24.0.0.0",
+        "FileVersion":  "24.0.47.0.0",
+        "Product":  "24.0.47.0.0",
+        "Size":  138112,
+        "Sha256":  "DD2158C06238BE85394FC112997F360D38922DBBA5E9415ED6012DEEEAFC8AD8",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2021\\inc-x64\\Autodesk.AutoCAD.Interop.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcCoreMgd.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  403744,
+        "Sha256":  "9BCC52BF57B12728F2C6601D50CC3234A62F3068F7A304B5AA43C2B6C82B414F",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcCoreMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcCui.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  152352,
+        "Sha256":  "4CA247D78481D8B2A8892D9EA2060A034EDCFC678312C2D8E6203F9DF1FFE04E",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcCui.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcDbMgd.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  2271008,
+        "Sha256":  "D81824ECF10AAEA953BDB87823F546A7B773871E36376D0A61D4A36731741300",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcDbMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "acdbmgdbrep.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  74528,
+        "Sha256":  "71D21F4342D30B0D8E15DABBFC39B16E4EB3BE840F16E528DC376CFAE80F83C0",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\acdbmgdbrep.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcDx.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  77600,
+        "Sha256":  "0DDBC506B2489F42E1A5CE11B34F439AECC0F3699243DEBB142A0CE6F50C8CCC",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcDx.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcMgd.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  1045280,
+        "Sha256":  "B85B1F0D01EC1F085A2FF8261BCEBDFCAAB4A4347C9AE95D935F2DFF3E93846E",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcMr.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  91936,
+        "Sha256":  "CE351D030200A9A1AABE99003A423ABB379DDAF3F18FD085FEF43D57B2FF27B5",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcMr.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcSeamless.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  41760,
+        "Sha256":  "F0E6A1DB9BFB1E01BB7B5098C7D51F2734E4AA8C3A7547EDE13D6C0344F38C4F",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcSeamless.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcTcMgd.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  70944,
+        "Sha256":  "A25B02CD42F72709FBFB7A7274AB88E7776DE9BBAEF7A3A3B5D3D19EFCD0C392",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcTcMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcWindows.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  587552,
+        "Sha256":  "8160B31AEF50946ADE3E6F4FFA97873AC9D9EA89DBEE80050A1F353CFA7C32D4",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AcWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AdUIMgd.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  42272,
+        "Sha256":  "D231B00F005B874D49F6435DD3FB32B5C5B6B8113A22E7C14832FDF1D35789BB",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AdUIMgd.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AdUiPalettes.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  222496,
+        "Sha256":  "5F67F26AD2C8E113A89C47CF916F158A250C318D030DD726DF030810EF5E180A",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AdUiPalettes.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AdWindows.dll",
+        "AsmVersion":  "5.1.1.1",
+        "FileVersion":  "5.1.1.1",
+        "Product":  "5.1.1.1",
+        "Size":  2361696,
+        "Sha256":  "39DA62CA5A340EF38BBD2E6F99CEA7B9DD70F3784E6E803EFC327150396555F9",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc\\AdWindows.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "AcAxDb25res.dll",
+        "AsmVersion":  "NOT_MANAGED",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  490784,
+        "Sha256":  "0E51FEF9C1DAD8A75557DC9455BAD62AFA9725180D9AF40E262383572066B31D",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc-x64\\AcAxDb25res.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "Autodesk.AutoCAD.Interop.Common.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  1117984,
+        "Sha256":  "E6614727747AE493BA7D18C561C3DE25C0E8703310DB3D88BB59DDC63AC5BE6E",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc-x64\\Autodesk.AutoCAD.Interop.Common.dll"
+    },
+    {
+        "Sdk":  "ObjectARX-2025",
+        "File":  "Autodesk.AutoCAD.Interop.dll",
+        "AsmVersion":  "25.0.0.0",
+        "FileVersion":  "25.0.58.0.0",
+        "Product":  "25.0.58.0.0",
+        "Size":  142112,
+        "Sha256":  "6FB1C731AC5653B9C386F823E2126295614C9B0FF12F4FF90AA8FBF60C630F86",
+        "Path":  "D:\\CAD APPLOAD\\ObjectARX\\ObjectARX-2025\\inc-x64\\Autodesk.AutoCAD.Interop.dll"
+    }
+]
