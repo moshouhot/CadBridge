@@ -327,7 +327,8 @@ live-intent 改为**结构化检查极性**；分类改为**按相对路径为�
 
 | 项目 | 命令 | 结果 |
 |---|---|---|
-| 工具自检（当前最终脚本；含仓库级 Python 静态门禁、execution-baseline regression、变异测试、隐私守卫、编码/假清洁/manifest 夹具） | `bash tools/selftest.sh` | **53 passed, 0 failed**，exit 0（实测于 `8074c60`；后续 SHA 必须重新运行） |
+| 工具自检（历史证据：`8074c60`） | `bash tools/selftest.sh` | **53 passed, 0 failed**，exit 0 |
+| 工具自检（当前 HEAD；新增 Codex findings 回归后） | `bash tools/selftest.sh` | **PENDING LOCAL RE-VERIFICATION**；不得继承旧 SHA 计数 |
 | 半径策略回归测试 | `bash tests/run-radius-policy-tests.sh` | **14 passed, 0 failed**，exit 0 |
 | 变异：删 `dap-probe` 闸门 | `check-live-gates.py` 对损坏副本 | **检出** |
 | 变异：闸门改注释 | 同上 | **检出** |

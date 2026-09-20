@@ -244,6 +244,38 @@ surface, with all confirmed findings handled. If GitHub does not expose evidence
 Codex review/security result to the final SHA, that surface remains **UNVERIFIED** rather than
 being inferred from configuration.
 
+## Fifth online follow-up: confirmed Codex review findings
+
+Codex Code Review was enabled as a formal independent audit surface and reviewed
+`8074c60a9f132f8ff449d2d5c01350362f84e853`. Its new findings were independently checked
+against source rather than accepted mechanically. Eight were confirmed and remediated on the
+online branch:
+
+- repository-wide live-gate coverage now includes first-party scripts under `tests/` and the
+  repository root, while captured historical evidence under `docs/evidence/` stays out of
+  executable-source scope;
+- Python gate calls must be reachable from the executable `main()` path; dead branches and
+  uncalled helpers cannot satisfy the checker;
+- `com_read_worker.py` is now a gated live entrypoint because scalar identity verification
+  does not prove ownership or authorize attaching to an arbitrary existing AutoCAD process;
+- explicit missing redaction paths fail closed instead of reporting a zero-file clean result;
+- identifier-aware UTF-16LE/BE matching closes the Chinese-heavy BOM-less UTF-16 false-clean
+  case before GB18030 fallback;
+- redaction stages both evidence and provenance before publication and publishes provenance
+  first, so a sidecar creation failure cannot occur after evidence bytes are changed;
+- atomic manifest replacement preserves the existing destination permission mode;
+- manifest validation is recomputed after all `--extra` handling so non-object metadata cannot
+  leave `validation.ok=true` alongside a recorded problem.
+
+The previous F6 bounded-failure harness and F7 evidence-history correction from `9cb4ab03`
+are retained. Because the self-test suite changed again in this follow-up, the 53-pass count
+remains historical evidence for `8074c60`; the final candidate requires a fresh local run and
+must not guess a new count.
+
+Codex Code Review, Codex Security Review and Sourcery remain independent closeout surfaces.
+Evidence must bind each enabled review to the final SHA; otherwise that surface is reported
+**UNVERIFIED**.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

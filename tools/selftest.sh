@@ -353,8 +353,8 @@ fi
 # satisfy it. It also verifies that dap-probe.py's gate is conditional on live intent, that
 # the retired shell harness routes through safe_process.py --gate, and that no tooling reads
 # an environment variable that could bypass the gate.
-check "every live CAD entrypoint is gated (AST-checked)" \
-  python "$TOOLS/check-live-gates.py" "$TOOLS"
+check "every live CAD entrypoint is gated (repo-scope AST check)" \
+  python "$TOOLS/check-live-gates.py" "$REPO"
 
 # MUTATION TESTS: a gate check that cannot fail is not a check.
 # These run check-live-gates.py against deliberately DAMAGED COPIES of the tools tree, so
@@ -410,12 +410,35 @@ mutation_caught "new live harness with a computed exe path (invisible to discove
 mutation_caught "PowerShell script that really starts a CAD host" \
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"launch-cad.ps1").write_text("Start-Process -FilePath chr(34)+" + chr(39) + "acad.exe" + chr(39) + "\n", encoding="utf-8")'
 
+REPO_SCOPE_MUT="$MUT_DIR/repository-scope"
+rm -rf "$REPO_SCOPE_MUT"; mkdir -p "$REPO_SCOPE_MUT/tools" "$REPO_SCOPE_MUT/tests"
+cp -r "$TOOLS"/. "$REPO_SCOPE_MUT/tools/"
+cp "$REPO/tests/run-radius-policy-tests.sh" "$REPO_SCOPE_MUT/tests/"
+cp "$REPO/tests/run-execution-baseline-tests.sh" "$REPO_SCOPE_MUT/tests/"
+cat > "$REPO_SCOPE_MUT/tests/new-live-harness.sh" <<'EOF'
+#!/usr/bin/env bash
+acad.exe
+EOF
+if python "$TOOLS/check-live-gates.py" "$REPO_SCOPE_MUT" >/dev/null 2>&1; then
+  echo "  FAIL  repo-scope checker missed an unclassified live script under tests/"
+  fail=$((fail+1))
+else
+  echo "  PASS  repo-scope checker detects live scripts outside tools/"
+  pass=$((pass+1))
+fi
+
 # Regressions for the six defects Sourcery found in the SECOND full review of this PR. Every
 # one was reproduced against the checker as it stood before being fixed.
 mutation_caught "gate function imported directly then reassigned" \
   'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import safe_process as sp\nfrom safe_process import require_safety_review_passed as gate"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py live mode\")", "        gate = lambda *a, **k: None\n        gate(\"dap-probe.py live mode\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "live-intent guard polarity inverted" \
   'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    if live_intent:", "    if not live_intent:"); p.write_text(t, encoding="utf-8")'
+mutation_caught "gate hidden in statically dead if False branch" \
+  'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    if False:\n        sp.require_safety_review_passed(\"dap-session.py\")"); p.write_text(t, encoding="utf-8")'
+mutation_caught "gate moved into an uncalled helper" \
+  'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    pass"); t += "\n\ndef _unused_gate_for_mutation():\n    sp.require_safety_review_passed(\"dap-session.py\")\n"; p.write_text(t, encoding="utf-8")'
+mutation_caught "standalone COM worker gate removed" \
+  'p = pathlib.Path(sys.argv[1])/"com_read_worker.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"com_read_worker.py\")\n\n", ""); p.write_text(t, encoding="utf-8")'
 mutation_caught "nested script reusing a registry basename" \
   'import pathlib as _pl; d = _pl.Path(sys.argv[1])/"subdir"; d.mkdir(exist_ok=True); (d/"safe_process.py").write_text("import subprocess\nsubprocess.Popen([chr(39)+chr(97)+chr(99)+chr(97)+chr(100)+chr(46)+chr(101)+chr(120)+chr(101)+chr(39)])\n", encoding="utf-8")'
 mutation_caught "extensionless executable with a shebang" \
@@ -503,6 +526,52 @@ PYEOF
   fi
 fi
 
+# (b3) A syntactically valid but non-object --extra must make validation.ok false.
+mkdir -p "$TMP/extra-array"
+printf '{"ok":true}' > "$TMP/extra-array/a.json"
+printf '["not-an-object"]' > "$TMP/extra-array/extra.json"
+if python "$TOOLS/make-manifest.py" "$TMP/extra-array" --phase X --run-id R \
+  --extra "$TMP/extra-array/extra.json" >/dev/null 2>&1; then
+  echo "  FAIL  non-object --extra unexpectedly exited 0"
+  fail=$((fail+1))
+else
+  if python - "$TMP/extra-array/manifest.json" <<'PYEOF'
+import json, pathlib, sys
+d = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert d["validation"]["ok"] is False
+assert any("--extra must contain a JSON object" in x for x in d["validation"]["problems"])
+PYEOF
+  then
+    echo "  PASS  non-object --extra is reflected in validation.ok=false"; pass=$((pass+1))
+  else
+    echo "  FAIL  non-object --extra wrote contradictory validation state"; fail=$((fail+1))
+  fi
+fi
+
+# (b4) Atomic replacement must preserve an existing manifest's permission mode on POSIX.
+if python - "$TMP" "$TOOLS/make-manifest.py" <<'PYEOF'
+import os, pathlib, stat, subprocess, sys
+root, tool = pathlib.Path(sys.argv[1]) / "mode-preserve", pathlib.Path(sys.argv[2])
+root.mkdir(parents=True, exist_ok=True)
+(root / "a.json").write_text('{"ok":true}', encoding="utf-8")
+subprocess.check_call([sys.executable, str(tool), str(root), "--phase", "X", "--run-id", "R"],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+if os.name == "nt":
+    sys.exit(0)
+manifest = root / "manifest.json"
+os.chmod(manifest, 0o644)
+subprocess.check_call([sys.executable, str(tool), str(root), "--phase", "X", "--run-id", "R"],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+assert stat.S_IMODE(manifest.stat().st_mode) == 0o644
+PYEOF
+then
+  echo "  PASS  manifest atomic replace preserves existing permissions"
+  pass=$((pass+1))
+else
+  echo "  FAIL  manifest atomic replace changed existing permissions"
+  fail=$((fail+1))
+fi
+
 # (c) Line endings must be preserved, or every manifest edit becomes an unreviewable
 #     whole-file diff (docs/evidence is -text in .gitattributes, so bytes are what matter).
 mkdir -p "$TMP/crlf"
@@ -529,6 +598,8 @@ fi
 if [ -n "${CB_REDACT_IDENTIFIER:-}" ]; then
   check "no local machine identifier in tracked files" \
     python "$TOOLS/redact-evidence.py" --check
+  expect_fail "explicit nonexistent redaction path is refused" \
+    python "$TOOLS/redact-evidence.py" --check "$TMP/definitely-missing-redaction-input.txt"
 
   # Encoding coverage: a UTF-8-only scan reports a false clean on the UTF-16 and GB18030
   # evidence this repository actually contains (accoreconsole writes UTF-16LE when stdout is
@@ -543,6 +614,9 @@ line = "p: " + chr(67) + ":" + chr(92) + "Users" + chr(92) + ident + chr(92) + "
 for enc, name in (("utf-16-le", "le-bomless.txt"), ("utf-16-be", "be-bomless.txt"),
                   ("utf-16", "bom.txt"), ("utf-8", "utf8.txt"), ("gb18030", "gbk.txt")):
     (d / name).write_bytes(line.encode(enc))
+heavy = ("中文证据内容" * 120) + line + ("更多中文内容" * 120)
+(d / "le-chinese-heavy.txt").write_bytes(heavy.encode("utf-16-le"))
+(d / "be-chinese-heavy.txt").write_bytes(heavy.encode("utf-16-be"))
 PYEOF
   for encfile in "$ENC_DIR"/*.txt; do
     if CB_REDACT_IDENTIFIER="$CB_REDACT_IDENTIFIER" python "$TOOLS/redact-evidence.py" \
@@ -622,6 +696,39 @@ PYEOF
     echo "  PASS  byte-level scrub removes only the identifier and preserves the rest"
     pass=$((pass+1))
   else
+    fail=$((fail+1))
+  fi
+
+  TX_DIR="$TMP/redaction-transaction"
+  mkdir -p "$TX_DIR"
+  if python - "$TOOLS/redact-evidence.py" "$TX_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import importlib.util, pathlib, sys
+tool, d, ident = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), sys.argv[3]
+spec = importlib.util.spec_from_file_location("redact_evidence_under_test", tool)
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+p = d / "evidence.txt"
+original = ("C:" + chr(92) + "Users" + chr(92) + ident + chr(92) + "evidence").encode("utf-8")
+p.write_bytes(original)
+real_stage = mod._stage_bytes
+def injected(dest, data, mode):
+    if str(dest).endswith(".redaction.txt"):
+        raise OSError("injected sidecar staging failure")
+    return real_stage(dest, data, mode)
+mod._stage_bytes = injected
+try:
+    mod.scrub_file(p, ident, dry_run=False)
+except RuntimeError:
+    pass
+else:
+    raise AssertionError("injected sidecar failure was not reported")
+assert p.read_bytes() == original, "evidence changed before provenance was safely staged"
+assert not p.with_name(p.name + ".redaction.txt").exists(), "partial provenance was published"
+PYEOF
+  then
+    echo "  PASS  provenance failure leaves evidence byte-identical"
+    pass=$((pass+1))
+  else
+    echo "  FAIL  provenance failure changed evidence or left partial state"
     fail=$((fail+1))
   fi
 else

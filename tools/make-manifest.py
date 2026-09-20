@@ -27,6 +27,7 @@ import datetime as dt
 import hashlib
 import json
 import os
+import stat
 import sys
 import tempfile
 from pathlib import Path
@@ -150,12 +151,21 @@ def write_manifest_atomically(out: Path, manifest: dict) -> None:
 
     # Keep the temp file in the same directory so the replace cannot cross a filesystem
     # boundary (which would make it a copy + delete instead of an atomic rename).
+    previous_mode: int | None = None
+    if out.exists():
+        try:
+            previous_mode = stat.S_IMODE(out.stat().st_mode)
+        except OSError as e:
+            raise RuntimeError(f"cannot stat existing manifest {out}: {e}") from e
+
     fd, tmp_name = tempfile.mkstemp(dir=str(out.parent), prefix=MANIFEST_NAME + ".", suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="") as fh:
             fh.write(payload.replace("\n", newline) if newline != "\n" else payload)
             fh.flush()
             os.fsync(fh.fileno())
+        if previous_mode is not None:
+            os.chmod(tmp_name, previous_mode)
         os.replace(tmp_name, out)
     except BaseException:
         # Never leave a temp file behind, and never leave the previous manifest damaged.
@@ -315,6 +325,10 @@ def main() -> int:
         )
         manifest["artifact_count"] = len(manifest.get("artifacts", []))
         manifest["validation"] = {"problems": problems, "ok": False}
+
+    # Recompute validation LAST. This covers non-object --extra input too; previously that
+    # path appended a problem after validation.ok had already been captured as true.
+    manifest["validation"] = {"problems": problems, "ok": not problems}
 
     write_manifest_atomically(out, manifest)
     print(f"WROTE {out}  ({len(artifacts)} artifacts, {len(tests)} tests)")

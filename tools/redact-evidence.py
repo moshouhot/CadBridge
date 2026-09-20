@@ -40,7 +40,9 @@ import argparse
 import hashlib
 import os
 import pathlib
+import stat
 import subprocess
+import tempfile
 import sys
 
 DEFAULT_IDENTIFIER = os.environ.get("CB_REDACT_IDENTIFIER", "")
@@ -80,23 +82,24 @@ def _tracked_files(root: pathlib.Path) -> list[pathlib.Path]:
 
 
 def _detect_encoding(raw: bytes) -> tuple[str | None, str]:
-    """Determine the text encoding of `raw`, or report that it is not scannable text.
+    """Determine the text encoding when no identifier-specific match is available."""
+    if raw.startswith(b"\xff\xfe"):
+        try:
+            raw.decode("utf-16-le")
+            return "utf-16-le", ""
+        except UnicodeError:
+            return None, "UTF-16LE BOM present but content is malformed"
+    if raw.startswith(b"\xfe\xff"):
+        try:
+            raw.decode("utf-16-be")
+            return "utf-16-be", ""
+        except UnicodeError:
+            return None, "UTF-16BE BOM present but content is malformed"
 
-    Returns (encoding, reason). encoding is None when the bytes are not decodable text.
-
-    BOM-less UTF-16 is detected STRUCTURALLY, not by trial decoding: decoding arbitrary bytes
-    as utf-16 rarely raises (it just produces garbage), so a naive loop silently mis-decodes
-    and reports a false clean. Evidence here includes UTF-16LE output captured from
-    accoreconsole when stdout was not a console, and it has no BOM.
-
-    GB18030 is included because this project's host is a Chinese Windows install and some
-    captured console output is GBK/GB18030, not UTF-8.
-    """
     if len(raw) >= 2:
         odd_nuls = raw[1::2].count(0)
         even_nuls = raw[0::2].count(0)
         pairs = max(1, len(raw) // 2)
-        # ASCII text in UTF-16LE has NULs in every odd byte position; in BE, every even one.
         if odd_nuls / pairs > 0.3 and even_nuls / pairs < 0.05:
             enc = "utf-16-le"
         elif even_nuls / pairs > 0.3 and odd_nuls / pairs < 0.05:
@@ -104,11 +107,9 @@ def _detect_encoding(raw: bytes) -> tuple[str | None, str]:
         else:
             enc = None
         if enc:
-            # Structural detection still requires the bytes to decode cleanly; otherwise the
-            # file is not scannable text and must not be reported as clean.
             try:
                 raw.decode(enc)
-            except (UnicodeDecodeError, UnicodeError):
+            except UnicodeError:
                 return None, f"structurally UTF-16 ({enc}) but contains malformed sequences"
             return enc, ""
 
@@ -116,9 +117,30 @@ def _detect_encoding(raw: bytes) -> tuple[str | None, str]:
         try:
             raw.decode(enc)
             return enc, ""
-        except (UnicodeDecodeError, UnicodeError):
+        except UnicodeError:
             continue
     return None, "cannot decode as UTF-8, UTF-16 or GB18030"
+
+
+def _encoding_for_identifier(raw: bytes, identifier: str) -> tuple[str | None, str]:
+    """Prefer an encoding that actually decodes the requested identifier from the bytes.
+
+    This closes the Chinese-heavy BOM-less UTF-16 gap: those files may contain very few NULs
+    overall and can also decode as GB18030. The ASCII identifier itself still has an exact
+    UTF-16 byte representation, so verify candidate decodings directly before falling back to
+    generic text detection.
+    """
+    for enc in ("utf-16-le", "utf-16-be", "utf-8", "gb18030"):
+        pattern = identifier.encode(enc)
+        if not pattern or pattern not in raw:
+            continue
+        try:
+            text = raw.decode(enc)
+        except UnicodeError:
+            continue
+        if identifier in text:
+            return enc, ""
+    return _detect_encoding(raw)
 
 
 def _pattern_codec(encoding: str) -> str:
@@ -135,30 +157,38 @@ def _pattern_codec(encoding: str) -> str:
     return encoding
 
 
+def _stage_bytes(dest: pathlib.Path, data: bytes, mode: int | None) -> pathlib.Path:
+    """Write and fsync a same-directory temporary file without publishing it."""
+    fd, tmp_name = tempfile.mkstemp(
+        dir=str(dest.parent), prefix=dest.name + ".", suffix=".tmp"
+    )
+    tmp = pathlib.Path(tmp_name)
+    try:
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(data)
+            fh.flush()
+            os.fsync(fh.fileno())
+        if mode is not None:
+            os.chmod(tmp, mode)
+        return tmp
+    except BaseException:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
+
+
 def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
-    """Replace the identifier in one text file. Returns the number of occurrences.
-
-    REPLACEMENT IS DONE AT THE BYTE LEVEL, and that is the point.
-
-    An earlier version decoded with errors="replace", substituted the identifier, and encoded
-    back with errors="replace". That rewrites EVERY malformed sequence in the file, not just
-    the identifier: a lone surrogate in an otherwise-fine UTF-16 evidence file became U+FFFD.
-    The scrub then silently altered unrelated evidence bytes while appearing to only remove a
-    username. Verified before fixing: a file whose tail was the bytes 00 d8 came back as fd ff.
-
-    So the file is now: (1) checked to be decodable text, which is required to know the
-    identifier's byte pattern and to refuse unscannable files; (2) scrubbed by replacing only
-    the encoded identifier bytes; and (3) VERIFIED by re-inserting the identifier pattern and
-    asserting the result is byte-identical to the original, which proves nothing else changed.
-    """
+    """Replace the identifier while keeping evidence and provenance failure-safe."""
     if p.suffix.lower() in SKIP_SUFFIXES:
         return 0
     try:
         raw = p.read_bytes()
     except OSError as e:
-        raise RuntimeError(f"cannot read {p}: {e}")
+        raise RuntimeError(f"cannot read {p}: {e}") from e
 
-    encoding, reason = _detect_encoding(raw)
+    encoding, reason = _encoding_for_identifier(raw, identifier)
     if encoding is None:
         raise RuntimeError(
             f"cannot scan {p}: {reason}; it was NOT checked for the identifier"
@@ -173,37 +203,87 @@ def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
         return n
 
     scrubbed = raw.replace(pattern, replacement)
-
-    # VERIFY that ONLY the identifier bytes changed. The check reconstructs the expected result
-    # from the original segments and compares it to what was written, which is exact and
-    # unambiguous. (Re-inserting the identifier into the scrubbed bytes would NOT be: if the
-    # file already contained the literal replacement text, that approach would rewrite it too
-    # and report a false failure.)
     expected = replacement.join(raw.split(pattern))
     if scrubbed != expected:
         raise RuntimeError(
             f"refusing to write {p}: byte-level verification failed, so the scrub would change "
-            f"bytes other than the identifier"
+            "bytes other than the identifier"
         )
 
-    before = _sha256(p)
-    p.write_bytes(scrubbed)
-    after = _sha256(p)
-    p.with_name(p.name + ".redaction.txt").write_text(
+    before = hashlib.sha256(raw).hexdigest()
+    after = hashlib.sha256(scrubbed).hexdigest()
+    sidecar = p.with_name(p.name + ".redaction.txt")
+    provenance = (
         f"Redaction provenance for {p.name}\n"
         f"original_sha256={before}\n"
         f"stored_sha256={after}\n"
         f"occurrences={n}\n"
         f"encoding={encoding}\n"
-        f"method=byte-level replacement of the encoded identifier only\n"
-        f"verification=the written bytes equal the original bytes with only the encoded "
-        f"identifier spans replaced\n"
+        "method=byte-level replacement of the encoded identifier only\n"
+        "verification=the written bytes equal the original bytes with only the encoded "
+        "identifier spans replaced\n"
         f"replacement=local account/machine identifier -> {REPLACEMENT}\n"
-        f"scope=Only the encoded identifier bytes were replaced. Every other byte, including any\n"
-        f"malformed sequences, is unchanged. No measurement, warning count, exit code or\n"
-        f"conclusion was altered.\n",
-        encoding="utf-8",
-    )
+        "scope=Only the encoded identifier bytes were replaced. Every other byte, including any\n"
+        "malformed sequences, is unchanged. No measurement, warning count, exit code or\n"
+        "conclusion was altered.\n"
+    ).encode("utf-8")
+
+    try:
+        evidence_mode = stat.S_IMODE(p.stat().st_mode)
+    except OSError as e:
+        raise RuntimeError(f"cannot stat {p}: {e}") from e
+
+    old_sidecar: bytes | None = None
+    old_sidecar_mode: int | None = None
+    if sidecar.exists():
+        try:
+            old_sidecar = sidecar.read_bytes()
+            old_sidecar_mode = stat.S_IMODE(sidecar.stat().st_mode)
+        except OSError as e:
+            raise RuntimeError(f"cannot preserve existing provenance {sidecar}: {e}") from e
+
+    evidence_tmp: pathlib.Path | None = None
+    sidecar_tmp: pathlib.Path | None = None
+    try:
+        # Stage BOTH artifacts before publishing either one. A sidecar staging failure therefore
+        # cannot occur after evidence bytes have changed.
+        evidence_tmp = _stage_bytes(p, scrubbed, evidence_mode)
+        sidecar_tmp = _stage_bytes(sidecar, provenance, old_sidecar_mode)
+
+        # Publish provenance FIRST. A hard interruption after this point can leave a stale
+        # sidecar next to the original evidence, but can never leave scrubbed evidence without
+        # the original/stored hashes needed to audit it.
+        os.replace(sidecar_tmp, sidecar)
+        sidecar_tmp = None
+        try:
+            os.replace(evidence_tmp, p)
+            evidence_tmp = None
+        except BaseException:
+            # Evidence replacement failed, so the original evidence still exists. Restore the
+            # prior provenance state so a normal exception path is fully transactional.
+            try:
+                if old_sidecar is None:
+                    sidecar.unlink(missing_ok=True)
+                else:
+                    restore_tmp = _stage_bytes(sidecar, old_sidecar, old_sidecar_mode)
+                    os.replace(restore_tmp, sidecar)
+            except BaseException as rollback_error:
+                raise RuntimeError(
+                    f"evidence update failed and provenance rollback also failed: {rollback_error}"
+                )
+            raise
+    except BaseException as e:
+        raise RuntimeError(f"transactional redaction failed for {p}: {e}") from e
+    finally:
+        for tmp in (evidence_tmp, sidecar_tmp):
+            if tmp is not None:
+                try:
+                    tmp.unlink()
+                except OSError:
+                    pass
+
+    if _sha256(p) != after:
+        raise RuntimeError(f"post-write hash verification failed for {p}")
     return n
 
 
@@ -226,12 +306,19 @@ def main() -> int:
     root = pathlib.Path(".").resolve()
     if args.paths:
         targets: list[pathlib.Path] = []
+        missing: list[str] = []
         for raw in args.paths:
             p = pathlib.Path(raw)
             if p.is_dir():
                 targets.extend(sorted(x for x in p.rglob("*") if x.is_file()))
             elif p.is_file():
                 targets.append(p)
+            else:
+                missing.append(raw)
+        if missing:
+            for item in missing:
+                print(f"ERROR: explicit redaction path does not exist: {item}", file=sys.stderr)
+            return 2
     else:
         try:
             targets = _tracked_files(root)

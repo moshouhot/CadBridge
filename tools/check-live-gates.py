@@ -90,6 +90,7 @@ GATED: dict[str, str] = {
     "dap-a14-sequence.py": "unconditional",
     "live-job-ownership-smoke.py": "unconditional",
     "dap-probe.py": "conditional",  # may probe an adapter offline; gate only on live intent
+    "com_read_worker.py": "unconditional",
 }
 
 # (b) Live entrypoints deliberately NOT gated, with the reason and the limits.
@@ -137,7 +138,6 @@ NON_LIVE: dict[str, str] = {
     "redact-evidence.py": "text scrubbing over tracked files; no process launch",
     "bounded_worker.py": "generic bounded subprocess worker; no CAD executable is referenced",
     "job-family-fixture.py": "launches a copy of itself as a sleep fixture; no CAD involved",
-    "com_read_worker.py": "child worker that reads an already-verified instance; owns nothing",
     "make-manifest.py": "hashes evidence files; no process launch",
     "compare-security-baseline.py": "diffs two JSON baselines; no process launch",
     "test-repl-probe-offline.py": "offline fake-based tests; no CAD is started",
@@ -145,6 +145,12 @@ NON_LIVE: dict[str, str] = {
         "runs the suite. It only INVOKES the harness scripts (argument-validation cases) and "
         "writes a fake accoreconsole stand-in with a heredoc redirect; it never executes a real "
         "CAD binary."
+    ),
+    "tests/run-radius-policy-tests.sh": (
+        "builds and runs host-independent prompt-policy logic; it does not launch AutoCAD"
+    ),
+    "tests/run-execution-baseline-tests.sh": (
+        "builds and runs the non-live execution-baseline regression with Autodesk boundary stubs"
     ),
     "inventory-autocad.ps1": "READ-ONLY inventory of installed AutoCAD; never launches a host",
     "scan-autocad.ps1": "READ-ONLY install scan; never launches a host",
@@ -296,6 +302,99 @@ def _resolved_gate_calls(tree: ast.AST) -> tuple[list[ast.Call], list[str]]:
         elif isinstance(fn, ast.Name) and fn.id in direct:
             out.append(node)
     return out, unsafe_reasons + direct_reasons + suspicious
+
+
+def _is_main_guard(test: ast.AST) -> bool:
+    """True only for the conventional `if __name__ == "__main__":` guard."""
+    if not isinstance(test, ast.Compare) or len(test.ops) != 1 or len(test.comparators) != 1:
+        return False
+    if not isinstance(test.ops[0], ast.Eq):
+        return False
+    left, right = test.left, test.comparators[0]
+    return (
+        isinstance(left, ast.Name) and left.id == "__name__"
+        and isinstance(right, ast.Constant) and right.value == "__main__"
+    ) or (
+        isinstance(right, ast.Name) and right.id == "__name__"
+        and isinstance(left, ast.Constant) and left.value == "__main__"
+    )
+
+
+def _main_is_executable_entrypoint(tree: ast.AST) -> bool:
+    """Require an actual module-level __main__ guard that invokes main()."""
+    for stmt in getattr(tree, "body", []):
+        if not isinstance(stmt, ast.If) or not _is_main_guard(stmt.test):
+            continue
+        for body_stmt in stmt.body:
+            for node in ast.walk(body_stmt):
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) \
+                        and node.func.id == "main":
+                    return True
+    return False
+
+
+def _contains_node(stmts: list[ast.stmt], target: ast.AST) -> bool:
+    return any(target is node for stmt in stmts for node in ast.walk(stmt))
+
+
+def _gate_call_on_entry_path(tree: ast.AST, call: ast.Call) -> tuple[bool, str]:
+    """Conservatively prove a resolved gate call lies on the executable main path.
+
+    A prior checker accepted any resolved gate call anywhere in the AST. That lets an
+    uncalled helper or `if False:` block satisfy the checker while the real live path remains
+    ungated. Current live Python harnesses all use a conventional main() entrypoint; fail
+    closed if a future harness uses a shape this static proof cannot establish.
+    """
+    parents: dict[ast.AST, ast.AST] = {}
+    for parent in ast.walk(tree):
+        for child in ast.iter_child_nodes(parent):
+            parents[child] = parent
+
+    # Reject statically dead branches containing the gate.
+    for node in ast.walk(tree):
+        if isinstance(node, ast.If) and isinstance(node.test, ast.Constant):
+            truthy = bool(node.test.value)
+            if not truthy and _contains_node(node.body, call):
+                return False, f"line {call.lineno}: gate is inside a statically false if-body"
+            if truthy and _contains_node(node.orelse, call):
+                return False, f"line {call.lineno}: gate is inside a statically unreachable else"
+        if isinstance(node, ast.While) and isinstance(node.test, ast.Constant) \
+                and not bool(node.test.value) and _contains_node(node.body, call):
+            return False, f"line {call.lineno}: gate is inside a statically false while-body"
+
+    cur: ast.AST | None = call
+    enclosing: ast.AST | None = None
+    while cur in parents:
+        cur = parents[cur]
+        if isinstance(cur, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+            enclosing = cur
+            break
+
+    if enclosing is None:
+        # A module-level gate executes when the module is run and is therefore conservative.
+        return True, ""
+    if not isinstance(enclosing, (ast.FunctionDef, ast.AsyncFunctionDef)) \
+            or enclosing.name != "main":
+        name = getattr(enclosing, "name", "lambda")
+        return False, (
+            f"line {call.lineno}: gate is inside {name!r}, not directly in executable main(); "
+            "an uncalled helper cannot satisfy the live gate"
+        )
+    if not _main_is_executable_entrypoint(tree):
+        return False, "main() contains the gate but is not invoked from a __main__ entrypoint"
+    return True, ""
+
+
+def _reachable_gate_calls(tree: ast.AST, calls: list[ast.Call]) -> tuple[list[ast.Call], list[str]]:
+    reachable: list[ast.Call] = []
+    rejected: list[str] = []
+    for call in calls:
+        ok, why = _gate_call_on_entry_path(tree, call)
+        if ok:
+            reachable.append(call)
+        else:
+            rejected.append(why)
+    return reachable, rejected
 
 
 def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> tuple[bool, str]:
@@ -539,56 +638,70 @@ def _is_executable_script(p: pathlib.Path) -> tuple[bool, str]:
     return False, ""
 
 
-def check(tools: pathlib.Path) -> list[str]:
+def _classification_key(relative_path: str) -> str:
+    """Map repository-relative tool paths onto the historical tools/ registry keys."""
+    if relative_path.startswith("tools/"):
+        return relative_path[len("tools/"):]
+    return relative_path
+
+
+def _out_of_scope_path(relative_path: str) -> bool:
+    """Generated/captured trees are evidence, not executable first-party entrypoints."""
+    if relative_path.startswith("docs/evidence/"):
+        return True
+    parts = pathlib.PurePosixPath(relative_path).parts
+    return any(p in {".git", "bin", "obj", ".venv", "node_modules", "__pycache__"} for p in parts)
+
+
+def check(root: pathlib.Path) -> list[str]:
     problems: list[str] = []
     registries = _all_registries()
 
-    # --- coverage: every executable script at any depth must be classified -----------
-    #
-    # Classification is keyed by the path RELATIVE to tools/, not by basename. Keying by
-    # basename let `subdir/safe_process.py` inherit the GATE_MECHANISM entry for
-    # `safe_process.py`, so a live harness could pick a colliding name and be neither gated
-    # nor rejected. Basename collisions across different directories are also rejected, so a
-    # registry entry can never silently cover two files.
-    found: list[tuple[pathlib.Path, str]] = []
-    for p in sorted(tools.rglob("*")):
+    # Backward-compatible tools-only mode remains useful for isolated mutation fixtures.
+    tools_only = root.name == "tools" and not (root / "tools").is_dir()
+    scoped_registries = {
+        k: v for k, v in registries.items()
+        if not (tools_only and k.startswith("tests/"))
+    }
+
+    # --- coverage: every executable first-party script in repository scope is classified ---
+    found: list[tuple[pathlib.Path, str, str, str]] = []
+    for p in sorted(root.rglob("*")):
         if not p.is_file():
             continue
+        rel = p.relative_to(root).as_posix()
+        if _out_of_scope_path(rel):
+            continue
         ok, why = _is_executable_script(p)
-        if ok:
-            found.append((p, why))
+        if not ok:
+            continue
+        key = _classification_key(rel)
+        found.append((p, why, rel, key))
 
-    by_rel = {p.relative_to(tools).as_posix(): (p, why) for p, why in found}
-    by_name: dict[str, list[str]] = {}
-    for rel in by_rel:
-        by_name.setdefault(pathlib.PurePosixPath(rel).name, []).append(rel)
-
-    for rel, (p, why) in sorted(by_rel.items()):
-        if rel not in registries:
+    by_key: dict[str, tuple[pathlib.Path, str, str]] = {}
+    for p, why, rel, key in found:
+        if key in by_key:
             problems.append(
-                f"{rel}: UNCLASSIFIED executable script (detected by {why}). Every script must "
-                f"be declared in GATED, LIVE_EXCEPTIONS, GATE_MECHANISM, RETIRED_HARNESSES or "
-                f"NON_LIVE, so a new live harness cannot slip in unexamined."
+                f"classification key collision {key!r}: {by_key[key][2]!r} and {rel!r}"
+            )
+            continue
+        by_key[key] = (p, why, rel)
+
+    for key, (p, why, rel) in sorted(by_key.items()):
+        if key not in scoped_registries:
+            problems.append(
+                f"{rel}: UNCLASSIFIED executable script (detected by {why}). Every first-party "
+                "script in repository scope must be declared so a live harness cannot move to "
+                "tests/ or the repository root and escape review."
             )
 
-    for name in sorted(registries):
-        if name not in by_rel:
-            problems.append(f"{name}: classified but no such script exists (stale registry entry)")
-
-    # Reject basename collisions: two different paths sharing a name would make a basename-keyed
-    # registry ambiguous, and a nested file could inherit another file's classification.
-    for base, rels in sorted(by_name.items()):
-        if len(rels) > 1 and base in registries:
-            problems.append(
-                f"basename collision for {base!r}: {rels}. The registry is keyed by basename, so "
-                f"a nested file would inherit another file's classification. Rename one, or key "
-                f"the registry by path."
-            )
+    for key in sorted(scoped_registries):
+        if key not in by_key:
+            problems.append(f"{key}: classified but no such script exists in the checked scope")
 
     # --- per-file checks -------------------------------------------------------------
-    for rel, (p, why_detected) in sorted(by_rel.items()):
-        name = pathlib.PurePosixPath(rel).name
-        if rel not in registries:
+    for key, (p, why_detected, rel) in sorted(by_key.items()):
+        if key not in scoped_registries:
             continue
         suffix = p.suffix.lower()
         if suffix == ".py":
@@ -600,14 +713,14 @@ def check(tools: pathlib.Path) -> list[str]:
         else:
             live, why = False, ""
 
-        if live and rel in NON_LIVE:
+        if live and key in NON_LIVE:
             problems.append(
-                f"{rel}: classified non-live ({NON_LIVE[rel]}) but behavioural discovery says "
+                f"{rel}: classified non-live ({NON_LIVE[key]}) but behavioural discovery says "
                 f"it is live ({why}); the classification is wrong"
             )
             continue
 
-        if rel in GATED:
+        if key in GATED:
             if suffix == ".py":
                 try:
                     tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
@@ -615,18 +728,19 @@ def check(tools: pathlib.Path) -> list[str]:
                     problems.append(f"{rel}: cannot parse: {e}")
                     continue
                 calls, suspicious = _resolved_gate_calls(tree)
-                if not calls:
-                    detail = ("; ".join(suspicious) if suspicious
-                              else "no call to the gate at all")
+                reachable, unreachable = _reachable_gate_calls(tree, calls)
+                if not reachable:
+                    detail_parts = suspicious + unreachable
+                    detail = "; ".join(detail_parts) if detail_parts else "no reachable gate call"
                     problems.append(
-                        f"{rel}: live entrypoint with no call resolving to a safely-bound "
+                        f"{rel}: live entrypoint with no reachable call resolving to a safely-bound "
                         f"{GATE_MODULE}.{GATE_FUNC}() ({detail})"
                     )
                     continue
                 if suspicious:
                     problems.append(f"{rel}: {suspicious[0]}")
-                if GATED[rel] == "conditional":
-                    ok_guard, reason = _guard_mentions_live_intent(tree, calls)
+                if GATED[key] == "conditional":
+                    ok_guard, reason = _guard_mentions_live_intent(tree, reachable)
                     if not ok_guard:
                         problems.append(
                             f"{rel}: gate is not on the live-intent path, so a real CAD run "
@@ -639,29 +753,29 @@ def check(tools: pathlib.Path) -> list[str]:
                         f"safe_process.py --gate"
                     )
             else:
-                # A gated entrypoint that is neither Python nor shell (e.g. a shebang script
-                # with no suffix) cannot be verified, so refuse rather than assume.
                 problems.append(
                     f"{rel}: classified as GATED but its type ({suffix or 'no suffix'}) cannot "
                     f"be verified for a gate call; use Python/shell or move it to LIVE_EXCEPTIONS "
                     f"with a reason"
                 )
 
-        if rel in RETIRED_HARNESSES and suffix in (".sh", ".bash"):
+        if key in RETIRED_HARNESSES and suffix in (".sh", ".bash"):
             if not _shell_invokes_gate(p):
                 problems.append(
                     f"{rel}: retired harness no longer routes through safe_process.py --gate, so "
-                    f"an old command would fail silently instead of loudly"
+                    "an old command would fail silently instead of loudly"
                 )
 
     # --- no environment-variable bypass ----------------------------------------------
-    for f in sorted(tools.rglob("*.py")):
+    for f in sorted(root.rglob("*.py")):
+        rel = f.relative_to(root).as_posix()
+        if _out_of_scope_path(rel):
+            continue
         for envname in _env_reads(f):
             if "CBRIDGE_ACK" in envname:
                 problems.append(
-                    f"{f.relative_to(tools)}: reads environment variable {envname!r} (directly, "
-                    f"via an alias, or as a literal); an environment variable must never bypass "
-                    f"the live-run gate"
+                    f"{rel}: reads environment variable {envname!r}; an environment variable "
+                    "must never bypass the live-run gate"
                 )
 
     if not problems:
@@ -671,7 +785,6 @@ def check(tools: pathlib.Path) -> list[str]:
               f"mechanism: {len(GATE_MECHANISM)} | retired: {len(RETIRED_HARNESSES)} | "
               f"non-live: {len(NON_LIVE)}")
     return problems
-
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
