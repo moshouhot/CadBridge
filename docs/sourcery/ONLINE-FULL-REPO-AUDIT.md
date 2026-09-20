@@ -210,6 +210,40 @@ vacuous.
 At this stage GitHub reported 16 review threads, 15 resolved and 1 unresolved (F4). As before,
 a green Sourcery check is not sufficient without zero unresolved threads.
 
+## Fourth local verification follow-up: bounded-failure harness
+
+Independent local verification of `8074c60a9f132f8ff449d2d5c01350362f84e853`
+proved the repaired concurrency test is meaningful: the no-lock mutation was killed with
+three failures and exited nonzero. The production F1 transaction was not invalidated.
+
+The same verification found F6: realistic rollback/ordering mutations produced failures but
+could then hang indefinitely because several synchronization/join waits were unbounded. The
+mandatory runner and therefore `tools/selftest.sh` could wedge instead of reporting failure.
+
+This follow-up keeps production baseline semantics unchanged and hardens only the test
+infrastructure:
+
+- candidate-entry waits, hook release waits, reader joins and writer joins are bounded;
+- timeout paths are explicit FAIL evidence rather than silent continuation;
+- post-state checks are skipped when a bounded join itself fails, avoiding a second lock wait;
+- `run-execution-baseline-tests.sh` adds an outer owned-process watchdog so an internal
+  harness regression cannot wedge the parent self-test indefinitely.
+
+F7 was an evidence-accuracy nit: `BASELINE-AUDIT.md` still said 47 self-tests although the
+verified `8074c60` script ran 53. The current-measurement row is corrected without rewriting
+older historical results.
+
+At that stage GitHub reported 17 review threads, 16 resolved and 1 unresolved (F7).
+
+### Independent AI review closeout
+
+The project now treats Sourcery, Codex Code Review, and Codex Security Review as separate
+audit surfaces. For a final candidate SHA, a green result from one does not substitute for the
+others. Closeout requires evidence that the final SHA was actually covered by each enabled
+surface, with all confirmed findings handled. If GitHub does not expose evidence binding a
+Codex review/security result to the final SHA, that surface remains **UNVERIFIED** rather than
+being inferred from configuration.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

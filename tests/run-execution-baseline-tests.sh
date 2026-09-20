@@ -18,7 +18,26 @@ DLL="$OUT/CadBridge.Tests.ExecutionContextBaseline.dll"
 
 echo
 echo "== run =="
-dotnet "$DLL"
+# Second-layer watchdog: the C# harness has bounded waits, but a regression in the
+# harness itself must not wedge selftest/CI forever. Python is already a project
+# prerequisite and can terminate only this owned dotnet test process on timeout.
+RUN_TIMEOUT_SECONDS="${CB_EXEC_BASELINE_TIMEOUT_SECONDS:-45}"
+python - "$DLL" "$RUN_TIMEOUT_SECONDS" <<'PYEOF'
+import subprocess
+import sys
+
+dll = sys.argv[1]
+timeout_seconds = float(sys.argv[2])
+try:
+    completed = subprocess.run(["dotnet", dll], timeout=timeout_seconds)
+except subprocess.TimeoutExpired:
+    print(
+        f"ERROR: execution-baseline regression timed out after {timeout_seconds:g}s",
+        file=sys.stderr,
+    )
+    sys.exit(124)
+sys.exit(completed.returncode)
+PYEOF
 RC=$?
 echo "exit_code=$RC"
 exit $RC
