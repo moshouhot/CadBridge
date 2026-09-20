@@ -1,0 +1,28 @@
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "nuget"
+    directories:
+      - "/src/CadBridge.Plugin.Legacy"
+      - "/src/CadBridge.Plugin.Modern"
+      - "/tests/CoreConsoleProbe"
+      - "/tests/CoreConsoleProbeModern"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      nuget:
+        patterns:
+          - "*"
