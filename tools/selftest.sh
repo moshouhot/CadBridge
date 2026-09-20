@@ -9,7 +9,7 @@
 # These tests assert the harness FAILS LOUDLY on each of those conditions, so a broken
 # harness can never again masquerade as a negative product result.
 #
-# No AutoCAD is launched. Pure argument/path/decoder behaviour.
+# No AutoCAD is launched. The suite includes pure tooling checks plus non-live compiled regressions.
 set -u
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
@@ -36,6 +36,10 @@ echo "== Python static gates =="
 # pyflakes catches undefined-name classes without executing any live harness.
 check "all Python tooling compiles" env PYTHONPYCACHEPREFIX="$TMP/pycache" python -m compileall -q "$TOOLS"
 check "pyflakes clean across tools/*.py" python -m pyflakes "$TOOLS"/*.py
+
+echo "== execution baseline transaction regression =="
+check "production ExecutionContextBaseline publication regression" \
+  bash "$REPO/tests/run-execution-baseline-tests.sh"
 
 echo "== pathconv =="
 check "to-win converts /f/a/b"        test "$(python "$TOOLS/pathconv.py" to-win '/f/a/b')" = 'F:\a\b'

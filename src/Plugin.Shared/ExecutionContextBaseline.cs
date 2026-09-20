@@ -56,6 +56,14 @@ namespace CadBridge.Plugin.Shared
         /// <summary>Serializes the one-time baseline transition.</summary>
         private static readonly object BaselineLock = new object();
 
+#if CADBRIDGE_TESTING
+        // Test-only synchronization seam. Production plugin builds never define
+        // CADBRIDGE_TESTING, so this hook is absent from shipped assemblies. The offline
+        // regression uses it to hold the writer after a provisional candidate exists but
+        // before readiness commit/rollback, making the publication lock observable.
+        internal static Action TestAfterCandidateEstablished;
+#endif
+
         private static bool HasBaselineUnsafe()
         {
             return _idleNativeThreadId != 0 && _hasContextBaseline;
@@ -151,6 +159,10 @@ namespace CadBridge.Plugin.Shared
             _idleIsApplicationContext = appContext;
             _hasContextBaseline = true;
             establishedThisAttempt = true;
+
+#if CADBRIDGE_TESTING
+            TestAfterCandidateEstablished?.Invoke();
+#endif
 
             var sb = new StringBuilder();
             sb.Append("CBBASELINE_RECORDED");

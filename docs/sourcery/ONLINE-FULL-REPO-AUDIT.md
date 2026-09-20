@@ -175,6 +175,41 @@ reported 15 total / 14 resolved / 1 unresolved even though the Sourcery check wa
 Baseline closeout therefore requires BOTH a successful Sourcery check and zero unresolved
 review threads.
 
+## Third local verification follow-up: test harness defects
+
+Independent local verification of `1e119587d6740d971422ef64afd07aa32a067e0d`
+returned **LOCAL NON-LIVE FAIL** even though the production F1 transaction itself was
+independently reproduced as correct.
+
+Two test defects were confirmed:
+
+- F3: the new regression did not compile because its test namespace ended in
+  `ExecutionContextBaseline`, shadowing the imported production type. The regression also was
+  not wired into `tools/selftest.sh`, so the main self-test could remain green.
+- F4: the concurrency section was vacuous. It started readers only after the one-shot baseline
+  had already committed, so all later writers were refused and no reader raced a publication
+  transition. A temporary mutation removing the publication lock still passed.
+
+The repaired regression now:
+
+- uses a non-conflicting namespace and an explicit global alias for the production type;
+- is a mandatory `selftest.sh` gate;
+- compiles the real production `ExecutionContextBaseline.cs`;
+- enables a `CADBRIDGE_TESTING`-only internal synchronization hook that is absent from normal
+  plugin builds;
+- starts readers before the first rollback and first successful commit;
+- holds the writer after a provisional candidate exists, proving readers cannot finish until
+  commit/rollback releases the publication lock;
+- verifies rollback readers see only fully-unset state and commit readers see only fully-
+  published state.
+
+Acceptance of this repair requires the local mutation that removes the transaction lock to
+make the concurrency regression fail; a passing no-lock mutation means the test is still
+vacuous.
+
+At this stage GitHub reported 16 review threads, 15 resolved and 1 unresolved (F4). As before,
+a green Sourcery check is not sufficient without zero unresolved threads.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership
