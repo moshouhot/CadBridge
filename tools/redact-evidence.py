@@ -353,9 +353,10 @@ def scrub_file(
     n = len(positions)
     if not n:
         return 0
-    if dry_run:
-        return n
 
+    # Dry-run and real scrub must answer the SAME question: could this exact transformed
+    # payload be published safely? Validate the staged bytes before returning from dry-run so
+    # a mixed-encoding file cannot be reported as "would redact" when the real scrub refuses.
     scrubbed = _replace_at_positions(raw, pattern, replacement, positions)
     remaining = _remaining_identifier_representations(scrubbed, identifier)
     if remaining:
@@ -363,6 +364,8 @@ def scrub_file(
             "refusing to publish a partial scrub: identifier remains visible under supported "
             f"encoding(s): {', '.join(remaining)}"
         )
+    if dry_run:
+        return n
 
     before = hashlib.sha256(raw).hexdigest()
     after = hashlib.sha256(scrubbed).hexdigest()
@@ -389,6 +392,11 @@ def scrub_file(
 
     old_sidecar: bytes | None = None
     old_sidecar_mode: int | None = None
+    if sidecar.is_symlink():
+        raise RuntimeError(
+            f"refusing provenance symlink {sidecar}: replacing it would break repository "
+            "structure while leaving the referent unchanged"
+        )
     if sidecar.exists():
         try:
             old_sidecar = sidecar.read_bytes()
@@ -516,13 +524,11 @@ def main() -> int:
                 verb = "would redact" if args.dry_run else "redacted"
                 print(f"  {verb} {n:3d} occurrence(s)  {p}")
 
-    # Files that are not decodable text (binaries, .dll, .pdb) are excluded from the scan by
-    # design, and that exclusion must be EXPLICIT rather than an accident of decoding failure.
-    # Anything else that fails to decode is an UNVERIFIED file: reporting PASS for it would be
-    # a false clean, so --check fails instead. This was a real defect -- an undecodable tracked
-    # file produced "PASS no local machine identifier" while never having been scanned.
-    unexpected = [u for u in undecodable
-                  if pathlib.Path(u.split(":", 1)[0]).suffix.lower() not in SKIP_SUFFIXES]
+    # Every intended target that failed processing is UNVERIFIED and therefore blocks a clean
+    # result. UNSCANNABLE_SUFFIXES is enforced inside scrub_file() and deliberately raises;
+    # there is no second "skip" list here. Keeping this list identical to undecodable also
+    # prevents a stale symbol rename from turning a deliberate refusal into a NameError.
+    unexpected = list(undecodable)
 
     if undecodable:
         print(f"  WARN  {len(undecodable)} file(s) not scanned:")

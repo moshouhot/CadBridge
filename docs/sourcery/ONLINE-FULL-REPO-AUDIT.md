@@ -398,6 +398,31 @@ The next certification step is a fresh independent local non-live verification o
 post-remediation SHA. Live AutoCAD/CoreConsole/DAP/COM execution remains UNVERIFIED unless
 separately authorized.
 
+## Eleventh follow-up: local non-live FAIL cleanup
+
+Independent local verification of `ded8518cac98ecbc42f59480e1ec9661609946d9`
+correctly returned **LOCAL NON-LIVE FAIL**. The core baseline/build regressions remained healthy,
+but four closeout defects were confirmed and are fixed in this follow-up:
+
+- the `SKIP_SUFFIXES` -> `UNSCANNABLE_SUFFIXES` policy rename left one stale symbol in the
+  result-aggregation path, causing a NameError instead of the intended fail-closed diagnostic;
+- four remaining live harnesses still discarded `terminate_owned()` results; all now persist
+  cleanup confirmation and make cleanup failure affect the final process status;
+- mixed-encoding dry-run now validates the simulated transformed bytes exactly like real scrub,
+  and the regression asserts the intended refusal message while explicitly rejecting
+  Traceback/NameError false positives;
+- a pre-existing provenance sidecar symlink is refused before read/stat/atomic replacement, so
+  the scrub cannot silently replace the link with a regular file.
+
+The prior handoff's 58/58 thread count was a point-in-time statement. After automatic Codex
+review of `ded8518`, GitHub reported 68 total / 58 resolved / 10 unresolved. Per owner
+decision, that automatic post-handoff Codex cycle is not a closeout gate. One of those findings
+(the provenance-sidecar symlink) was independently reproduced locally and therefore promoted
+to a required fix above.
+
+No further Codex review is requested for this remediation. The next certification step is a
+fresh independent local non-live verification of the exact new SHA.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

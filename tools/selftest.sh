@@ -905,8 +905,25 @@ raw += (" | utf8:" + ident + " |").encode("utf-8")
 p.write_bytes(raw)
 PYEOF
   MIXED_BEFORE="$(sha256sum "$MIXED_ENCODING" | cut -d' ' -f1)"
-  expect_fail "mixed-encoding evidence cannot be partially scrubbed" \
-    python "$TOOLS/redact-evidence.py" "$MIXED_ENCODING"
+  MIXED_DRY_LOG="$TMP/mixed-encoding-dry.log"
+  if python "$TOOLS/redact-evidence.py" --dry-run "$MIXED_ENCODING" >"$MIXED_DRY_LOG" 2>&1; then
+    echo "  FAIL  mixed-encoding dry-run incorrectly predicted publishability"; fail=$((fail+1))
+  elif grep -q "refusing to publish a partial scrub" "$MIXED_DRY_LOG" \
+       && ! grep -Eq "Traceback|NameError" "$MIXED_DRY_LOG"; then
+    echo "  PASS  mixed-encoding dry-run rejects for the intended reason"; pass=$((pass+1))
+  else
+    echo "  FAIL  mixed-encoding dry-run failed for the wrong reason"; cat "$MIXED_DRY_LOG"; fail=$((fail+1))
+  fi
+
+  MIXED_SCRUB_LOG="$TMP/mixed-encoding-scrub.log"
+  if python "$TOOLS/redact-evidence.py" "$MIXED_ENCODING" >"$MIXED_SCRUB_LOG" 2>&1; then
+    echo "  FAIL  mixed-encoding scrub unexpectedly succeeded"; fail=$((fail+1))
+  elif grep -q "refusing to publish a partial scrub" "$MIXED_SCRUB_LOG" \
+       && ! grep -Eq "Traceback|NameError" "$MIXED_SCRUB_LOG"; then
+    echo "  PASS  mixed-encoding scrub rejects for the intended reason"; pass=$((pass+1))
+  else
+    echo "  FAIL  mixed-encoding scrub failed for the wrong reason"; cat "$MIXED_SCRUB_LOG"; fail=$((fail+1))
+  fi
   MIXED_AFTER="$(sha256sum "$MIXED_ENCODING" | cut -d' ' -f1)"
   if [ "$MIXED_BEFORE" = "$MIXED_AFTER" ] && [ ! -e "$MIXED_ENCODING.redaction.txt" ]; then
     echo "  PASS  mixed-encoding refusal leaves evidence and provenance untouched"; pass=$((pass+1))
@@ -916,8 +933,15 @@ PYEOF
 
   UNSCANNABLE="$TMP/private-fixture.zip"
   printf '%s\n' "$CB_REDACT_IDENTIFIER" > "$UNSCANNABLE"
-  expect_fail "unscannable publication format fails closed" \
-    python "$TOOLS/redact-evidence.py" --check "$UNSCANNABLE"
+  UNSCANNABLE_LOG="$TMP/unscannable.log"
+  if python "$TOOLS/redact-evidence.py" --check "$UNSCANNABLE" >"$UNSCANNABLE_LOG" 2>&1; then
+    echo "  FAIL  unscannable publication format was reported clean"; fail=$((fail+1))
+  elif grep -q "not safely scannable/redactable" "$UNSCANNABLE_LOG" \
+       && ! grep -Eq "Traceback|NameError" "$UNSCANNABLE_LOG"; then
+    echo "  PASS  unscannable publication format fails closed without crashing"; pass=$((pass+1))
+  else
+    echo "  FAIL  unscannable format failed for the wrong reason"; cat "$UNSCANNABLE_LOG"; fail=$((fail+1))
+  fi
 
   NAME_DIR="$TMP/redaction-name-leak"
   mkdir -p "$NAME_DIR"
@@ -965,6 +989,36 @@ PYEOF
     echo "  PASS  symlink targets are refused before evidence replacement"; pass=$((pass+1))
   else
     echo "  FAIL  symlink target refusal regression failed"; fail=$((fail+1))
+  fi
+
+
+  if python - "$TOOLS/redact-evidence.py" "$TMP" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import importlib.util, pathlib, sys
+tool, tmp, ident = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), sys.argv[3]
+spec = importlib.util.spec_from_file_location("redact_sidecar_symlink_test", tool)
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+p = tmp / "sidecar-symlink-fixture.txt"
+p.write_text(ident, encoding="utf-8")
+sidecar = p.with_name(p.name + ".redaction.txt")
+before = p.read_bytes()
+real = mod.pathlib.Path.is_symlink
+mod.pathlib.Path.is_symlink = lambda self: self == sidecar
+try:
+    try:
+        mod.scrub_file(p, ident, dry_run=False)
+    except RuntimeError as e:
+        assert "provenance symlink" in str(e).lower()
+    else:
+        raise AssertionError("provenance symlink was accepted")
+finally:
+    mod.pathlib.Path.is_symlink = real
+assert p.read_bytes() == before
+assert not sidecar.exists()
+PYEOF
+  then
+    echo "  PASS  provenance sidecar symlink is refused without changing evidence"; pass=$((pass+1))
+  else
+    echo "  FAIL  provenance sidecar symlink regression failed"; fail=$((fail+1))
   fi
 
   # An undecodable tracked file must NOT be reported as a clean result: that would be a false

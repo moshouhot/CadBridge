@@ -189,13 +189,17 @@ def main() -> int:
             results["attempts"].append(entry)
             time.sleep(3)
     finally:
+        cleanup_ok = True
         if pid is not None:
             log(f"\nterminating only our CAD pid={pid}")
             # Verified-ownership termination (pid + creation time + exe path).
-            sp.terminate_owned(owned_token, log=log)   # token only; a dict cannot authorize a kill
+            cleanup_ok = sp.terminate_owned(owned_token, log=log)
+        results["cleanup_confirmed"] = bool(cleanup_ok)
         pathlib.Path(args.out).write_text(json.dumps(results, indent=2, ensure_ascii=False),
                                           encoding="utf-8")
         log(f"results: {args.out}")
+        if sys.exc_info()[0] is None and not cleanup_ok:
+            raise SystemExit(1)
 
     return 0
 
