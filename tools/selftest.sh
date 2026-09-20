@@ -35,7 +35,14 @@ echo "== Python static gates =="
 # self-test reported 50/50 PASS.  compileall catches syntax/import-time parse failures and
 # pyflakes catches undefined-name classes without executing any live harness.
 check "all Python tooling compiles" env PYTHONPYCACHEPREFIX="$TMP/pycache" python -m compileall -q "$TOOLS"
-check "pyflakes clean across tools/*.py" python -m pyflakes "$TOOLS"/*.py
+PYFLAKES_LOG="$TMP/pyflakes.log"
+if python -m pyflakes "$TOOLS"/*.py >"$PYFLAKES_LOG" 2>&1; then
+  echo "  PASS  pyflakes clean across tools/*.py"; pass=$((pass+1))
+else
+  echo "  FAIL  pyflakes clean across tools/*.py"
+  cat "$PYFLAKES_LOG"
+  fail=$((fail+1))
+fi
 
 echo "== execution baseline transaction regression =="
 check "production ExecutionContextBaseline publication regression" \
