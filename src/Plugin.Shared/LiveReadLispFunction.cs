@@ -101,7 +101,7 @@ namespace CadBridge.Plugin.Shared
             // THREAD/CONTEXT IDENTITY IS VERIFIED BEFORE ANY DOCUMENT OR DATABASE ACCESS.
             //
             // A check performed after the read could not prevent the access it guards. If no
-            // idle baseline has been recorded (run CBBASELINE first) or the current thread does
+            // idle baseline has been recorded (run CBBRIDGEBASELINE first) or the current thread does
             // not match it, this refuses immediately and touches nothing.
             try
             {
