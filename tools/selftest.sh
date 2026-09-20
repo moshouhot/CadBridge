@@ -29,6 +29,14 @@ expect_fail() {
   else echo "  PASS  $name"; pass=$((pass+1)); fi
 }
 
+echo "== Python static gates =="
+# These are repository-wide gates, not tests for one known variable name.  The local
+# b715501 verification found two changed harnesses with an undefined name even though this
+# self-test reported 50/50 PASS.  compileall catches syntax/import-time parse failures and
+# pyflakes catches undefined-name classes without executing any live harness.
+check "all Python tooling compiles" env PYTHONPYCACHEPREFIX="$TMP/pycache" python -m compileall -q "$TOOLS"
+check "pyflakes clean across tools/*.py" python -m pyflakes "$TOOLS"/*.py
+
 echo "== pathconv =="
 check "to-win converts /f/a/b"        test "$(python "$TOOLS/pathconv.py" to-win '/f/a/b')" = 'F:\a\b'
 check "to-msys converts F:\\a\\b"     test "$(python "$TOOLS/pathconv.py" to-msys 'F:\a\b')" = '/f/a/b'
@@ -467,7 +475,7 @@ fi
 mkdir -p "$TMP/extrachk"
 printf '{"real":true}' > "$TMP/extrachk/real.json"
 cat > "$TMP/extrachk/evil-extra.json" <<'EOF'
-{"artifacts":[{"path":"fake.bin","bytes":1,"sha256":"deadbeef"}],"validation":{"ok":true,"problems":[]}}
+{"artifacts":[{"path":"fake.bin","bytes":1,"sha256":"deadbeef"}],"validation":{"ok":true,"problems":[]},"redactions":{"forged":true}}
 EOF
 if python "$TOOLS/make-manifest.py" "$TMP/extrachk" --phase X --run-id R \
   --extra "$TMP/extrachk/evil-extra.json" >/dev/null 2>&1; then
@@ -480,6 +488,7 @@ d = json.loads((pathlib.Path(sys.argv[1]) / "manifest.json").read_text(encoding=
 paths = {a["path"] for a in d["artifacts"]}
 assert "real.json" in paths, paths
 assert "fake.bin" not in paths, paths
+assert "redactions" not in d, d.get("redactions")
 assert d["validation"]["ok"] is False
 assert any("protected manifest field" in p for p in d["validation"]["problems"])
 PYEOF

@@ -304,7 +304,7 @@ def main() -> int:
         log(f"\nchecks: {passed} passed, {failed} failed")
         log(f"summary: {out}")
         if sys.exc_info()[0] is None:
-            raise SystemExit(1 if bad else 0)
+            raise SystemExit(1 if failed else 0)
 
 
 if __name__ == "__main__":

@@ -224,8 +224,9 @@ def main() -> int:
         pathlib.Path(args.out).write_text(json.dumps(results, indent=2, ensure_ascii=False),
                                           encoding="utf-8")
         log(f"results: {args.out}")
+        failed = sum(1 for x in results["checks"] if not x["ok"])
         if sys.exc_info()[0] is None:
-            raise SystemExit(1 if bad else 0)
+            raise SystemExit(1 if failed else 0)
 
 
 if __name__ == "__main__":

@@ -122,6 +122,25 @@ Fixed in `ee7da69`: classify directly from the measured `RuntimeInformation.Fram
 
 Fixed in `8ab45cd`: `--extra` is metadata-only. Attempts to override protected fields are ignored, recorded as validation failures, and produce a nonzero result. Regression coverage attempts to forge both `artifacts` and `validation`.
 
+## Post-audit non-live verification follow-up
+
+Independent local verification of `b715501c4604ed4a5a5da9b32737badc70dd646d`
+returned **LOCAL NON-LIVE FAIL** despite 125 passing checks, because pyflakes found two
+undefined-name regressions introduced by the O3 exit-code remediation.
+
+- `dap-a14-sequence.py` computed `failed` but tested undefined `bad`.
+- `t01-5-pause-query-probe.py` tested undefined `bad` without computing a failed count.
+- `selftest.sh` did not run repository-wide compile/pyflakes gates, so it could remain green
+  while changed Python harnesses contained undefined names.
+
+The follow-up remediation fixes both exit paths and makes whole-tools `compileall` and
+`pyflakes` part of `selftest.sh`. The prior local results are evidence for `b715501`
+only; the new head requires a fresh full non-live verification.
+
+The final Sourcery review of `b715501` also found two valid gaps that are fixed in the same
+follow-up: `redactions` provenance is now protected from `--extra` replacement, and
+execution-context baseline readers consume a snapshot synchronized with the one-shot writer.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

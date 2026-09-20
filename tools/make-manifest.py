@@ -281,6 +281,7 @@ def main() -> int:
                 protected = {
                     "phase", "run_id", "generated_at_utc", "run_dir",
                     "artifact_count", "artifacts", "tests", "validation",
+                    "redactions",
                 }
                 for key, value in extra.items():
                     if key in protected:

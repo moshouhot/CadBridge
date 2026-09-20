@@ -55,14 +55,44 @@ namespace CadBridge.Plugin.Shared
         /// <summary>Serializes the one-time baseline transition.</summary>
         private static readonly object BaselineLock = new object();
 
+        private static bool HasBaselineUnsafe()
+        {
+            return _idleNativeThreadId != 0 && _hasContextBaseline;
+        }
+
         /// <summary>Whether a baseline has been recorded in this session.</summary>
         public static bool HasBaseline
         {
-            get { return _idleNativeThreadId != 0 && _hasContextBaseline; }
+            get
+            {
+                lock (BaselineLock)
+                {
+                    return HasBaselineUnsafe();
+                }
+            }
         }
 
-        public static uint IdleNativeThreadId { get { return _idleNativeThreadId; } }
-        public static int IdleManagedThreadId { get { return _idleManagedThreadId; } }
+        public static uint IdleNativeThreadId
+        {
+            get
+            {
+                lock (BaselineLock)
+                {
+                    return _idleNativeThreadId;
+                }
+            }
+        }
+
+        public static int IdleManagedThreadId
+        {
+            get
+            {
+                lock (BaselineLock)
+                {
+                    return _idleManagedThreadId;
+                }
+            }
+        }
 
         /// <summary>
         /// Records the current thread as the idle command-context baseline.
@@ -80,7 +110,7 @@ namespace CadBridge.Plugin.Shared
                 // A trusted baseline is a session invariant, not mutable state. Once an idle
                 // command context has established it, no later command/debugger path may
                 // replace it. Failed attempts leave the baseline unset so startup may retry.
-                if (HasBaseline)
+                if (HasBaselineUnsafe())
                 {
                     return "CBBASELINE_REFUSED status=already_recorded";
                 }
@@ -90,35 +120,35 @@ namespace CadBridge.Plugin.Shared
 
                 bool appContext;
                 try { appContext = Application.DocumentManager.IsApplicationContext; }
-            catch (SysException ex)
-            {
-                _idleNativeThreadId = 0;
-                _idleManagedThreadId = 0;
-                _hasContextBaseline = false;
-                return "CBBASELINE_REFUSED status=context_query_failed error_type="
-                     + ex.GetType().Name;
-            }
+                catch (SysException ex)
+                {
+                    _idleNativeThreadId = 0;
+                    _idleManagedThreadId = 0;
+                    _hasContextBaseline = false;
+                    return "CBBASELINE_REFUSED status=context_query_failed error_type="
+                         + ex.GetType().Name;
+                }
 
-            if (appContext)
-            {
-                _idleNativeThreadId = 0;
-                _idleManagedThreadId = 0;
-                _hasContextBaseline = false;
-                return "CBBASELINE_REFUSED status=application_context";
-            }
+                if (appContext)
+                {
+                    _idleNativeThreadId = 0;
+                    _idleManagedThreadId = 0;
+                    _hasContextBaseline = false;
+                    return "CBBASELINE_REFUSED status=application_context";
+                }
 
-            _idleNativeThreadId = native;
-            _idleManagedThreadId = managed;
-            _idleIsApplicationContext = appContext;
-            _hasContextBaseline = true;
+                _idleNativeThreadId = native;
+                _idleManagedThreadId = managed;
+                _idleIsApplicationContext = appContext;
+                _hasContextBaseline = true;
 
-            var sb = new StringBuilder();
-            sb.Append("CBBASELINE_RECORDED");
-            sb.Append(" native_thread_id=").Append(native.ToString(CultureInfo.InvariantCulture));
-            sb.Append(" managed_thread_id=").Append(managed.ToString(CultureInfo.InvariantCulture));
-            sb.Append(" is_application_context=").Append(appContext ? "true" : "false");
-            sb.Append(" has_document=").Append(
-                Application.DocumentManager.MdiActiveDocument != null ? "true" : "false");
+                var sb = new StringBuilder();
+                sb.Append("CBBASELINE_RECORDED");
+                sb.Append(" native_thread_id=").Append(native.ToString(CultureInfo.InvariantCulture));
+                sb.Append(" managed_thread_id=").Append(managed.ToString(CultureInfo.InvariantCulture));
+                sb.Append(" is_application_context=").Append(appContext ? "true" : "false");
+                sb.Append(" has_document=").Append(
+                    Application.DocumentManager.MdiActiveDocument != null ? "true" : "false");
                 sb.Append(" src=CadBridge.Plugin.Shared.ExecutionContextBaseline");
                 return sb.ToString();
             }
@@ -170,28 +200,41 @@ namespace CadBridge.Plugin.Shared
                 reason = "AutoCAD reports application execution context; read probe requires document context";
                 return false;
             }
-            if (appContext != _idleIsApplicationContext)
+            uint idleNative;
+            int idleManaged;
+            bool idleAppContext;
+            bool hasBaseline;
+            lock (BaselineLock)
             {
-                reason = "AutoCAD execution context differs from idle baseline";
-                return false;
+                // Read the four baseline fields as one published snapshot.  The setter uses
+                // this same lock, so Check can never observe a half-published baseline.
+                hasBaseline = HasBaselineUnsafe();
+                idleNative = _idleNativeThreadId;
+                idleManaged = _idleManagedThreadId;
+                idleAppContext = _idleIsApplicationContext;
             }
 
-            if (!HasBaseline)
+            if (!hasBaseline)
             {
                 reason = "no baseline recorded (run CBBRIDGEBASELINE while AutoCAD is idle); "
                        + "refusing because thread identity cannot be verified";
                 return false;
             }
-            if (native != _idleNativeThreadId)
+            if (appContext != idleAppContext)
             {
-                reason = "native thread id " + native.ToString(CultureInfo.InvariantCulture)
-                       + " != baseline " + _idleNativeThreadId.ToString(CultureInfo.InvariantCulture);
+                reason = "AutoCAD execution context differs from idle baseline";
                 return false;
             }
-            if (managed != _idleManagedThreadId)
+            if (native != idleNative)
+            {
+                reason = "native thread id " + native.ToString(CultureInfo.InvariantCulture)
+                       + " != baseline " + idleNative.ToString(CultureInfo.InvariantCulture);
+                return false;
+            }
+            if (managed != idleManaged)
             {
                 reason = "managed thread id " + managed.ToString(CultureInfo.InvariantCulture)
-                       + " != baseline " + _idleManagedThreadId.ToString(CultureInfo.InvariantCulture);
+                       + " != baseline " + idleManaged.ToString(CultureInfo.InvariantCulture);
                 return false;
             }
             reason = "AutoCAD document context and thread identity match the idle baseline";
