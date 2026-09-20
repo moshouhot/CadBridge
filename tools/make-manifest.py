@@ -85,7 +85,8 @@ def collect_artifacts(root: Path) -> tuple[list[dict], list[str]]:
     return artifacts, problems
 
 
-def validate_tests(tests: list[dict], root: Path) -> list[str]:
+def validate_tests(tests: list[dict], artifact_paths: set[str]) -> list[str]:
+    """Validate evidence references against artifacts actually hashed into this run."""
     problems: list[str] = []
     for t in tests:
         tid = t.get("id", "<no id>")
@@ -98,8 +99,20 @@ def validate_tests(tests: list[dict], root: Path) -> list[str]:
         if status in ("PASS", "FAIL") and not evidence:
             problems.append(f"test {tid}: status {status} requires at least one evidence path")
         for rel in evidence:
-            if not (root / rel).exists():
-                problems.append(f"test {tid}: evidence path does not exist: {rel}")
+            if not isinstance(rel, str) or not rel:
+                problems.append(f"test {tid}: evidence path must be a non-empty string: {rel!r}")
+                continue
+            candidate = Path(rel)
+            if candidate.is_absolute() or ".." in candidate.parts:
+                problems.append(
+                    f"test {tid}: evidence path must stay inside the run directory: {rel!r}"
+                )
+                continue
+            normalized = candidate.as_posix()
+            if normalized not in artifact_paths:
+                problems.append(
+                    f"test {tid}: evidence path is not a hashed manifest artifact: {rel}"
+                )
     return problems
 
 
@@ -226,7 +239,7 @@ def main() -> int:
         tests = previous["tests"]
 
     if not args.no_validate:
-        problems += validate_tests(tests, root)
+        problems += validate_tests(tests, {a["path"] for a in artifacts})
 
     # SELF-CONSISTENCY: `artifact_count` must equal the array length. Nothing checked this, so
     # a manifest could declare 16 artifacts while listing 15 -- observed in practice after a

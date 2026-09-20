@@ -95,6 +95,14 @@ cat > "$TMP/ev/bad-path.json" <<'EOF'
 {"tests":[{"id":"T3","status":"PASS","evidence":["does-not-exist.json"]}]}
 EOF
 expect_fail "missing evidence path rejected" python "$TOOLS/make-manifest.py" "$TMP/ev" --phase X --run-id R --status-file "$TMP/ev/bad-path.json"
+echo "outside evidence" > "$TMP/outside.txt"
+cat > "$TMP/ev/traversal-status.json" <<'EOF'
+{"tests":[{"id":"T3b","status":"PASS","evidence":["../outside.txt"]}]}
+EOF
+expect_fail "parent-traversal evidence path rejected even when target exists" python "$TOOLS/make-manifest.py" "$TMP/ev" --phase X --run-id R --status-file "$TMP/ev/traversal-status.json"
+ABS_OUTSIDE="$(cd "$TMP" && pwd)/outside.txt"
+printf '{"tests":[{"id":"T3c","status":"PASS","evidence":["%s"]}]}' "$ABS_OUTSIDE" > "$TMP/ev/absolute-status.json"
+expect_fail "absolute evidence path rejected even when target exists" python "$TOOLS/make-manifest.py" "$TMP/ev" --phase X --run-id R --status-file "$TMP/ev/absolute-status.json"
 printf '' > "$TMP/ev/empty.json"
 cat > "$TMP/ev/empty-status.json" <<'EOF'
 {"tests":[{"id":"T4","status":"PASS","evidence":["empty.json"]}]}
