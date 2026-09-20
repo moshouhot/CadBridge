@@ -435,6 +435,8 @@ mutation_caught "t01-5 harness gate replaced by comment" \
   'p = pathlib.Path(sys.argv[1])/"t01-5-definitive.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"t01-5-definitive.py\")", "    # sp.require_safety_review_passed(\"t01-5-definitive.py\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "retired GUI harness gate removed" \
   'p = pathlib.Path(sys.argv[1])/"run-acad-gui-test.sh"; t = p.read_text(encoding="utf-8"); t = t.replace("python \"$TOOLS_DIR/safe_process.py\" --gate \"run-acad-gui-test.sh\" || exit $?", "echo retired"); p.write_text(t, encoding="utf-8")'
+mutation_caught "retired GUI harness only echoes the gate command" \
+  'p = pathlib.Path(sys.argv[1])/"run-acad-gui-test.sh"; t = p.read_text(encoding="utf-8"); t = t.replace("python \"$TOOLS_DIR/safe_process.py\" --gate \"run-acad-gui-test.sh\" || exit $?", "echo python \"$TOOLS_DIR/safe_process.py\" --gate \"run-acad-gui-test.sh\""); p.write_text(t, encoding="utf-8")'
 
 # Regression mutations for the two defects Sourcery found in the FIRST version of this
 # checker (PR #1). Both were reproduced against that version before being fixed.
@@ -455,6 +457,8 @@ mutation_caught "new live harness with a computed exe path (invisible to discove
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"com-attach-harness.py").write_text("import os\nimport win32com.client\n\ndef main():\n    exe = os.environ[\"CADDIR\"] + chr(92) + \"acad\" + \".exe\"\n    app = win32com.client.GetActiveObject(\"AutoCAD.Application\")\n    return 0\n", encoding="utf-8")'
 mutation_caught "PowerShell script that really starts a CAD host" \
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"launch-cad.ps1").write_text("Start-Process -FilePath chr(34)+" + chr(39) + "acad.exe" + chr(39) + "\n", encoding="utf-8")'
+mutation_caught "classified PowerShell inventory script directly invokes acad.exe" \
+  'p = pathlib.Path(sys.argv[1])/"inventory-autocad.ps1"; t = p.read_text(encoding="utf-8"); t += "\nacad.exe /nologo\n"; p.write_text(t, encoding="utf-8")'
 
 REPO_SCOPE_MUT="$MUT_DIR/repository-scope"
 rm -rf "$REPO_SCOPE_MUT"; mkdir -p "$REPO_SCOPE_MUT/tools" "$REPO_SCOPE_MUT/tests"
@@ -519,6 +523,8 @@ mutation_caught "gate moved after the first live DapClient sink" \
   'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); gate="    sp.require_safety_review_passed(\"dap-session.py\")\n"; t=t.replace(gate, ""); sink="    c = dap.DapClient([args.adapter, \"--\", args.product], args.transcript, timeout=args.timeout)\n"; t=t.replace(sink, sink+gate); p.write_text(t, encoding="utf-8")'
 mutation_caught "conditional live sink inserted before gate in same branch" \
   'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); gate="        sp.require_safety_review_passed(\"dap-probe.py\")\n"; injected="        DapClient([args.adapter], args.transcript, timeout=args.timeout)\n"+gate; t=t.replace(gate, injected); p.write_text(t, encoding="utf-8")'
+mutation_caught "conditional gate nested under optional stack branch" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); gate="        sp.require_safety_review_passed(\"dap-probe.py\")"; t=t.replace(gate, "        if args.stack:\n            sp.require_safety_review_passed(\"dap-probe.py\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "standalone COM worker gate removed" \
   'p = pathlib.Path(sys.argv[1])/"com_read_worker.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"com_read_worker.py\")\n\n", ""); p.write_text(t, encoding="utf-8")'
 mutation_caught "nested script reusing a registry basename" \
@@ -654,6 +660,30 @@ else
   fail=$((fail+1))
 fi
 
+# (b5) A new manifest should use normal creation permissions rather than mkstemp private mode.
+if python - "$TMP" "$TOOLS/make-manifest.py" <<'PYEOF'
+import os, pathlib, stat, subprocess, sys
+if os.name == "nt":
+    raise SystemExit(0)
+root, tool = pathlib.Path(sys.argv[1]) / "fresh-mode", pathlib.Path(sys.argv[2])
+root.mkdir(parents=True, exist_ok=True)
+(root / "a.json").write_text('{"ok":true}', encoding="utf-8")
+old = os.umask(0o022)
+try:
+    subprocess.check_call(
+        [sys.executable, str(tool), str(root), "--phase", "X", "--run-id", "R"],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+finally:
+    os.umask(old)
+assert stat.S_IMODE((root / "manifest.json").stat().st_mode) == 0o644
+PYEOF
+then
+  echo "  PASS  fresh manifest respects umask (022 -> 0644)"; pass=$((pass+1))
+else
+  echo "  FAIL  fresh manifest inherited mkstemp private mode"; fail=$((fail+1))
+fi
+
 # (c) Line endings must be preserved, or every manifest edit becomes an unreviewable
 #     whole-file diff (docs/evidence is -text in .gitattributes, so bytes are what matter).
 mkdir -p "$TMP/crlf"
@@ -734,6 +764,32 @@ p.write_bytes(line.encode("utf-16-le") + b"\xff")
 PYEOF
   expect_fail "malformed Chinese-heavy UTF-16 cannot fall through to GB18030" \
     python "$TOOLS/redact-evidence.py" --check "$MALFORMED_HEAVY"
+
+  ALIGN_DIR="$TMP/utf16-alignment"
+  mkdir -p "$ALIGN_DIR"
+  python - "$ALIGN_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import pathlib, sys
+d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+prefix = "".join(chr((ord(ch) << 8) | 0x41) for ch in ident)
+text = prefix + "|" + ident + "|tail"
+(d / "odd-offset.txt").write_bytes(text.encode("utf-16-le"))
+PYEOF
+  CB_REDACT_IDENTIFIER="$CB_REDACT_IDENTIFIER" python "$TOOLS/redact-evidence.py" \
+    "$ALIGN_DIR/odd-offset.txt" >/dev/null 2>&1
+  if python - "$ALIGN_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import pathlib, sys
+d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+text = (d / "odd-offset.txt").read_bytes().decode("utf-16-le")
+prefix = "".join(chr((ord(ch) << 8) | 0x41) for ch in ident)
+assert text.startswith(prefix + "|"), "unrelated odd-offset bytes were modified"
+assert ident not in text, "real decoded identifier was not removed"
+assert "<REDACTED-USER>" in text
+PYEOF
+  then
+    echo "  PASS  UTF-16 scrub replaces only aligned decoded identifier spans"; pass=$((pass+1))
+  else
+    echo "  FAIL  UTF-16 scrub altered an odd-offset byte coincidence"; fail=$((fail+1))
+  fi
 
   NAME_DIR="$TMP/redaction-name-leak"
   mkdir -p "$NAME_DIR"

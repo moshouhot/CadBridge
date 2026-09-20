@@ -353,6 +353,25 @@ This follow-up strengthens the same non-live boundaries:
 All changes remain non-live. The resulting SHA requires another full Sourcery + Codex Code
 Review + Codex Security Review cycle before local final verification.
 
+## Ninth online follow-up: completed 1663552 reviews
+
+Sourcery, Codex Code Review and Codex Security Review completed against
+16635528d65059bc2cbaa38b9d7fe7fadadec882. Five new Codex findings were independently
+reproduced and addressed:
+
+- fresh atomic manifests now publish with normal POSIX file permissions derived from the
+  process umask rather than retaining the temporary-file private mode;
+- conditional Python gates must be direct statements of the proven live-intent branch, so an
+  optional nested condition cannot leave another live path unauthorized;
+- shell gate verification parses a real Python execution of safe_process.py --gate and the
+  exact harness key; echoed text cannot satisfy review;
+- PowerShell discovery treats a direct command such as acad.exe /nologo as a live launch;
+- redaction replaces only byte spans that correspond one-for-one with decoded occurrences;
+  UTF-16 byte coincidences at odd offsets are not modified.
+
+Matching non-live regression and mutation coverage was added for each class. The resulting SHA
+requires another three-surface review cycle before final local verification.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership
