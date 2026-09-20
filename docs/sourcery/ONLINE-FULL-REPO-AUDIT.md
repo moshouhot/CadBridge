@@ -423,6 +423,27 @@ to a required fix above.
 No further Codex review is requested for this remediation. The next certification step is a
 fresh independent local non-live verification of the exact new SHA.
 
+## Twelfth follow-up: G5 mixed-encoding fixture parity
+
+Independent local verification of `d638b4952a0acd043503cb96b0db058702702372`
+confirmed all prior product blockers fixed, but found the mixed-encoding regression fixture itself
+depended on identifier-length parity. For odd identifier lengths the concatenated bytes had odd
+length and therefore took the malformed-UTF-16 refusal path instead of the intended
+partial-scrub refusal path.
+
+This follow-up changes only the non-live test fixture:
+
+- mixed-encoding payload construction pads one byte when necessary so the complete fixture is
+  always valid UTF-16LE regardless of identifier length;
+- construction asserts both UTF-16LE and UTF-8 identifier representations are present;
+- a dedicated regression exercises 29-character and 30-character synthetic identifiers through
+  both dry-run and real scrub and requires the exact
+  `refusing to publish a partial scrub` reason.
+
+No private machine identifier is embedded in the repository. Product redaction logic is
+unchanged. No further Codex review is requested; the next certification step remains fresh
+local non-live verification of the resulting exact SHA.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

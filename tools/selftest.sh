@@ -950,10 +950,68 @@ PYEOF
   python - "$MIXED_ENCODING" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
 import pathlib, sys
 p, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
-raw = ("prefix " + ident + " suffix").encode("utf-16-le")
-raw += (" | utf8:" + ident + " |").encode("utf-8")
-p.write_bytes(raw)
+
+def build_mixed(identifier: str) -> bytes:
+    raw = ("prefix " + identifier + " suffix").encode("utf-16-le")
+    raw += (" | utf8:" + identifier + " |").encode("utf-8")
+    # The whole fixture must remain valid UTF-16LE so the intended test path is
+    # "one decoded UTF-16 identifier removed, UTF-8 representation still remains".
+    # The UTF-8 tail changes byte parity with identifier length, so pad one byte if needed.
+    if len(raw) % 2:
+        raw += b" "
+    assert len(raw) % 2 == 0
+    raw.decode("utf-16-le")
+    assert identifier.encode("utf-16-le") in raw
+    assert identifier.encode("utf-8") in raw
+    return raw
+
+# Construction-level parity proof: representative odd/even lengths must both produce a
+# well-formed UTF-16LE payload. These values are synthetic and contain no private identifier.
+for probe in ("ODD_LENGTH_29_CHARS_1234567890", "EVEN_LENGTH_30_CHARS_1234567890"):
+    candidate = build_mixed(probe)
+    assert len(candidate) % 2 == 0
+    candidate.decode("utf-16-le")
+
+p.write_bytes(build_mixed(ident))
 PYEOF
+
+  if python - "$TOOLS/redact-evidence.py" "$TMP" <<'PYEOF'
+import importlib.util, pathlib, sys
+tool, tmp = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+spec = importlib.util.spec_from_file_location("redact_parity_test", tool)
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+
+def build(identifier: str) -> bytes:
+    raw = ("prefix " + identifier + " suffix").encode("utf-16-le")
+    raw += (" | utf8:" + identifier + " |").encode("utf-8")
+    if len(raw) % 2:
+        raw += b" "
+    raw.decode("utf-16-le")
+    return raw
+
+for identifier in ("X" * 29, "Y" * 30):
+    p = tmp / ("mixed-parity-" + str(len(identifier)) + ".txt")
+    for dry_run in (True, False):
+        p.write_bytes(build(identifier))
+        sidecar = p.with_name(p.name + ".redaction.txt")
+        if sidecar.exists():
+            sidecar.unlink()
+        try:
+            mod.scrub_file(p, identifier, dry_run=dry_run)
+        except RuntimeError as exc:
+            assert "refusing to publish a partial scrub" in str(exc), str(exc)
+        else:
+            raise AssertionError(
+                f"mixed-encoding {len(identifier)}-char fixture unexpectedly succeeded "
+                f"(dry_run={dry_run})"
+            )
+        assert not sidecar.exists()
+PYEOF
+  then
+    echo "  PASS  mixed-encoding fixture is identifier-length/parity independent"; pass=$((pass+1))
+  else
+    echo "  FAIL  mixed-encoding fixture still depends on identifier length/parity"; fail=$((fail+1))
+  fi
   MIXED_BEFORE="$(sha256sum "$MIXED_ENCODING" | cut -d' ' -f1)"
   MIXED_DRY_LOG="$TMP/mixed-encoding-dry.log"
   if python "$TOOLS/redact-evidence.py" --dry-run "$MIXED_ENCODING" >"$MIXED_DRY_LOG" 2>&1; then
