@@ -271,7 +271,25 @@ def main() -> int:
     if args.extra:
         ep = Path(args.extra)
         if ep.is_file():
-            manifest.update(json.loads(ep.read_text(encoding="utf-8")))
+            extra = json.loads(ep.read_text(encoding="utf-8"))
+            if not isinstance(extra, dict):
+                problems.append("--extra must contain a JSON object")
+            else:
+                # These fields are derived from the run or validated inputs. Allowing an
+                # arbitrary metadata file to overwrite them would let --extra replace the
+                # hashed artifact list or turn validation.ok back to true.
+                protected = {
+                    "phase", "run_id", "generated_at_utc", "run_dir",
+                    "artifact_count", "artifacts", "tests", "validation",
+                }
+                for key, value in extra.items():
+                    if key in protected:
+                        problems.append(
+                            f"--extra may not override protected manifest field {key!r}"
+                        )
+                        continue
+                    manifest[key] = value
+                manifest["validation"] = {"problems": problems, "ok": not problems}
 
     # Carry forward provenance blocks that this tool cannot derive. `redactions` in
     # particular documents that published bytes differ from the originally captured ones;

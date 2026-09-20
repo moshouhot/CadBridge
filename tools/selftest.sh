@@ -463,6 +463,33 @@ PYEOF
   fi
 fi
 
+# (b2) --extra is metadata only. It must not replace derived hashes or validation state.
+mkdir -p "$TMP/extrachk"
+printf '{"real":true}' > "$TMP/extrachk/real.json"
+cat > "$TMP/extrachk/evil-extra.json" <<'EOF'
+{"artifacts":[{"path":"fake.bin","bytes":1,"sha256":"deadbeef"}],"validation":{"ok":true,"problems":[]}}
+EOF
+if python "$TOOLS/make-manifest.py" "$TMP/extrachk" --phase X --run-id R \
+  --extra "$TMP/extrachk/evil-extra.json" >/dev/null 2>&1; then
+  echo "  FAIL  --extra was allowed to replace protected artifact/validation fields"
+  fail=$((fail+1))
+else
+  if python - "$TMP/extrachk" <<'PYEOF'
+import json, pathlib, sys
+d = json.loads((pathlib.Path(sys.argv[1]) / "manifest.json").read_text(encoding="utf-8"))
+paths = {a["path"] for a in d["artifacts"]}
+assert "real.json" in paths, paths
+assert "fake.bin" not in paths, paths
+assert d["validation"]["ok"] is False
+assert any("protected manifest field" in p for p in d["validation"]["problems"])
+PYEOF
+  then
+    echo "  PASS  --extra cannot override derived artifacts or validation"; pass=$((pass+1))
+  else
+    echo "  FAIL  protected fields were corrupted by --extra"; fail=$((fail+1))
+  fi
+fi
+
 # (c) Line endings must be preserved, or every manifest edit becomes an unreviewable
 #     whole-file diff (docs/evidence is -text in .gitattributes, so bytes are what matter).
 mkdir -p "$TMP/crlf"
