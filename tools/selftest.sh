@@ -857,8 +857,21 @@ if [ -n "${CB_REDACT_IDENTIFIER:-}" ]; then
   expect_fail "explicit nonexistent redaction path is refused" \
     python "$TOOLS/redact-evidence.py" --check "$TMP/definitely-missing-redaction-input.txt"
 
-  check "tracked-file redaction is anchored to the CadBridge repository" \
-    bash -c "cd '$TMP' && CB_REDACT_IDENTIFIER='$CB_REDACT_IDENTIFIER' python '$TOOLS/redact-evidence.py' --check"
+  if (cd "$TMP" && python - "$TOOLS/redact-evidence.py" "$REPO" <<'PYEOF'
+import importlib.util, pathlib, sys
+tool, expected = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]).resolve()
+spec = importlib.util.spec_from_file_location("redact_anchor_test", tool)
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+root = pathlib.Path(mod.__file__).resolve().parent.parent
+assert root == expected, (root, expected)
+tracked = mod._tracked_files(root)
+assert any(p.resolve() == tool.resolve() for p in tracked), "tool itself missing from repo enumeration"
+PYEOF
+  ); then
+    echo "  PASS  tracked-file redaction root is anchored to the CadBridge repository"; pass=$((pass+1))
+  else
+    echo "  FAIL  tracked-file redaction root depends on caller CWD"; fail=$((fail+1))
+  fi
 
   FAILMODE_DIR="$TMP/redaction-failmode"
   mkdir -p "$FAILMODE_DIR"
