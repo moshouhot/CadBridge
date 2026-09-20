@@ -227,6 +227,29 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
 
                 Baseline.TestAfterCandidateEstablished = null;
 
+                // Publication must also fail safely AFTER the temp payload was staged. Pointing
+                // the destination at an existing directory lets temp write+fsync succeed but
+                // makes the final atomic move/replace fail. Baseline must roll back and no
+                // readiness temp file may remain.
+                string atomicFailurePath = Path.Combine(root, "existing-directory-destination");
+                Directory.CreateDirectory(atomicFailurePath);
+                Environment.SetEnvironmentVariable("CB_BASELINE_LOG_PATH", atomicFailurePath);
+                Exception atomicFailure = null;
+                try
+                {
+                    Baseline.RecordBaselineCommand();
+                }
+                catch (Exception ex)
+                {
+                    atomicFailure = ex;
+                }
+                Check("atomic readiness publish failure propagates",
+                      atomicFailure is IOException || atomicFailure is UnauthorizedAccessException,
+                      atomicFailure == null ? "no exception" : atomicFailure.GetType().Name);
+                Check("atomic readiness publish failure rolls baseline back", !Baseline.HasBaseline);
+                Check("atomic readiness publish failure leaves no staged temp file",
+                      Directory.GetFiles(root, "*.tmp", SearchOption.AllDirectories).Length == 0);
+
                 // -----------------------------------------------------------------
                 // COMMIT RACE: repeat the controlled first-publication window, but
                 // this time readiness succeeds. Readers must remain blocked until

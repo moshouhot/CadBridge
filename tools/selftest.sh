@@ -47,6 +47,15 @@ check "to-msys converts F:\\a\\b"     test "$(python "$TOOLS/pathconv.py" to-msy
 check "to-win-slash converts /f/a/b"  test "$(python "$TOOLS/pathconv.py" to-win-slash '/f/a/b')" = 'F:/a/b'
 expect_fail "unknown mode fails"      python "$TOOLS/pathconv.py" bogus '/f/a/b'
 
+echo "== compatibility parser =="
+RUNTIME_PARSED="$(printf '  runtime_framework=.NET 8.0.0\r\n' | \
+  sed -e 's/^[[:space:]]*runtime_framework=[[:space:]]*//' | tr -d '\r')"
+if [ "$RUNTIME_PARSED" = ".NET 8.0.0" ]; then
+  echo "  PASS  runtime_framework parser returns the measured value only"; pass=$((pass+1))
+else
+  echo "  FAIL  runtime_framework parser returned: $RUNTIME_PARSED"; fail=$((fail+1))
+fi
+
 echo "== decoder =="
 # UTF-16LE input must decode; UTF-8 input must also decode.
 printf 'hello\x00w\x00o\x00r\x00l\x00d\x00' > "$TMP/u16.raw"
@@ -144,6 +153,43 @@ then
   echo "  PASS  regeneration preserves tests and redaction provenance"; pass=$((pass+1))
 else
   echo "  FAIL  regeneration erased non-derived manifest blocks"; fail=$((fail+1))
+fi
+
+# Carried redaction provenance must still describe the CURRENT stored artifact bytes.
+STALE_DIR="$TMP/stale-redaction"
+mkdir -p "$STALE_DIR"
+printf 'original stored bytes\n' > "$STALE_DIR/evidence.txt"
+python "$TOOLS/make-manifest.py" "$STALE_DIR" --phase X --run-id R >/dev/null 2>&1
+python - "$STALE_DIR" <<'PYEOF'
+import hashlib, json, pathlib, sys
+d = pathlib.Path(sys.argv[1])
+p = d / "evidence.txt"
+m = json.loads((d / "manifest.json").read_text(encoding="utf-8"))
+m["redactions"] = {
+    "artifacts": [{
+        "path": "evidence.txt",
+        "stored_sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
+        "stored_bytes": p.stat().st_size,
+    }]
+}
+(d / "manifest.json").write_text(json.dumps(m, indent=2), encoding="utf-8")
+PYEOF
+printf 'tampered after provenance\n' > "$STALE_DIR/evidence.txt"
+if python "$TOOLS/make-manifest.py" "$STALE_DIR" --phase X --run-id R >/dev/null 2>&1; then
+  echo "  FAIL  stale carried redaction hash was accepted"; fail=$((fail+1))
+else
+  if python - "$STALE_DIR/manifest.json" <<'PYEOF'
+import json, pathlib, sys
+m = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert m["validation"]["ok"] is False
+assert any("stored_sha256" in x and "does not match" in x
+           for x in m["validation"]["problems"])
+PYEOF
+  then
+    echo "  PASS  stale carried redaction hash makes manifest validation fail"; pass=$((pass+1))
+  else
+    echo "  FAIL  stale redaction was rejected without truthful manifest validation"; fail=$((fail+1))
+  fi
 fi
 
 # ATOMIC WRITE: an interrupted write must leave the PREVIOUS manifest intact, never a
@@ -463,6 +509,8 @@ mutation_caught "gate moved into an uncalled helper" \
   'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    pass"); t += "\n\ndef _unused_gate_for_mutation():\n    sp.require_safety_review_passed(\"dap-session.py\")\n"; p.write_text(t, encoding="utf-8")'
 mutation_caught "module-level gate moved after __main__ entrypoint" \
   'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    pass"); t += "\nsp.require_safety_review_passed(\"dap-session.py\")\n"; p.write_text(t, encoding="utf-8")'
+mutation_caught "gate moved after the first live DapClient sink" \
+  'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); gate="    sp.require_safety_review_passed(\"dap-session.py\")\n"; t=t.replace(gate, ""); sink="    c = dap.DapClient([args.adapter, \"--\", args.product], args.transcript, timeout=args.timeout)\n"; t=t.replace(sink, sink+gate); p.write_text(t, encoding="utf-8")'
 mutation_caught "standalone COM worker gate removed" \
   'p = pathlib.Path(sys.argv[1])/"com_read_worker.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"com_read_worker.py\")\n\n", ""); p.write_text(t, encoding="utf-8")'
 mutation_caught "nested script reusing a registry basename" \
@@ -668,6 +716,28 @@ PYEOF
       pass=$((pass+1))
     fi
   done
+
+  MALFORMED_HEAVY="$ENC_DIR/le-chinese-heavy-malformed.txt"
+  python - "$MALFORMED_HEAVY" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import pathlib, sys
+p, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+line = ("中文证据内容" * 120) + ident + ("更多中文内容" * 120)
+p.write_bytes(line.encode("utf-16-le") + b"\xff")
+PYEOF
+  expect_fail "malformed Chinese-heavy UTF-16 cannot fall through to GB18030" \
+    python "$TOOLS/redact-evidence.py" --check "$MALFORMED_HEAVY"
+
+  NAME_DIR="$TMP/redaction-name-leak"
+  mkdir -p "$NAME_DIR"
+  NAME_FILE="$NAME_DIR/$CB_REDACT_IDENTIFIER.txt"
+  printf '%s\n' "$CB_REDACT_IDENTIFIER" > "$NAME_FILE"
+  expect_fail "redaction refuses a target filename containing the private identifier" \
+    python "$TOOLS/redact-evidence.py" "$NAME_FILE"
+  if [ ! -e "$NAME_FILE.redaction.txt" ]; then
+    echo "  PASS  rejected private filename produced no provenance sidecar"; pass=$((pass+1))
+  else
+    echo "  FAIL  rejected private filename was repeated into provenance"; fail=$((fail+1))
+  fi
 
   # An undecodable tracked file must NOT be reported as a clean result: that would be a false
   # clean for a file that was never scanned. Reproduced against the previous version, which

@@ -130,7 +130,24 @@ def _encoding_for_identifier(raw: bytes, identifier: str) -> tuple[str | None, s
     UTF-16 byte representation, so verify candidate decodings directly before falling back to
     generic text detection.
     """
-    for enc in ("utf-16-le", "utf-16-be", "utf-8", "gb18030"):
+    # UTF-16 gets fail-closed treatment. If its exact identifier byte pattern is
+    # present but the full file is malformed (for example an odd trailing byte), falling
+    # through to GB18030 can produce a false clean because GB18030 accepts the bytes while its
+    # single-byte identifier pattern is absent.
+    for enc in ("utf-16-le", "utf-16-be"):
+        pattern = identifier.encode(enc)
+        if not pattern or pattern not in raw:
+            continue
+        try:
+            text = raw.decode(enc)
+        except UnicodeError as e:
+            return None, (
+                f"{enc} identifier byte pattern is present but the file is malformed: {e}"
+            )
+        if identifier in text:
+            return enc, ""
+
+    for enc in ("utf-8", "gb18030"):
         pattern = identifier.encode(enc)
         if not pattern or pattern not in raw:
             continue
@@ -181,6 +198,12 @@ def _stage_bytes(dest: pathlib.Path, data: bytes, mode: int | None) -> pathlib.P
 
 def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
     """Replace the identifier while keeping evidence and provenance failure-safe."""
+    if identifier.casefold() in p.name.casefold():
+        raise RuntimeError(
+            f"refusing to process {p}: the target filename itself contains the private "
+            "identifier; content scrubbing would leave the name public and repeat it in "
+            "provenance"
+        )
     if p.suffix.lower() in SKIP_SUFFIXES:
         return 0
     try:

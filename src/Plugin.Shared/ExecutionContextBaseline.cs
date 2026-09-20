@@ -187,7 +187,43 @@ namespace CadBridge.Plugin.Shared
             {
                 Directory.CreateDirectory(dir);
             }
-            File.WriteAllText(path, result + Environment.NewLine, new UTF8Encoding(false));
+
+            // Never expose the readiness path until the complete payload has been written and
+            // flushed. The startup harness treats a non-empty readiness file as committed, so
+            // a direct WriteAllText() could publish a partial/success-looking file if close or
+            // flush failed. Stage on the same filesystem, then atomically publish.
+            string fileName = Path.GetFileName(path);
+            string tempPath = Path.Combine(
+                string.IsNullOrWhiteSpace(dir) ? "." : dir,
+                "." + fileName + "." + Guid.NewGuid().ToString("N") + ".tmp");
+            byte[] payload = new UTF8Encoding(false).GetBytes(result + Environment.NewLine);
+            try
+            {
+                using (var stream = new FileStream(
+                    tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                {
+                    stream.Write(payload, 0, payload.Length);
+                    stream.Flush(true);
+                }
+
+                if (File.Exists(path))
+                {
+                    File.Replace(tempPath, path, null);
+                }
+                else
+                {
+                    File.Move(tempPath, path);
+                }
+                tempPath = null;
+            }
+            finally
+            {
+                if (!string.IsNullOrWhiteSpace(tempPath))
+                {
+                    try { File.Delete(tempPath); }
+                    catch (SysException) { }
+                }
+            }
         }
 
         /// <summary>

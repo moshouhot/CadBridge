@@ -301,6 +301,31 @@ Each defect class has a non-live regression or mutation test. Because this produ
 candidate SHA, all Sourcery/Codex results for `c0412ea` remain historical evidence only and
 the final SHA must be reviewed again.
 
+## Seventh online follow-up: completed b899b7d reviews
+
+Sourcery, Codex Code Review and Codex Security Review all completed against
+`b899b7dad7fdc9b405fee71b578db13852ebef4d`. Completion again was not treated as a clean
+pass: six open findings were independently reproduced and confirmed.
+
+This follow-up addresses them:
+
+- compatibility parsing strips the `runtime_framework=` key and stores only the measured
+  runtime value;
+- Python live-gate review now requires the gate barrier to precede every known adapter/process/
+  COM live sink in `main()`, not merely exist somewhere reachable;
+- carried `redactions.artifacts` provenance is cross-checked against freshly hashed artifact
+  paths, sizes and `stored_sha256` values before validation can report success;
+- a UTF-16 identifier byte pattern followed by malformed UTF-16 is fail-closed and cannot fall
+  through to GB18030 as a false clean;
+- redaction refuses target filenames containing the private identifier instead of repeating
+  that identifier into the provenance sidecar;
+- execution-baseline readiness is staged, flushed and atomically published in the destination
+  directory so consumers never see a partial readiness record.
+
+Non-live regression/mutation coverage was added for each class. The resulting candidate SHA
+must undergo Sourcery + Codex Code Review + Codex Security Review again before local final
+verification.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

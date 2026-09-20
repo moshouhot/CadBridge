@@ -165,6 +165,7 @@ NON_LIVE: dict[str, str] = {
 # ---------------------------------------------------------------------------------
 EXE_PAT = re.compile(r"(acad\.exe|accoreconsole(\.exe)?|AutoLispDebugAdapter)", re.I)
 LIVE_LAUNCH_CALLS = {"launch_and_record", "launch_job_and_record", "DapClient"}
+COM_LIVE_CALLS = {"GetActiveObject", "GetObject", "Dispatch", "DispatchEx", "CreateObject"}
 SUBPROCESS_CALLS = {"Popen", "run", "call", "check_output", "check_call"}
 
 
@@ -413,6 +414,91 @@ def _reachable_gate_calls(tree: ast.AST, calls: list[ast.Call]) -> tuple[list[as
         else:
             rejected.append(why)
     return reachable, rejected
+
+
+def _call_terminal_name(call: ast.Call) -> str | None:
+    fn = call.func
+    if isinstance(fn, ast.Name):
+        return fn.id
+    if isinstance(fn, ast.Attribute):
+        return fn.attr
+    return None
+
+
+def _call_is_known_live_sink(call: ast.Call) -> bool:
+    """Recognise calls that can start/attach/drive a live CAD-side process."""
+    name = _call_terminal_name(call)
+    if name in LIVE_LAUNCH_CALLS or name in COM_LIVE_CALLS:
+        return True
+    if name in SUBPROCESS_CALLS:
+        for arg in list(call.args) + [kw.value for kw in call.keywords]:
+            for sub in ast.walk(arg):
+                if isinstance(sub, ast.Constant) and isinstance(sub.value, str) \
+                        and EXE_PAT.search(sub.value):
+                    return True
+    return False
+
+
+def _main_function(tree: ast.AST) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+    for stmt in getattr(tree, "body", []):
+        if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef)) and stmt.name == "main":
+            return stmt
+    return None
+
+
+def _top_level_stmt_in_function(
+    fn: ast.FunctionDef | ast.AsyncFunctionDef, target: ast.AST
+) -> ast.stmt | None:
+    for stmt in fn.body:
+        if stmt is target or any(node is target for node in ast.walk(stmt)):
+            return stmt
+    return None
+
+
+def _gate_precedes_live_sinks(
+    tree: ast.AST, calls: list[ast.Call], *, conditional: bool
+) -> tuple[bool, str]:
+    """Require authorization before every known live operation in executable main().
+
+    Existence alone is insufficient: a gate placed immediately after DapClient()/COM attach
+    would still be "reachable" but would authorize too late. For unconditional harnesses the
+    gate must be a direct top-level statement in main(). For the one conditional harness the
+    live-intent If statement is the barrier; _guard_mentions_live_intent separately proves its
+    polarity.
+    """
+    fn = _main_function(tree)
+    if fn is None:
+        return False, "no module-level main() function"
+
+    sinks = [
+        node for node in ast.walk(fn)
+        if isinstance(node, ast.Call) and _call_is_known_live_sink(node)
+    ]
+    if not sinks:
+        return True, ""
+
+    barriers: list[ast.stmt] = []
+    for call in calls:
+        stmt = _top_level_stmt_in_function(fn, call)
+        if stmt is None:
+            continue
+        if not conditional:
+            if not (isinstance(stmt, ast.Expr) and stmt.value is call):
+                continue
+        barriers.append(stmt)
+
+    if not barriers:
+        kind = "live-intent barrier" if conditional else "direct top-level gate statement"
+        return False, f"no {kind} in main() can dominate the live sinks"
+
+    earliest_sink = min(getattr(s, "lineno", 10**9) for s in sinks)
+    for barrier in barriers:
+        if getattr(barrier, "lineno", 10**9) < earliest_sink:
+            return True, ""
+    return False, (
+        f"gate barrier occurs at/after the first known live sink on line {earliest_sink}; "
+        "authorization must precede adapter/process/COM activity"
+    )
 
 
 def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> tuple[bool, str]:
@@ -788,13 +874,23 @@ def check(root: pathlib.Path) -> list[str]:
                     continue
                 if suspicious:
                     problems.append(f"{rel}: {suspicious[0]}")
-                if GATED[key] == "conditional":
+                conditional = GATED[key] == "conditional"
+                if conditional:
                     ok_guard, reason = _guard_mentions_live_intent(tree, reachable)
                     if not ok_guard:
                         problems.append(
                             f"{rel}: gate is not on the live-intent path, so a real CAD run "
                             f"could skip it ({reason})"
                         )
+                        continue
+                ok_order, order_reason = _gate_precedes_live_sinks(
+                    tree, reachable, conditional=conditional
+                )
+                if not ok_order:
+                    problems.append(
+                        f"{rel}: safety gate does not dominate the live operation(s) "
+                        f"({order_reason})"
+                    )
             elif suffix in (".sh", ".bash"):
                 if not _shell_invokes_gate(p):
                     problems.append(

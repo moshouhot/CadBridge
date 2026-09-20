@@ -117,6 +117,52 @@ def validate_tests(tests: list[dict], artifact_paths: set[str]) -> list[str]:
     return problems
 
 
+def validate_redactions(redactions: object, artifacts: list[dict]) -> list[str]:
+    """Cross-check preserved redaction provenance against freshly hashed stored bytes."""
+    problems: list[str] = []
+    if not isinstance(redactions, dict):
+        return ["redactions provenance must be a JSON object"]
+    entries = redactions.get("artifacts", [])
+    if not isinstance(entries, list):
+        return ["redactions.artifacts must be a JSON array"]
+
+    by_path = {
+        a.get("path"): a
+        for a in artifacts
+        if isinstance(a, dict) and isinstance(a.get("path"), str)
+    }
+    for i, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            problems.append(f"redactions.artifacts[{i}] must be a JSON object")
+            continue
+        path = entry.get("path")
+        stored_sha = entry.get("stored_sha256")
+        if not isinstance(path, str) or not path:
+            problems.append(f"redactions.artifacts[{i}].path must be a non-empty string")
+            continue
+        if not isinstance(stored_sha, str) or not stored_sha:
+            problems.append(f"redaction {path}: stored_sha256 is missing")
+            continue
+        current = by_path.get(Path(path).as_posix())
+        if current is None:
+            problems.append(
+                f"redaction {path}: carried provenance refers to an artifact not present "
+                "in the freshly hashed manifest"
+            )
+            continue
+        if current.get("sha256") != stored_sha:
+            problems.append(
+                f"redaction {path}: stored_sha256 {stored_sha} does not match freshly hashed "
+                f"artifact sha256 {current.get('sha256')}"
+            )
+        if "stored_bytes" in entry and current.get("bytes") != entry.get("stored_bytes"):
+            problems.append(
+                f"redaction {path}: stored_bytes {entry.get('stored_bytes')} does not match "
+                f"fresh artifact size {current.get('bytes')}"
+            )
+    return problems
+
+
 def write_manifest_atomically(out: Path, manifest: dict) -> None:
     """Write the manifest via a temp file + atomic replace.
 
@@ -306,12 +352,16 @@ def main() -> int:
     # particular documents that published bytes differ from the originally captured ones;
     # losing it would make the published hashes look unexplained.
     if "redactions" in previous and "redactions" not in manifest:
-        manifest["redactions"] = previous["redactions"]
+        carried_redactions = previous["redactions"]
+        if not args.no_validate:
+            problems += validate_redactions(carried_redactions, artifacts)
+        manifest["redactions"] = carried_redactions
         manifest.setdefault("notes", [])
         if not any("REDACTION" in n for n in manifest["notes"]):
             manifest["notes"].append(
                 "REDACTION: preserved from the previous manifest; some artifact hashes cover "
-                "bytes that differ from the originally captured ones."
+                "bytes that differ from the originally captured ones. Preserved provenance is "
+                "validated against the freshly hashed stored bytes on regeneration."
             )
 
     # Final self-consistency gate, AFTER --extra and the carried-forward blocks, so a value

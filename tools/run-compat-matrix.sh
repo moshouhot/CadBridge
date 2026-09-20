@@ -91,7 +91,7 @@ for entry in "${HOSTS[@]}"; do
     loaded="NO"; runtime="-"; circle="-"; entities="-"; note=""
     if [ -f "$txt" ]; then
       grep -q "CBBRIDGEINFO BEGIN" "$txt" && loaded="YES"
-      runtime="$(grep -m1 'runtime_framework=' "$txt" | sed -e 's/^[[:space:]]*//' | tr -d '\r')"
+      runtime="$(grep -m1 'runtime_framework=' "$txt" | sed -e 's/^[[:space:]]*runtime_framework=[[:space:]]*//' | tr -d '\r')"
       if grep -q 'CBBRIDGEPINGCIRCLE OK' "$txt"; then circle="YES"; fi
       entities="$(grep 'model_space_entities:' "$txt" | tail -1 | sed -e 's/.*model_space_entities:[[:space:]]*//' | tr -d '\r')"
       grep -q 'MessageBox' "$txt" && note="host-abort-dialog"
