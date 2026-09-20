@@ -593,11 +593,13 @@ def _py_live_signal(path: pathlib.Path) -> tuple[bool, str]:
 
 
 def _shell_code_lines(path: pathlib.Path):
-    """Yield executable shell source lines while skipping heredoc payload bytes.
+    """Yield shell source, skipping only heredocs used as literal data fixtures.
 
-    Heredoc bodies are DATA, not commands executed by the surrounding shell. Treating their
-    contents as source produced a false live classification when selftest.sh wrote a temporary
-    fixture containing the literal line `acad.exe`.
+    A blanket "ignore every heredoc" rule would be unsafe: payload passed to `python <<EOF`,
+    `bash <<EOF`, etc. is executable code. The false positive found by Codex came from
+    `cat > fixture <<EOF`, whose body is only data written to a temporary file. Therefore
+    only heredocs on known data-sink commands (cat/tee) are suppressed; every other heredoc
+    remains conservatively visible to behavioural discovery.
     """
     terminator: str | None = None
     strip_tabs = False
@@ -609,13 +611,14 @@ def _shell_code_lines(path: pathlib.Path):
                 strip_tabs = False
             continue
 
-        # Detect the first conventional heredoc on this source line. The command preceding
-        # the redirection is still executable source and is yielded; only following payload
-        # lines are skipped until the exact terminator.
+        stripped = raw.strip()
         m = re.search(r"<<(-?)\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\2", raw)
         if m:
-            terminator = m.group(3)
-            strip_tabs = bool(m.group(1))
+            # Only literal data-writer heredocs are excluded from source scanning.
+            first = stripped.split()[0] if stripped.split() else ""
+            if first in {"cat", "tee"}:
+                terminator = m.group(3)
+                strip_tabs = bool(m.group(1))
         yield raw
 
 
