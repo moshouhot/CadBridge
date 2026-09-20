@@ -305,6 +305,15 @@ def _resolved_gate_calls(tree: ast.AST) -> tuple[list[ast.Call], list[str]]:
     return out, unsafe_reasons + direct_reasons + suspicious
 
 
+def _gate_call_matches_harness(call: ast.Call, expected: str) -> bool:
+    """The runtime allowlist is keyed by exact harness names; static review must be too."""
+    if not call.args:
+        return False
+    first = call.args[0]
+    return isinstance(first, ast.Constant) and isinstance(first.value, str) \
+        and first.value == expected
+
+
 def _is_main_guard(test: ast.AST) -> bool:
     """True only for the conventional `if __name__ == "__main__":` guard."""
     if not isinstance(test, ast.Compare) or len(test.ops) != 1 or len(test.comparators) != 1:
@@ -458,13 +467,12 @@ def _top_level_stmt_in_function(
 def _gate_precedes_live_sinks(
     tree: ast.AST, calls: list[ast.Call], *, conditional: bool
 ) -> tuple[bool, str]:
-    """Require authorization before every known live operation in executable main().
+    """Require the ACTUAL gate call to execute before every known live sink.
 
-    Existence alone is insufficient: a gate placed immediately after DapClient()/COM attach
-    would still be "reachable" but would authorize too late. For unconditional harnesses the
-    gate must be a direct top-level statement in main(). For the one conditional harness the
-    live-intent If statement is the barrier; _guard_mentions_live_intent separately proves its
-    polarity.
+    Mapping both calls to their enclosing top-level If was too coarse: a live sink and a gate
+    inside the same `if live_intent:` body both inherited the If's line, so a sink placed
+    immediately before the gate still passed. After _guard_mentions_live_intent proves the
+    branch polarity, lexical call ordering is the conservative proof used here.
     """
     fn = _main_function(tree)
     if fn is None:
@@ -477,73 +485,103 @@ def _gate_precedes_live_sinks(
     if not sinks:
         return True, ""
 
-    barriers: list[ast.stmt] = []
+    relevant_calls: list[ast.Call] = []
     for call in calls:
         stmt = _top_level_stmt_in_function(fn, call)
         if stmt is None:
             continue
-        if not conditional:
-            if not (isinstance(stmt, ast.Expr) and stmt.value is call):
-                continue
-        barriers.append(stmt)
+        if not conditional and not (isinstance(stmt, ast.Expr) and stmt.value is call):
+            continue
+        relevant_calls.append(call)
 
-    if not barriers:
-        kind = "live-intent barrier" if conditional else "direct top-level gate statement"
+    if not relevant_calls:
+        kind = "live-intent gate" if conditional else "direct top-level gate statement"
         return False, f"no {kind} in main() can dominate the live sinks"
 
     earliest_sink = min(getattr(s, "lineno", 10**9) for s in sinks)
-    for barrier in barriers:
-        if getattr(barrier, "lineno", 10**9) < earliest_sink:
-            return True, ""
+    earliest_gate = min(getattr(g, "lineno", 10**9) for g in relevant_calls)
+    if earliest_gate < earliest_sink:
+        return True, ""
     return False, (
-        f"gate barrier occurs at/after the first known live sink on line {earliest_sink}; "
-        "authorization must precede adapter/process/COM activity"
+        f"gate call line {earliest_gate} is at/after the first known live sink on line "
+        f"{earliest_sink}; authorization must precede adapter/process/COM activity"
     )
 
 
-def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> tuple[bool, str]:
-    """Does a resolved gate call sit inside a branch taken WHEN LIVE INTENT IS TRUE?
+def _is_live_intent_atom(node: ast.AST) -> bool:
+    return (
+        isinstance(node, ast.Name) and node.id == "live_intent"
+    ) or (
+        isinstance(node, ast.Attribute) and node.attr == "live_intent"
+    )
 
-    Polarity matters. Searching the rendered condition for the text 'live' accepted
-    `if not live_intent:` -- where the gate runs only on the OFFLINE path and is skipped for a
-    real CAD run, the exact opposite of what is wanted. The condition is therefore inspected
-    structurally: the gate must be reachable when the live-intent expression is truthy.
+
+def _live_condition_polarity(test: ast.AST) -> bool | None:
+    """Prove whether a simple condition is true or false when live_intent is true.
+
+    Unknown/compound expressions fail closed. In particular, `live_intent and False`,
+    `live_intent or other_flag`, and arbitrary comparisons are NOT guessed safe.
     """
+    if _is_live_intent_atom(test):
+        return True
+    if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not) \
+            and _is_live_intent_atom(test.operand):
+        return False
+    if isinstance(test, ast.Compare) and len(test.ops) == 1 \
+            and len(test.comparators) == 1 and _is_live_intent_atom(test.left):
+        rhs = test.comparators[0]
+        if not (isinstance(rhs, ast.Constant) and isinstance(rhs.value, bool)):
+            return None
+        op = test.ops[0]
+        if isinstance(op, (ast.Eq, ast.Is)):
+            return bool(rhs.value)
+        if isinstance(op, (ast.NotEq, ast.IsNot)):
+            return not bool(rhs.value)
+    return None
+
+
+def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> tuple[bool, str]:
+    """Prove that a gate is on a branch taken when live_intent is true."""
     call_lines = {c.lineno for c in calls}
 
     def contains_gate(body: list[ast.stmt]) -> bool:
-        for stmt in body:
-            for sub in ast.walk(stmt):
-                if isinstance(sub, ast.Call) and sub.lineno in call_lines:
-                    return True
-        return False
+        return any(
+            isinstance(sub, ast.Call) and sub.lineno in call_lines
+            for stmt in body for sub in ast.walk(stmt)
+        )
 
+    seen_candidate = False
     for node in ast.walk(tree):
         if not isinstance(node, ast.If):
             continue
-        test = node.test
-        # Only conditions that actually reference live intent are considered.
-        names = {n.id for n in ast.walk(test) if isinstance(n, ast.Name)}
-        attrs = {n.attr for n in ast.walk(test) if isinstance(n, ast.Attribute)}
-        rendered = ast.unparse(test)
-        if not ("live_intent" in names or "live_intent" in attrs or "live_intent" in rendered):
+        body_has = contains_gate(node.body)
+        else_has = contains_gate(node.orelse)
+        if not body_has and not else_has:
             continue
 
-        if isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not):
-            # `if not live_intent:` -- the body is the OFFLINE path. A gate there is wrong.
-            if contains_gate(node.body):
-                return False, (f"line {node.lineno}: gate runs when live intent is FALSE "
-                               f"(`if not live_intent:`), so a live CAD run skips it")
-            # An `else` branch of a negated test IS the live path.
-            if node.orelse and contains_gate(node.orelse):
-                return True, ""
+        names = {n.id for n in ast.walk(node.test) if isinstance(n, ast.Name)}
+        attrs = {n.attr for n in ast.walk(node.test) if isinstance(n, ast.Attribute)}
+        if "live_intent" not in names and "live_intent" not in attrs:
             continue
 
-        # Positive condition: the body is the live path.
-        if contains_gate(node.body):
+        seen_candidate = True
+        polarity = _live_condition_polarity(node.test)
+        if polarity is None:
+            return False, (
+                f"line {node.lineno}: live-intent guard is compound/ambiguous; static review "
+                "cannot prove the gate executes for every live run"
+            )
+        if body_has and polarity is True:
             return True, ""
+        if else_has and polarity is False:
+            return True, ""
+        return False, (
+            f"line {node.lineno}: gate is on the branch taken when live intent is FALSE"
+        )
 
-    return False, "no gate call is reachable on the live-intent path"
+    if seen_candidate:
+        return False, "no provably-live branch contains the gate"
+    return False, "no gate call is reachable on a provably-positive live-intent path"
 
 
 def _shell_invokes_gate(path: pathlib.Path) -> bool:
@@ -863,13 +901,21 @@ def check(root: pathlib.Path) -> list[str]:
                     problems.append(f"{rel}: cannot parse: {e}")
                     continue
                 calls, suspicious = _resolved_gate_calls(tree)
-                reachable, unreachable = _reachable_gate_calls(tree, calls)
+                named_calls = [c for c in calls if _gate_call_matches_harness(c, key)]
+                wrong_names = [
+                    c for c in calls if not _gate_call_matches_harness(c, key)
+                ]
+                reachable, unreachable = _reachable_gate_calls(tree, named_calls)
                 if not reachable:
                     detail_parts = suspicious + unreachable
+                    if wrong_names:
+                        detail_parts.append(
+                            "resolved gate call uses a different/non-literal harness name"
+                        )
                     detail = "; ".join(detail_parts) if detail_parts else "no reachable gate call"
                     problems.append(
                         f"{rel}: live entrypoint with no reachable call resolving to a safely-bound "
-                        f"{GATE_MODULE}.{GATE_FUNC}() ({detail})"
+                        f"{GATE_MODULE}.{GATE_FUNC}({key!r}) ({detail})"
                     )
                     continue
                 if suspicious:

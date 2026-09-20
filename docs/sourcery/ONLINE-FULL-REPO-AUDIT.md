@@ -326,6 +326,33 @@ Non-live regression/mutation coverage was added for each class. The resulting ca
 must undergo Sourcery + Codex Code Review + Codex Security Review again before local final
 verification.
 
+## Eighth online follow-up: completed 4a162e2 reviews
+
+Codex Code Review and Codex Security Review completed against
+`4a162e20405895afcbf4f6759450247956fcd7af`. Seven open threads remained after
+completion. They were independently reproduced; the two gate-order findings overlap but
+exercise different bypasses.
+
+This follow-up strengthens the same non-live boundaries:
+
+- conditional live-intent polarity is fail-closed: only simple expressions whose truth value
+  for `live_intent=true` can be statically proven are accepted; compound/ambiguous guards are
+  rejected;
+- gate ordering compares the actual gate-call line with known live sinks, so a sink inserted
+  before the gate inside the same conditional branch fails review;
+- each Python gate call must pass the exact current harness key, preventing one harness from
+  borrowing another future allowlist entry;
+- compatibility parsing extracts `runtime_framework` from its real semicolon-delimited
+  summary position;
+- redaction detects case-insensitive identifier variants and refuses unsafe partial rewrites;
+- every publication-relative path component is checked for the identifier, not only the
+  basename;
+- symlink evidence targets are refused before replacement so repository structure and referents
+  cannot diverge silently.
+
+All changes remain non-live. The resulting SHA requires another full Sourcery + Codex Code
+Review + Codex Security Review cycle before local final verification.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

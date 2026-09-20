@@ -48,8 +48,8 @@ check "to-win-slash converts /f/a/b"  test "$(python "$TOOLS/pathconv.py" to-win
 expect_fail "unknown mode fails"      python "$TOOLS/pathconv.py" bogus '/f/a/b'
 
 echo "== compatibility parser =="
-RUNTIME_PARSED="$(printf '  runtime_framework=.NET 8.0.0\r\n' | \
-  sed -e 's/^[[:space:]]*runtime_framework=[[:space:]]*//' | tr -d '\r')"
+RUNTIME_PARSED="$(printf 'compiled_target=net8.0-windows; clr=8.0.0; runtime_framework=.NET 8.0.0; process_arch=x64\r\n' | \
+  sed -e 's/.*runtime_framework=[[:space:]]*//' -e 's/[[:space:]]*;.*$//' | tr -d '\r')"
 if [ "$RUNTIME_PARSED" = ".NET 8.0.0" ]; then
   echo "  PASS  runtime_framework parser returns the measured value only"; pass=$((pass+1))
 else
@@ -430,7 +430,7 @@ PYEOF
 }
 
 mutation_caught "dap-probe gate call deleted" \
-  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("sp.require_safety_review_passed(\"dap-probe.py live mode\")", "pass"); p.write_text(t, encoding="utf-8")'
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("sp.require_safety_review_passed(\"dap-probe.py\")", "pass"); p.write_text(t, encoding="utf-8")'
 mutation_caught "t01-5 harness gate replaced by comment" \
   'p = pathlib.Path(sys.argv[1])/"t01-5-definitive.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"t01-5-definitive.py\")", "    # sp.require_safety_review_passed(\"t01-5-definitive.py\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "retired GUI harness gate removed" \
@@ -439,7 +439,7 @@ mutation_caught "retired GUI harness gate removed" \
 # Regression mutations for the two defects Sourcery found in the FIRST version of this
 # checker (PR #1). Both were reproduced against that version before being fixed.
 mutation_caught "gate replaced by a same-named method on an unrelated object" \
-  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("CONTENT_LENGTH = b\"Content-Length: \"", "class _Noop:\n    def require_safety_review_passed(self, *a):\n        return None\nhelper = _Noop()\n\nCONTENT_LENGTH = b\"Content-Length: \""); t = t.replace("sp.require_safety_review_passed(\"dap-probe.py live mode\")", "helper.require_safety_review_passed(\"dap-probe.py live mode\")"); p.write_text(t, encoding="utf-8")'
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("CONTENT_LENGTH = b\"Content-Length: \"", "class _Noop:\n    def require_safety_review_passed(self, *a):\n        return None\nhelper = _Noop()\n\nCONTENT_LENGTH = b\"Content-Length: \""); t = t.replace("sp.require_safety_review_passed(\"dap-probe.py\")", "helper.require_safety_review_passed(\"dap-probe.py\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "new ungated live harness with an unlisted filename" \
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"dap-live-newprobe.py").write_text("import subprocess\nsubprocess.Popen([r\"D:/acad.exe\"])\n", encoding="utf-8")'
 
@@ -500,9 +500,15 @@ fi
 # Regressions for the six defects Sourcery found in the SECOND full review of this PR. Every
 # one was reproduced against the checker as it stood before being fixed.
 mutation_caught "gate function imported directly then reassigned" \
-  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import safe_process as sp\nfrom safe_process import require_safety_review_passed as gate"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py live mode\")", "        gate = lambda *a, **k: None\n        gate(\"dap-probe.py live mode\")"); p.write_text(t, encoding="utf-8")'
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import safe_process as sp\nfrom safe_process import require_safety_review_passed as gate"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py\")", "        gate = lambda *a, **k: None\n        gate(\"dap-probe.py\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "live-intent guard polarity inverted" \
   'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    if live_intent:", "    if not live_intent:"); p.write_text(t, encoding="utf-8")'
+mutation_caught "live-intent comparison inverted" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    if live_intent:", "    if live_intent == False:"); p.write_text(t, encoding="utf-8")'
+mutation_caught "compound live-intent guard made unreachable" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    if live_intent:", "    if live_intent and False:"); p.write_text(t, encoding="utf-8")'
+mutation_caught "gate borrows another harness allowlist key" \
+  'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("sp.require_safety_review_passed(\"dap-session.py\")", "sp.require_safety_review_passed(\"t01-5-definitive.py\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "gate hidden in statically dead if False branch" \
   'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    if False:\n        sp.require_safety_review_passed(\"dap-session.py\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "gate moved into an uncalled helper" \
@@ -511,6 +517,8 @@ mutation_caught "module-level gate moved after __main__ entrypoint" \
   'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    pass"); t += "\nsp.require_safety_review_passed(\"dap-session.py\")\n"; p.write_text(t, encoding="utf-8")'
 mutation_caught "gate moved after the first live DapClient sink" \
   'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); gate="    sp.require_safety_review_passed(\"dap-session.py\")\n"; t=t.replace(gate, ""); sink="    c = dap.DapClient([args.adapter, \"--\", args.product], args.transcript, timeout=args.timeout)\n"; t=t.replace(sink, sink+gate); p.write_text(t, encoding="utf-8")'
+mutation_caught "conditional live sink inserted before gate in same branch" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); gate="        sp.require_safety_review_passed(\"dap-probe.py\")\n"; injected="        DapClient([args.adapter], args.transcript, timeout=args.timeout)\n"+gate; t=t.replace(gate, injected); p.write_text(t, encoding="utf-8")'
 mutation_caught "standalone COM worker gate removed" \
   'p = pathlib.Path(sys.argv[1])/"com_read_worker.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"com_read_worker.py\")\n\n", ""); p.write_text(t, encoding="utf-8")'
 mutation_caught "nested script reusing a registry basename" \
@@ -518,7 +526,7 @@ mutation_caught "nested script reusing a registry basename" \
 mutation_caught "extensionless executable with a shebang" \
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"cad-launcher").write_text("#!/usr/bin/env python3\nimport subprocess\nsubprocess.Popen([chr(39)+chr(97)+chr(99)+chr(97)+chr(100)+chr(46)+chr(101)+chr(120)+chr(101)+chr(39)])\n", encoding="utf-8")'
 mutation_caught "environment read through an aliased environ mapping" \
-  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import os as _os\nimport safe_process as sp\nenv = _os.environ"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py live mode\")", "        if env.get(\"CBRIDGE_ACK_UNREVIEWED_LIVE\"):\n            pass\n        sp.require_safety_review_passed(\"dap-probe.py live mode\")"); p.write_text(t, encoding="utf-8")'
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import os as _os\nimport safe_process as sp\nenv = _os.environ"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py\")", "        if env.get(\"CBRIDGE_ACK_UNREVIEWED_LIVE\"):\n            pass\n        sp.require_safety_review_passed(\"dap-probe.py\")"); p.write_text(t, encoding="utf-8")'
 
 # Regressions for the two defects Sourcery found in the third review round, both in
 # make-manifest.py. Reproduced against the previous version before fixing.
@@ -737,6 +745,42 @@ PYEOF
     echo "  PASS  rejected private filename produced no provenance sidecar"; pass=$((pass+1))
   else
     echo "  FAIL  rejected private filename was repeated into provenance"; fail=$((fail+1))
+  fi
+
+  CASE_FILE="$NAME_DIR/case-variant.txt"
+  printf '%s\n' "$(printf '%s' "$CB_REDACT_IDENTIFIER" | tr '[:lower:]' '[:upper:]')" > "$CASE_FILE"
+  expect_fail "case-insensitive identifier variant cannot be reported clean" \
+    python "$TOOLS/redact-evidence.py" --check "$CASE_FILE"
+
+  PATH_ROOT="$TMP/redaction-path-component"
+  mkdir -p "$PATH_ROOT/$CB_REDACT_IDENTIFIER/nested"
+  printf 'clean contents\n' > "$PATH_ROOT/$CB_REDACT_IDENTIFIER/nested/log.txt"
+  expect_fail "repository-relative directory component containing identifier is refused" \
+    python "$TOOLS/redact-evidence.py" --check "$PATH_ROOT"
+
+  if python - "$TOOLS/redact-evidence.py" "$TMP" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import importlib.util, pathlib, sys
+tool, tmp, ident = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), sys.argv[3]
+spec = importlib.util.spec_from_file_location("redact_symlink_test", tool)
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+p = tmp / "symlink-fixture.txt"
+p.write_text(ident, encoding="utf-8")
+real = mod.pathlib.Path.is_symlink
+mod.pathlib.Path.is_symlink = lambda self: self == p
+try:
+    try:
+        mod.scrub_file(p, ident, dry_run=False)
+    except RuntimeError as e:
+        assert "symlink" in str(e).lower()
+    else:
+        raise AssertionError("symlink target was accepted")
+finally:
+    mod.pathlib.Path.is_symlink = real
+PYEOF
+  then
+    echo "  PASS  symlink targets are refused before evidence replacement"; pass=$((pass+1))
+  else
+    echo "  FAIL  symlink target refusal regression failed"; fail=$((fail+1))
   fi
 
   # An undecodable tracked file must NOT be reported as a clean result: that would be a false

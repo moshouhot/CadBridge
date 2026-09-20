@@ -157,6 +157,21 @@ def _encoding_for_identifier(raw: bytes, identifier: str) -> tuple[str | None, s
             continue
         if identifier in text:
             return enc, ""
+
+    # Windows paths/account names are case-insensitive. A differently-cased identifier must
+    # never become a false clean. We intentionally REFUSE rather than case-fold/re-encode the
+    # evidence, because preserving every non-identifier byte is a publication invariant.
+    folded = identifier.casefold()
+    for enc in ("utf-16-le", "utf-16-be", "utf-8", "gb18030"):
+        try:
+            text = raw.decode(enc)
+        except UnicodeError:
+            continue
+        if folded in text.casefold():
+            return None, (
+                f"case-insensitive identifier variant is present under {enc}; refusing an "
+                "unsafe partial scrub"
+            )
     return _detect_encoding(raw)
 
 
@@ -172,6 +187,25 @@ def _pattern_codec(encoding: str) -> str:
     if encoding == "utf-16":
         return "utf-16-le"  # detection returns explicit endianness; this is a safe default
     return encoding
+
+
+def _path_scope_parts(
+    p: pathlib.Path, path_root: pathlib.Path | None
+) -> tuple[str, ...]:
+    if path_root is None:
+        return (p.name,)
+    try:
+        rel = p.relative_to(path_root)
+    except ValueError:
+        return (p.name,)
+    return tuple(str(part) for part in rel.parts)
+
+
+def _path_contains_identifier(
+    p: pathlib.Path, identifier: str, path_root: pathlib.Path | None
+) -> bool:
+    needle = identifier.casefold()
+    return any(needle in part.casefold() for part in _path_scope_parts(p, path_root))
 
 
 def _stage_bytes(dest: pathlib.Path, data: bytes, mode: int | None) -> pathlib.Path:
@@ -196,13 +230,23 @@ def _stage_bytes(dest: pathlib.Path, data: bytes, mode: int | None) -> pathlib.P
         raise
 
 
-def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
+def scrub_file(
+    p: pathlib.Path,
+    identifier: str,
+    *,
+    dry_run: bool,
+    path_root: pathlib.Path | None = None,
+) -> int:
     """Replace the identifier while keeping evidence and provenance failure-safe."""
-    if identifier.casefold() in p.name.casefold():
+    if p.is_symlink():
         raise RuntimeError(
-            f"refusing to process {p}: the target filename itself contains the private "
-            "identifier; content scrubbing would leave the name public and repeat it in "
-            "provenance"
+            f"refusing to process symlink {p}: replacing it would change repository structure "
+            "while leaving the referent untouched"
+        )
+    if _path_contains_identifier(p, identifier, path_root):
+        raise RuntimeError(
+            f"refusing to process {p}: a published path component contains the private "
+            "identifier; content-only scrubbing cannot make that repository path safe"
         )
     if p.suffix.lower() in SKIP_SUFFIXES:
         return 0
@@ -215,6 +259,18 @@ def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
     if encoding is None:
         raise RuntimeError(
             f"cannot scan {p}: {reason}; it was NOT checked for the identifier"
+        )
+
+    try:
+        decoded = raw.decode(encoding)
+    except UnicodeError as e:
+        raise RuntimeError(f"cannot scan {p}: malformed {encoding}: {e}") from e
+    folded_count = decoded.casefold().count(identifier.casefold())
+    exact_count = decoded.count(identifier)
+    if folded_count != exact_count:
+        raise RuntimeError(
+            f"cannot safely scrub {p}: case-insensitive identifier variants are present; "
+            "refusing a partial redaction"
         )
 
     pattern = identifier.encode(_pattern_codec(encoding))
@@ -332,15 +388,23 @@ def main() -> int:
     # No-path mode always scans the CadBridge repository that CONTAINS this tool,
     # never an arbitrary caller working directory or a different Git checkout.
     root = pathlib.Path(__file__).resolve().parent.parent
+    target_roots: dict[pathlib.Path, pathlib.Path] = {}
     if args.paths:
         targets: list[pathlib.Path] = []
         missing: list[str] = []
         for raw in args.paths:
             p = pathlib.Path(raw)
-            if p.is_dir():
-                targets.extend(sorted(x for x in p.rglob("*") if x.is_file()))
+            if p.is_symlink():
+                targets.append(p)
+                target_roots[p] = p.parent
+            elif p.is_dir():
+                for x in sorted(p.rglob("*")):
+                    if x.is_file() or x.is_symlink():
+                        targets.append(x)
+                        target_roots[x] = p
             elif p.is_file():
                 targets.append(p)
+                target_roots[p] = p.parent
             else:
                 missing.append(raw)
         if missing:
@@ -350,6 +414,7 @@ def main() -> int:
     else:
         try:
             targets = _tracked_files(root)
+            target_roots = {p: root for p in targets}
         except RuntimeError as e:
             print(f"ERROR: {e}", file=sys.stderr)
             return 2
@@ -359,7 +424,12 @@ def main() -> int:
     undecodable: list[str] = []
     for p in targets:
         try:
-            n = scrub_file(p, args.identifier, dry_run=args.check or args.dry_run)
+            n = scrub_file(
+                p,
+                args.identifier,
+                dry_run=args.check or args.dry_run,
+                path_root=target_roots.get(p),
+            )
         except RuntimeError as e:
             # A file we could not scan is a gap in coverage, not a pass.
             undecodable.append(f"{p}: {e}")
