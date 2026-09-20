@@ -19,6 +19,11 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
             internal string Reason;
         }
 
+        private sealed class Counter
+        {
+            internal int Value;
+        }
+
         private static int passed;
         private static int failed;
 
@@ -41,7 +46,7 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
             CountdownEvent readersReady,
             ManualResetEventSlim releaseCandidate,
             ConcurrentBag<Snapshot> snapshots,
-            ref int completedBeforeRelease)
+            Counter completedBeforeRelease)
         {
             var readers = new Task[4];
             for (int i = 0; i < readers.Length; i++)
@@ -62,7 +67,7 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
 
                     if (!releaseCandidate.IsSet)
                     {
-                        Interlocked.Increment(ref completedBeforeRelease);
+                        Interlocked.Increment(ref completedBeforeRelease.Value);
                     }
                 });
             }
@@ -71,7 +76,7 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
 
         private static bool ReadersRemainBlockedUntilRelease(
             CountdownEvent readersReady,
-            ref int completedBeforeRelease)
+            Counter completedBeforeRelease)
         {
             if (!readersReady.Wait(TimeSpan.FromSeconds(5)))
             {
@@ -82,7 +87,7 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
             // production lock intact, no reader can finish a baseline getter/Check here.
             // Removing the transaction lock lets at least one reader observe provisional state.
             return !SpinWait.SpinUntil(
-                () => Volatile.Read(ref completedBeforeRelease) != 0,
+                () => Volatile.Read(ref completedBeforeRelease.Value) != 0,
                 TimeSpan.FromMilliseconds(750));
         }
 
@@ -114,7 +119,7 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
                 using (var readersReady = new CountdownEvent(4))
                 {
                     var snapshots = new ConcurrentBag<Snapshot>();
-                    int completedBeforeRelease = 0;
+                    var completedBeforeRelease = new Counter();
 
                     Baseline.TestAfterCandidateEstablished = () =>
                     {
@@ -128,7 +133,7 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
 
                     Task[] readers = StartReaders(
                         candidateEntered, readersReady, releaseCandidate,
-                        snapshots, ref completedBeforeRelease);
+                        snapshots, completedBeforeRelease);
 
                     Exception writerError = null;
                     Task writer = Task.Run(() =>
@@ -146,8 +151,8 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
                     Check("rollback candidate window reached",
                           candidateEntered.Wait(TimeSpan.FromSeconds(5)));
                     Check("rollback readers are blocked before release",
-                          ReadersRemainBlockedUntilRelease(readersReady, ref completedBeforeRelease),
-                          "completed_before_release=" + completedBeforeRelease);
+                          ReadersRemainBlockedUntilRelease(readersReady, completedBeforeRelease),
+                          "completed_before_release=" + completedBeforeRelease.Value);
 
                     releaseCandidate.Set();
                     Task.WaitAll(readers);
@@ -185,7 +190,7 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
                 using (var readersReady = new CountdownEvent(4))
                 {
                     var snapshots = new ConcurrentBag<Snapshot>();
-                    int completedBeforeRelease = 0;
+                    var completedBeforeRelease = new Counter();
 
                     Baseline.TestAfterCandidateEstablished = () =>
                     {
@@ -199,7 +204,7 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
 
                     Task[] readers = StartReaders(
                         candidateEntered, readersReady, releaseCandidate,
-                        snapshots, ref completedBeforeRelease);
+                        snapshots, completedBeforeRelease);
 
                     Exception writerError = null;
                     Task writer = Task.Run(() =>
@@ -218,8 +223,8 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
                     Check("commit candidate window reached",
                           candidateEntered.Wait(TimeSpan.FromSeconds(5)));
                     Check("commit readers are blocked before release",
-                          ReadersRemainBlockedUntilRelease(readersReady, ref completedBeforeRelease),
-                          "completed_before_release=" + completedBeforeRelease);
+                          ReadersRemainBlockedUntilRelease(readersReady, completedBeforeRelease),
+                          "completed_before_release=" + completedBeforeRelease.Value);
 
                     releaseCandidate.Set();
                     Task.WaitAll(readers);
