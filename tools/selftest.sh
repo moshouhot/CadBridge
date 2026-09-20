@@ -525,6 +525,12 @@ mutation_caught "conditional live sink inserted before gate in same branch" \
   'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); gate="        sp.require_safety_review_passed(\"dap-probe.py\")\n"; injected="        DapClient([args.adapter], args.transcript, timeout=args.timeout)\n"+gate; t=t.replace(gate, injected); p.write_text(t, encoding="utf-8")'
 mutation_caught "conditional gate nested under optional stack branch" \
   'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); gate="        sp.require_safety_review_passed(\"dap-probe.py\")"; t=t.replace(gate, "        if args.stack:\n            sp.require_safety_review_passed(\"dap-probe.py\")"); p.write_text(t, encoding="utf-8")'
+mutation_caught "live-intent guard nested under optional ancestor guard" \
+  'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); old="    if live_intent:\n        sp.require_safety_review_passed(\"dap-probe.py\")"; new="    if args.stack:\n        if live_intent:\n            sp.require_safety_review_passed(\"dap-probe.py\")"; t=t.replace(old, new); p.write_text(t, encoding="utf-8")'
+mutation_caught "safe_process alias shadowed by a class definition" \
+  'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t=t.replace("import safe_process as sp", "import safe_process as sp\nclass sp:\n    @staticmethod\n    def require_safety_review_passed(*a, **k):\n        return None", 1); p.write_text(t, encoding="utf-8")'
+mutation_caught "COM attachment wrapper executes before its gate" \
+  'p = pathlib.Path(sys.argv[1])/"com_read_worker.py"; t = p.read_text(encoding="utf-8"); gate="    sp.require_safety_review_passed(\"com_read_worker.py\")\n"; t=t.replace(gate, "    sp.com_attach_existing(\"AutoCAD.Application\")\n"+gate, 1); p.write_text(t, encoding="utf-8")'
 mutation_caught "standalone COM worker gate removed" \
   'p = pathlib.Path(sys.argv[1])/"com_read_worker.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"com_read_worker.py\")\n\n", ""); p.write_text(t, encoding="utf-8")'
 mutation_caught "nested script reusing a registry basename" \
@@ -533,6 +539,36 @@ mutation_caught "extensionless executable with a shebang" \
   'import pathlib as _pl; (_pl.Path(sys.argv[1])/"cad-launcher").write_text("#!/usr/bin/env python3\nimport subprocess\nsubprocess.Popen([chr(39)+chr(97)+chr(99)+chr(97)+chr(100)+chr(46)+chr(101)+chr(120)+chr(101)+chr(39)])\n", encoding="utf-8")'
 mutation_caught "environment read through an aliased environ mapping" \
   'p = pathlib.Path(sys.argv[1])/"dap-probe.py"; t = p.read_text(encoding="utf-8"); t = t.replace("import safe_process as sp", "import os as _os\nimport safe_process as sp\nenv = _os.environ"); t = t.replace("        sp.require_safety_review_passed(\"dap-probe.py\")", "        if env.get(\"CBRIDGE_ACK_UNREVIEWED_LIVE\"):\n            pass\n        sp.require_safety_review_passed(\"dap-probe.py\")"); p.write_text(t, encoding="utf-8")'
+
+if python - "$TOOLS" <<'PYEOF'
+import ast, pathlib, sys
+root = pathlib.Path(sys.argv[1])
+bad = []
+for p in sorted(root.glob("*.py")):
+    try:
+        tree = ast.parse(p.read_text(encoding="utf-8", errors="replace"))
+    except SyntaxError:
+        continue
+    parents = {}
+    for parent in ast.walk(tree):
+        for child in ast.iter_child_nodes(parent):
+            parents[child] = parent
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        fn = node.func
+        if isinstance(fn, ast.Attribute) and fn.attr == "terminate_owned":
+            if isinstance(parents.get(node), ast.Expr):
+                bad.append(f"{p.name}:{node.lineno}")
+if bad:
+    print("ignored terminate_owned result(s):", ", ".join(bad), file=sys.stderr)
+    raise SystemExit(1)
+PYEOF
+then
+  echo "  PASS  every terminate_owned result contributes to harness logic"; pass=$((pass+1))
+else
+  echo "  FAIL  a live harness ignores terminate_owned cleanup status"; fail=$((fail+1))
+fi
 
 # Regressions for the two defects Sourcery found in the third review round, both in
 # make-manifest.py. Reproduced against the previous version before fixing.
@@ -684,6 +720,77 @@ else
   echo "  FAIL  fresh manifest inherited mkstemp private mode"; fail=$((fail+1))
 fi
 
+# (b6) An explicitly requested status file is mandatory evidence, not an optional hint.
+MISSING_STATUS_DIR="$TMP/missing-status"
+mkdir -p "$MISSING_STATUS_DIR"
+printf '{"ok":true}' > "$MISSING_STATUS_DIR/a.json"
+if python "$TOOLS/make-manifest.py" "$MISSING_STATUS_DIR" --phase X --run-id R \
+  --status-file "$MISSING_STATUS_DIR/does-not-exist.json" >/dev/null 2>&1; then
+  echo "  FAIL  missing explicit --status-file was accepted"; fail=$((fail+1))
+else
+  if python - "$MISSING_STATUS_DIR/manifest.json" <<'PYEOF'
+import json, pathlib, sys
+m = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert m["validation"]["ok"] is False
+assert any("status-file" in x for x in m["validation"]["problems"])
+PYEOF
+  then
+    echo "  PASS  missing explicit status file fails manifest validation"; pass=$((pass+1))
+  else
+    echo "  FAIL  missing status file did not produce truthful manifest validation"; fail=$((fail+1))
+  fi
+fi
+
+# (b7) Atomic replacement must refuse a symlink destination. Use a fault-style monkeypatch so
+# the regression is portable to Windows hosts where creating symlinks may require privileges.
+if python - "$TOOLS/make-manifest.py" "$TMP" <<'PYEOF'
+import importlib.util, pathlib, sys
+tool, tmp = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+spec = importlib.util.spec_from_file_location("manifest_symlink_test", tool)
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+out = tmp / "manifest-symlink-fixture.json"
+out.write_text("ORIGINAL", encoding="utf-8")
+real = mod.Path.is_symlink
+mod.Path.is_symlink = lambda self: self == out
+try:
+    try:
+        mod.write_manifest_atomically(out, {"ok": True})
+    except RuntimeError as e:
+        assert "symlink" in str(e).lower()
+    else:
+        raise AssertionError("symlink manifest destination was accepted")
+finally:
+    mod.Path.is_symlink = real
+assert out.read_text(encoding="utf-8") == "ORIGINAL"
+PYEOF
+then
+  echo "  PASS  symlink manifest destination is refused before replacement"; pass=$((pass+1))
+else
+  echo "  FAIL  symlink manifest destination regression failed"; fail=$((fail+1))
+fi
+
+# (b8) A stale internal manifest staging file is never promoted into the artifact set.
+STALE_STAGE_DIR="$TMP/stale-manifest-stage"
+mkdir -p "$STALE_STAGE_DIR"
+printf '{"ok":true}' > "$STALE_STAGE_DIR/a.json"
+printf '{"partial":' > "$STALE_STAGE_DIR/manifest.json.orphan.tmp"
+if python "$TOOLS/make-manifest.py" "$STALE_STAGE_DIR" --phase X --run-id R >/dev/null 2>&1; then
+  echo "  FAIL  stale manifest staging file was accepted as evidence"; fail=$((fail+1))
+else
+  if python - "$STALE_STAGE_DIR/manifest.json" <<'PYEOF'
+import json, pathlib, sys
+m = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+assert m["validation"]["ok"] is False
+assert any("stale manifest staging file" in x for x in m["validation"]["problems"])
+assert all(not a["path"].endswith(".tmp") for a in m["artifacts"])
+PYEOF
+  then
+    echo "  PASS  stale manifest staging file fails closed and is excluded"; pass=$((pass+1))
+  else
+    echo "  FAIL  stale staging file handling is inconsistent"; fail=$((fail+1))
+  fi
+fi
+
 # (c) Line endings must be preserved, or every manifest edit becomes an unreviewable
 #     whole-file diff (docs/evidence is -text in .gitattributes, so bytes are what matter).
 mkdir -p "$TMP/crlf"
@@ -767,35 +874,50 @@ PYEOF
 
   ALIGN_DIR="$TMP/utf16-alignment"
   mkdir -p "$ALIGN_DIR"
-  python - "$ALIGN_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
-import pathlib, sys
-d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+  if python - "$TOOLS/redact-evidence.py" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import importlib.util, pathlib, sys
+tool, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+spec = importlib.util.spec_from_file_location("redact_alignment_test", tool)
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
 pattern = ident.encode("utf-16-le")
-# The first copy starts at byte offset 1. It is a raw byte coincidence spanning unrelated
-# UTF-16 code units. The second copy is aligned and is a real decoded identifier.
 false_prefix = b"Z" + pattern + b"\x00"
 raw = false_prefix + "|".encode("utf-16-le") + pattern + "|tail".encode("utf-16-le")
+aligned = raw.find(pattern, 2)
 assert raw.find(pattern) == 1
-assert raw.find(pattern, 2) % 2 == 0
-(d / "odd-offset.txt").write_bytes(raw)
-PYEOF
-  CB_REDACT_IDENTIFIER="$CB_REDACT_IDENTIFIER" python "$TOOLS/redact-evidence.py" \
-    "$ALIGN_DIR/odd-offset.txt" >/dev/null 2>&1
-  if python - "$ALIGN_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
-import pathlib, sys
-d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
-raw = (d / "odd-offset.txt").read_bytes()
-text = raw.decode("utf-16-le")
-pattern = ident.encode("utf-16-le")
-assert raw.find(pattern) == 1, "odd-offset byte coincidence was modified"
-assert ident not in text, "real decoded identifier was not removed"
-assert "<REDACTED-USER>" in text
+assert aligned >= 0 and aligned % 2 == 0
+positions = mod._replacement_positions(
+    raw, pattern, encoding="utf-16-le", decoded_exact_count=1
+)
+assert positions == [aligned], (positions, aligned)
 PYEOF
   then
-    echo "  PASS  UTF-16 scrub replaces only aligned decoded identifier spans"; pass=$((pass+1))
+    echo "  PASS  UTF-16 replacement positions exclude odd-offset byte coincidences"; pass=$((pass+1))
   else
-    echo "  FAIL  UTF-16 scrub altered an odd-offset byte coincidence"; fail=$((fail+1))
+    echo "  FAIL  UTF-16 alignment regression failed"; fail=$((fail+1))
   fi
+
+  MIXED_ENCODING="$TMP/mixed-encoding-evidence.txt"
+  python - "$MIXED_ENCODING" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
+import pathlib, sys
+p, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
+raw = ("prefix " + ident + " suffix").encode("utf-16-le")
+raw += (" | utf8:" + ident + " |").encode("utf-8")
+p.write_bytes(raw)
+PYEOF
+  MIXED_BEFORE="$(sha256sum "$MIXED_ENCODING" | cut -d' ' -f1)"
+  expect_fail "mixed-encoding evidence cannot be partially scrubbed" \
+    python "$TOOLS/redact-evidence.py" "$MIXED_ENCODING"
+  MIXED_AFTER="$(sha256sum "$MIXED_ENCODING" | cut -d' ' -f1)"
+  if [ "$MIXED_BEFORE" = "$MIXED_AFTER" ] && [ ! -e "$MIXED_ENCODING.redaction.txt" ]; then
+    echo "  PASS  mixed-encoding refusal leaves evidence and provenance untouched"; pass=$((pass+1))
+  else
+    echo "  FAIL  mixed-encoding refusal partially published a scrub"; fail=$((fail+1))
+  fi
+
+  UNSCANNABLE="$TMP/private-fixture.zip"
+  printf '%s\n' "$CB_REDACT_IDENTIFIER" > "$UNSCANNABLE"
+  expect_fail "unscannable publication format fails closed" \
+    python "$TOOLS/redact-evidence.py" --check "$UNSCANNABLE"
 
   NAME_DIR="$TMP/redaction-name-leak"
   mkdir -p "$NAME_DIR"
