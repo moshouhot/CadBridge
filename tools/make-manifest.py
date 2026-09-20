@@ -204,14 +204,22 @@ def write_manifest_atomically(out: Path, manifest: dict) -> None:
         except OSError as e:
             raise RuntimeError(f"cannot stat existing manifest {out}: {e}") from e
 
+    publish_mode = previous_mode
+    if publish_mode is None and os.name != "nt":
+        # mkstemp creates 0600 files. For a newly published manifest, reproduce normal
+        # file creation semantics: mode 0666 filtered by the process umask.
+        current_umask = os.umask(0)
+        os.umask(current_umask)
+        publish_mode = 0o666 & ~current_umask
+
     fd, tmp_name = tempfile.mkstemp(dir=str(out.parent), prefix=MANIFEST_NAME + ".", suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="") as fh:
             fh.write(payload.replace("\n", newline) if newline != "\n" else payload)
             fh.flush()
             os.fsync(fh.fileno())
-        if previous_mode is not None:
-            os.chmod(tmp_name, previous_mode)
+        if publish_mode is not None:
+            os.chmod(tmp_name, publish_mode)
         os.replace(tmp_name, out)
     except BaseException:
         # Never leave a temp file behind, and never leave the previous manifest damaged.

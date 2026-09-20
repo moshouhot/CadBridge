@@ -208,6 +208,53 @@ def _path_contains_identifier(
     return any(needle in part.casefold() for part in _path_scope_parts(p, path_root))
 
 
+def _replacement_positions(
+    raw: bytes,
+    pattern: bytes,
+    *,
+    encoding: str,
+    decoded_exact_count: int,
+) -> list[int]:
+    """Return non-overlapping byte positions that match decoded identifier spans.
+
+    UTF-16 byte patterns can appear accidentally at odd offsets across unrelated code units.
+    Those matches are not decoded identifiers and must never be replaced.
+    """
+    positions: list[int] = []
+    start = 0
+    while True:
+        pos = raw.find(pattern, start)
+        if pos < 0:
+            break
+        if encoding in ("utf-16-le", "utf-16-be") and pos % 2 != 0:
+            start = pos + 1
+            continue
+        positions.append(pos)
+        start = pos + len(pattern)
+
+    if len(positions) != decoded_exact_count:
+        raise RuntimeError(
+            "raw byte matches do not correspond one-for-one with decoded identifier spans "
+            f"(decoded={decoded_exact_count}, replaceable={len(positions)}, encoding={encoding})"
+        )
+    return positions
+
+
+def _replace_at_positions(
+    raw: bytes, pattern: bytes, replacement: bytes, positions: list[int]
+) -> bytes:
+    out: list[bytes] = []
+    cursor = 0
+    for pos in positions:
+        if pos < cursor:
+            raise RuntimeError("overlapping replacement spans are not allowed")
+        out.append(raw[cursor:pos])
+        out.append(replacement)
+        cursor = pos + len(pattern)
+    out.append(raw[cursor:])
+    return b"".join(out)
+
+
 def _stage_bytes(dest: pathlib.Path, data: bytes, mode: int | None) -> pathlib.Path:
     """Write and fsync a same-directory temporary file without publishing it."""
     fd, tmp_name = tempfile.mkstemp(
@@ -275,19 +322,19 @@ def scrub_file(
 
     pattern = identifier.encode(_pattern_codec(encoding))
     replacement = REPLACEMENT.encode(_pattern_codec(encoding))
-    n = raw.count(pattern)
+    positions = _replacement_positions(
+        raw,
+        pattern,
+        encoding=encoding,
+        decoded_exact_count=exact_count,
+    )
+    n = len(positions)
     if not n:
         return 0
     if dry_run:
         return n
 
-    scrubbed = raw.replace(pattern, replacement)
-    expected = replacement.join(raw.split(pattern))
-    if scrubbed != expected:
-        raise RuntimeError(
-            f"refusing to write {p}: byte-level verification failed, so the scrub would change "
-            "bytes other than the identifier"
-        )
+    scrubbed = _replace_at_positions(raw, pattern, replacement, positions)
 
     before = hashlib.sha256(raw).hexdigest()
     after = hashlib.sha256(scrubbed).hexdigest()

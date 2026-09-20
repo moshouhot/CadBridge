@@ -62,6 +62,7 @@ import argparse
 import ast
 import pathlib
 import re
+import shlex
 import sys
 
 GATE_FUNC = "require_safety_review_passed"
@@ -541,27 +542,36 @@ def _live_condition_polarity(test: ast.AST) -> bool | None:
 
 
 def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> tuple[bool, str]:
-    """Prove that a gate is on a branch taken when live_intent is true."""
-    call_lines = {c.lineno for c in calls}
+    """Prove the gate directly dominates the branch taken for live intent.
 
-    def contains_gate(body: list[ast.stmt]) -> bool:
-        return any(
-            isinstance(sub, ast.Call) and sub.lineno in call_lines
-            for stmt in body for sub in ast.walk(stmt)
-        )
+    Merely appearing somewhere under a live-intent branch is not enough. If the gate is
+    nested under another optional condition, some live executions can skip authorization.
+    """
+    call_ids = {id(c) for c in calls}
+
+    def direct_gate(body: list[ast.stmt]) -> ast.Call | None:
+        for stmt in body:
+            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call) \
+                    and id(stmt.value) in call_ids:
+                return stmt.value
+        return None
 
     seen_candidate = False
     for node in ast.walk(tree):
         if not isinstance(node, ast.If):
             continue
-        body_has = contains_gate(node.body)
-        else_has = contains_gate(node.orelse)
-        if not body_has and not else_has:
-            continue
 
         names = {n.id for n in ast.walk(node.test) if isinstance(n, ast.Name)}
         attrs = {n.attr for n in ast.walk(node.test) if isinstance(n, ast.Attribute)}
         if "live_intent" not in names and "live_intent" not in attrs:
+            continue
+
+        contains_any = any(
+            isinstance(sub, ast.Call) and id(sub) in call_ids
+            for stmt in node.body + node.orelse
+            for sub in ast.walk(stmt)
+        )
+        if not contains_any:
             continue
 
         seen_candidate = True
@@ -571,26 +581,52 @@ def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> tuple[b
                 f"line {node.lineno}: live-intent guard is compound/ambiguous; static review "
                 "cannot prove the gate executes for every live run"
             )
-        if body_has and polarity is True:
-            return True, ""
-        if else_has and polarity is False:
+
+        if polarity is True:
+            if direct_gate(node.body) is not None:
+                return True, ""
+            return False, (
+                f"line {node.lineno}: gate is nested inside the positive live-intent branch; "
+                "it must be a direct branch statement to dominate every live path"
+            )
+
+        if direct_gate(node.orelse) is not None:
             return True, ""
         return False, (
-            f"line {node.lineno}: gate is on the branch taken when live intent is FALSE"
+            f"line {node.lineno}: the live path is the else branch, but no direct gate "
+            "statement dominates that branch"
         )
 
     if seen_candidate:
-        return False, "no provably-live branch contains the gate"
+        return False, "no direct gate statement dominates the proven live-intent branch"
     return False, "no gate call is reachable on a provably-positive live-intent path"
 
 
-def _shell_invokes_gate(path: pathlib.Path) -> bool:
-    for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
+def _shell_invokes_gate(path: pathlib.Path, expected: str | None = None) -> bool:
+    """Accept only an executable Python invocation of safe_process.py --gate."""
+    for raw in _shell_code_lines(path):
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        if "safe_process.py" in line and "--gate" in line:
-            return True
+        try:
+            tokens = shlex.split(line, posix=True)
+        except ValueError:
+            continue
+        if len(tokens) < 3:
+            continue
+
+        cmd = pathlib.PurePosixPath(tokens[0].replace("\\", "/")).name.lower()
+        if cmd not in {"python", "python3", "python.exe", "python3.exe", "py", "py.exe"}:
+            continue
+
+        script = tokens[1].replace("\\", "/")
+        if pathlib.PurePosixPath(script).name != "safe_process.py":
+            continue
+        if tokens[2] != "--gate":
+            continue
+        if expected is not None and (len(tokens) < 4 or tokens[3] != expected):
+            continue
+        return True
     return False
 
 
@@ -764,29 +800,35 @@ def _sh_live_signal(path: pathlib.Path) -> tuple[bool, str]:
 
 
 def _ps_live_signal(path: pathlib.Path) -> tuple[bool, str]:
-    """PowerShell: does this actually START a CAD host?
-
-    Deliberately narrow, because PowerShell has many ways to merely NAME an executable:
-    `Get-ChildItem -Filter 'acad.exe'`, `Test-Path`, `Get-FileHash`, and invoking a scriptblock
-    such as `& $probe 'AutoLispDebugAdapter.exe'` (which tests for the file's PRESENCE, not
-    runs it -- a false positive that this function previously produced for
-    inventory-autocad.ps1).
-
-    Only these count:
-      * Start-Process / Invoke-Item / saps targeting a CAD executable
-      * a call operator (&) whose FIRST token is a CAD executable path
-      * New-Object -ComObject for AutoCAD
-    """
+    """PowerShell: detect actual CAD host launches, including direct PATH invocation."""
+    cad_direct = re.compile(
+        r"(?:^|[\\/])(acad|accoreconsole|AutoLispDebugAdapter)\.exe$",
+        re.I,
+    )
     for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        if re.search(r"\b(Start-Process|saps|Invoke-Item)\b[^;]*\b(acad|accoreconsole|AutoLispDebugAdapter)(\.exe)?\b", line, re.I):
+        if re.search(
+            r"\b(Start-Process|saps|Invoke-Item)\b[^;]*"
+            r"\b(acad|accoreconsole|AutoLispDebugAdapter)(\.exe)?\b",
+            line,
+            re.I,
+        ):
             return True, "starts a CAD executable"
-        # Call operator whose target is a CAD executable: `& "C:\...\acad.exe" args`
+
         m = re.match(r"^&\s+[\"']?([^\"'\s]+)", line)
-        if m and re.search(r"(acad|accoreconsole|AutoLispDebugAdapter)\.exe$", m.group(1), re.I):
+        if m and re.search(
+            r"(acad|accoreconsole|AutoLispDebugAdapter)\.exe$",
+            m.group(1),
+            re.I,
+        ):
             return True, "call operator on a CAD executable"
+
+        first = line.split()[0] if line.split() else ""
+        if cad_direct.search(first):
+            return True, "directly invokes a CAD executable"
+
         if re.search(r"New-Object\s+-ComObject\s+['\"]?AutoCAD", line, re.I):
             return True, "creates an AutoCAD COM object"
     return False, ""
@@ -938,7 +980,7 @@ def check(root: pathlib.Path) -> list[str]:
                         f"({order_reason})"
                     )
             elif suffix in (".sh", ".bash"):
-                if not _shell_invokes_gate(p):
+                if not _shell_invokes_gate(p, key):
                     problems.append(
                         f"{rel}: gated entrypoint with no non-comment line invoking "
                         f"safe_process.py --gate"
@@ -951,7 +993,7 @@ def check(root: pathlib.Path) -> list[str]:
                 )
 
         if key in RETIRED_HARNESSES and suffix in (".sh", ".bash"):
-            if not _shell_invokes_gate(p):
+            if not _shell_invokes_gate(p, key):
                 problems.append(
                     f"{rel}: retired harness no longer routes through safe_process.py --gate, so "
                     "an old command would fail silently instead of loudly"
