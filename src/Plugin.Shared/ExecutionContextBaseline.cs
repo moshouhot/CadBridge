@@ -63,14 +63,14 @@ namespace CadBridge.Plugin.Shared
 
         /// <summary>
         /// Records the current thread as the idle command-context baseline.
-        /// Lisp name: (CBBASELINE)
         ///
-        /// Run this with AutoCAD idle. Running it while LISP is paused would record the paused
-        /// context as the baseline and defeat the check, so the result reports whether a LISP
-        /// evaluation appears to be in progress.
+        /// This setter is deliberately NOT exported as a LispFunction. A paused debugger can
+        /// evaluate user-defined Lisp functions; allowing (CBBASELINE) there would let the
+        /// paused context overwrite the trusted idle reference and defeat the later check.
+        /// The only external setter is CBBRIDGEBASELINE, invoked by the startup script before
+        /// DAP attaches.
         /// </summary>
-        [LispFunction("CBBASELINE")]
-        public static object RecordBaseline(ResultBuffer args)
+        private static string RecordBaseline()
         {
             uint native = GetCurrentThreadId();
             int managed = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -120,8 +120,7 @@ namespace CadBridge.Plugin.Shared
         [CommandMethod("CBBRIDGEBASELINE")]
         public static void RecordBaselineCommand()
         {
-            string result = Convert.ToString(
-                RecordBaseline(null), CultureInfo.InvariantCulture) ?? "CBBASELINE_REFUSED";
+            string result = RecordBaseline();
             string path = Environment.GetEnvironmentVariable("CB_BASELINE_LOG_PATH");
             if (string.IsNullOrWhiteSpace(path))
             {

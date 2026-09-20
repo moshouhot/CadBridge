@@ -610,6 +610,44 @@ def launch_job_and_record(exe: str, args: list[str] | None = None,
 # ---------------------------------------------------------------------------------
 # launching
 # ---------------------------------------------------------------------------------
+def _cleanup_failed_direct_launch(handle, log=print, grace: float = 10.0) -> bool:
+    """Best-effort cleanup of the exact Popen handle after launch verification fails.
+
+    This never searches by PID or process name.  The handle is the process object returned by
+    our own Popen call, so terminating it cannot adopt an unrelated process after PID reuse.
+    A failed verification must not simply forget a process that this module just started.
+    """
+    if handle is None:
+        return True
+    try:
+        if handle.poll() is not None:
+            return True
+    except Exception as exc:  # noqa: BLE001
+        log(f"  could not poll failed launch handle: {type(exc).__name__}: {exc}; "
+            f"attempting exact-handle cleanup anyway")
+
+    try:
+        handle.terminate()
+    except Exception as exc:  # noqa: BLE001
+        log(f"  terminate of failed launch handle failed: {type(exc).__name__}: {exc}")
+    else:
+        try:
+            handle.wait(timeout=grace)
+            return True
+        except Exception as exc:  # noqa: BLE001
+            log(f"  failed launch did not exit after terminate: {type(exc).__name__}: {exc}")
+
+    # Escalate only through the same retained handle; never fall back to PID/name killing.
+    try:
+        handle.kill()
+        handle.wait(timeout=grace)
+        return True
+    except Exception as exc:  # noqa: BLE001
+        log(f"  FAILED to confirm cleanup of process started by this module: "
+            f"{type(exc).__name__}: {exc}")
+        return False
+
+
 def launch_and_record(exe: str, args: list[str] | None = None, cwd: str | None = None,
                       env: dict | None = None, role: str = "",
                       wait_timeout: float = 150.0, log=print) -> str | None:
@@ -640,6 +678,7 @@ def launch_and_record(exe: str, args: list[str] | None = None, cwd: str | None =
             p = _PROVIDER.by_pid(launched_pid)
         except EnumerationError as exc:
             log(f"  cannot verify pid {launched_pid}: {exc}")
+            _cleanup_failed_direct_launch(handle, log=log)
             return None
         if p is not None:
             # If the retained handle already reports exit, the metadata we just read may
@@ -654,6 +693,7 @@ def launch_and_record(exe: str, args: list[str] | None = None, cwd: str | None =
                 if norm_path(path) != norm_path(exe):
                     log(f"  REFUSING: launched pid {launched_pid} is running {path}, but we "
                         f"requested {exe}")
+                    _cleanup_failed_direct_launch(handle, log=log)
                     return None
                 owned = OwnedProcess(pid=launched_pid, creation=creation, path=path,
                                      requested_exe=exe, role=role, handle=handle)
@@ -667,6 +707,7 @@ def launch_and_record(exe: str, args: list[str] | None = None, cwd: str | None =
             return None
         time.sleep(1.5)
     log(f"  ERROR: launched pid={launched_pid} never presented a verifiable identity")
+    _cleanup_failed_direct_launch(handle, log=log)
     return None
 
 
@@ -785,6 +826,7 @@ class FakeHandle:
         self._alive = alive
         self.fail_terminate = fail_terminate
         self.terminated = False
+        self.killed = False
 
     def poll(self):
         return None if self._alive else 0
@@ -793,6 +835,10 @@ class FakeHandle:
         if self.fail_terminate:
             raise OSError("injected terminate failure")
         self.terminated = True
+        self._alive = False
+
+    def kill(self):
+        self.killed = True
         self._alive = False
 
     def wait(self, timeout=None):
@@ -1012,6 +1058,8 @@ def self_test() -> int:
                 subprocess.Popen = orig
             expect("launch refuses a process whose exe is not the requested one",
                    tok_w is None, f"token={tok_w}")
+            expect("wrong-exe launch failure cleans up the exact process handle",
+                   hw.terminated or hw.killed)
 
         # ---- enumeration failure during launch must fail closed ----
         with provider_scope(FakeProvider(fail=True)):
@@ -1024,6 +1072,22 @@ def self_test() -> int:
                 subprocess.Popen = orig
             expect("launch fails closed on enumeration failure", tok_f is None,
                    f"token={tok_f}")
+            expect("enumeration-failure launch cleans up the exact process handle",
+                   hf.terminated or hf.killed)
+
+        # ---- identity timeout must not orphan the process we just started ----
+        with provider_scope(FakeProvider(table)):
+            htmo = FakeHandle(4242)
+            orig = subprocess.Popen
+            try:
+                subprocess.Popen = lambda *a, **k: htmo
+                tok_tmo = launch_and_record(ACAD, wait_timeout=0.0, log=lambda *_: None)
+            finally:
+                subprocess.Popen = orig
+            expect("unverified launch times out without returning ownership", tok_tmo is None,
+                   f"token={tok_tmo}")
+            expect("identity-timeout launch cleans up the exact process handle",
+                   htmo.terminated or htmo.killed)
 
         # ---- the provider is restored by provider_scope ----
         before = current_provider()
