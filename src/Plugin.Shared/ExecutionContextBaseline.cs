@@ -10,7 +10,8 @@
 // This type records that baseline. The intended use is:
 //
 //   1. With AutoCAD idle at the command line (no LISP running, no debugger attached), run
-//      CBBRIDGEBASELINE. It records the native thread id and a few context facts, and reports them.
+//      CBBRIDGEBASELINE. It records the native thread id and context facts. When a readiness
+//      path is configured, the in-memory baseline and readiness file publish transactionally.
 //   2. The pause-state read then compares its own thread/context against that baseline and
 //      REFUSES BEFORE TOUCHING THE DOCUMENT if they disagree.
 //
@@ -103,55 +104,80 @@ namespace CadBridge.Plugin.Shared
         /// The only external setter is CBBRIDGEBASELINE, invoked by the startup script before
         /// DAP attaches.
         /// </summary>
-        private static string RecordBaseline()
+        private static void ClearBaselineUnsafe()
         {
-            lock (BaselineLock)
+            _idleNativeThreadId = 0;
+            _idleManagedThreadId = 0;
+            _idleIsApplicationContext = false;
+            _hasContextBaseline = false;
+        }
+
+        /// <summary>
+        /// Establishes the in-memory candidate while the caller holds <see cref="BaselineLock"/>.
+        /// The caller is responsible for publishing the readiness signal before releasing the
+        /// lock. If readiness publication fails, it rolls this attempt back under the same lock
+        /// so Check() can never observe the transient candidate.
+        /// </summary>
+        private static string RecordBaselineUnsafe(out bool establishedThisAttempt)
+        {
+            establishedThisAttempt = false;
+
+            // A trusted baseline is a session invariant, not mutable state. Once an idle
+            // command context has established it, no later command/debugger path may
+            // replace it. Failed attempts leave the baseline unset so startup may retry.
+            if (HasBaselineUnsafe())
             {
-                // A trusted baseline is a session invariant, not mutable state. Once an idle
-                // command context has established it, no later command/debugger path may
-                // replace it. Failed attempts leave the baseline unset so startup may retry.
-                if (HasBaselineUnsafe())
-                {
-                    return "CBBASELINE_REFUSED status=already_recorded";
-                }
-
-                uint native = GetCurrentThreadId();
-                int managed = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-                bool appContext;
-                try { appContext = Application.DocumentManager.IsApplicationContext; }
-                catch (SysException ex)
-                {
-                    _idleNativeThreadId = 0;
-                    _idleManagedThreadId = 0;
-                    _hasContextBaseline = false;
-                    return "CBBASELINE_REFUSED status=context_query_failed error_type="
-                         + ex.GetType().Name;
-                }
-
-                if (appContext)
-                {
-                    _idleNativeThreadId = 0;
-                    _idleManagedThreadId = 0;
-                    _hasContextBaseline = false;
-                    return "CBBASELINE_REFUSED status=application_context";
-                }
-
-                _idleNativeThreadId = native;
-                _idleManagedThreadId = managed;
-                _idleIsApplicationContext = appContext;
-                _hasContextBaseline = true;
-
-                var sb = new StringBuilder();
-                sb.Append("CBBASELINE_RECORDED");
-                sb.Append(" native_thread_id=").Append(native.ToString(CultureInfo.InvariantCulture));
-                sb.Append(" managed_thread_id=").Append(managed.ToString(CultureInfo.InvariantCulture));
-                sb.Append(" is_application_context=").Append(appContext ? "true" : "false");
-                sb.Append(" has_document=").Append(
-                    Application.DocumentManager.MdiActiveDocument != null ? "true" : "false");
-                sb.Append(" src=CadBridge.Plugin.Shared.ExecutionContextBaseline");
-                return sb.ToString();
+                return "CBBASELINE_REFUSED status=already_recorded";
             }
+
+            uint native = GetCurrentThreadId();
+            int managed = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+            bool appContext;
+            try { appContext = Application.DocumentManager.IsApplicationContext; }
+            catch (SysException ex)
+            {
+                ClearBaselineUnsafe();
+                return "CBBASELINE_REFUSED status=context_query_failed error_type="
+                     + ex.GetType().Name;
+            }
+
+            if (appContext)
+            {
+                ClearBaselineUnsafe();
+                return "CBBASELINE_REFUSED status=application_context";
+            }
+
+            _idleNativeThreadId = native;
+            _idleManagedThreadId = managed;
+            _idleIsApplicationContext = appContext;
+            _hasContextBaseline = true;
+            establishedThisAttempt = true;
+
+            var sb = new StringBuilder();
+            sb.Append("CBBASELINE_RECORDED");
+            sb.Append(" native_thread_id=").Append(native.ToString(CultureInfo.InvariantCulture));
+            sb.Append(" managed_thread_id=").Append(managed.ToString(CultureInfo.InvariantCulture));
+            sb.Append(" is_application_context=").Append(appContext ? "true" : "false");
+            sb.Append(" has_document=").Append(
+                Application.DocumentManager.MdiActiveDocument != null ? "true" : "false");
+            sb.Append(" src=CadBridge.Plugin.Shared.ExecutionContextBaseline");
+            return sb.ToString();
+        }
+
+        private static void PublishReadinessUnsafe(string path, string result)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
+            string dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrWhiteSpace(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            File.WriteAllText(path, result + Environment.NewLine, new UTF8Encoding(false));
         }
 
         /// <summary>
@@ -164,18 +190,29 @@ namespace CadBridge.Plugin.Shared
         [CommandMethod("CBBRIDGEBASELINE")]
         public static void RecordBaselineCommand()
         {
-            string result = RecordBaseline();
             string path = Environment.GetEnvironmentVariable("CB_BASELINE_LOG_PATH");
-            if (string.IsNullOrWhiteSpace(path))
+
+            // The in-memory baseline and its readiness file form one publication transaction.
+            // Check() uses this same lock, so it cannot observe the provisional state below.
+            // If readiness I/O fails after the candidate was established, roll it back BEFORE
+            // releasing the lock. A later startup attempt can then retry without restarting CAD.
+            lock (BaselineLock)
             {
-                return;
+                bool establishedThisAttempt;
+                string result = RecordBaselineUnsafe(out establishedThisAttempt);
+                try
+                {
+                    PublishReadinessUnsafe(path, result);
+                }
+                catch
+                {
+                    if (establishedThisAttempt)
+                    {
+                        ClearBaselineUnsafe();
+                    }
+                    throw;
+                }
             }
-            string dir = Path.GetDirectoryName(path);
-            if (!string.IsNullOrWhiteSpace(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-            File.WriteAllText(path, result + Environment.NewLine, new UTF8Encoding(false));
         }
 
         /// <summary>

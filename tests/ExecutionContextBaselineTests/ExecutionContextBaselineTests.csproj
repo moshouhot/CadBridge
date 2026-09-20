@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>CadBridge.Tests.ExecutionContextBaseline</AssemblyName>
+    <RootNamespace>CadBridge.Tests.ExecutionContextBaseline</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Compile the production source itself; only the Autodesk host boundary is stubbed. -->
+    <Compile Include="..\..\src\Plugin.Shared\ExecutionContextBaseline.cs" LinkBase="Shared" />
+  </ItemGroup>
+</Project>

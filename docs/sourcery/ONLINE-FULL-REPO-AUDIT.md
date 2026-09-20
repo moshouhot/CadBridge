@@ -141,6 +141,36 @@ The final Sourcery review of `b715501` also found two valid gaps that are fixed 
 follow-up: `redactions` provenance is now protected from `--extra` replacement, and
 execution-context baseline readers consume a snapshot synchronized with the one-shot writer.
 
+## Second local verification follow-up: readiness publication defect
+
+Independent local verification of `1719bb6e4ef252375adfadc3ca98020394df8295`
+ran 337 non-live checks without a test failure but correctly returned **LOCAL NON-LIVE FAIL**
+because one Sourcery thread remained open.
+
+The open finding showed that the one-shot baseline was committed before
+`CB_BASELINE_LOG_PATH` was written. A transient readiness I/O failure could therefore leave
+`HasBaseline == true` while no readiness file existed, and every retry was refused as
+`already_recorded`.
+
+The remediation makes baseline establishment plus readiness publication a lock-scoped
+transaction. If readiness publication fails for a baseline established by that attempt, the
+candidate is cleared before the lock is released, so a retry is allowed and `Check()` cannot
+observe the transient state.
+
+A durable non-live test now compiles the production
+`ExecutionContextBaseline.cs` against only an Autodesk host-boundary stub and verifies:
+
+- readiness I/O failure propagates;
+- failed publication leaves the baseline unset;
+- a second attempt with a writable path succeeds;
+- a third attempt remains one-shot and is refused;
+- concurrent readers never observe an unpublished/torn baseline.
+
+The previous handoff also overstated the review-thread state. At that time GitHub actually
+reported 15 total / 14 resolved / 1 unresolved even though the Sourcery check was green.
+Baseline closeout therefore requires BOTH a successful Sourcery check and zero unresolved
+review threads.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership
