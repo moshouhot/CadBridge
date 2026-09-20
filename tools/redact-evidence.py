@@ -248,7 +248,10 @@ def scrub_file(p: pathlib.Path, identifier: str, *, dry_run: bool) -> int:
         # Stage BOTH artifacts before publishing either one. A sidecar staging failure therefore
         # cannot occur after evidence bytes have changed.
         evidence_tmp = _stage_bytes(p, scrubbed, evidence_mode)
-        sidecar_tmp = _stage_bytes(sidecar, provenance, old_sidecar_mode)
+        # A newly-created provenance sidecar should be publishable wherever the evidence is.
+        # mkstemp defaults to 0600, so inherit the evidence mode when there is no prior sidecar.
+        sidecar_mode = old_sidecar_mode if old_sidecar_mode is not None else evidence_mode
+        sidecar_tmp = _stage_bytes(sidecar, provenance, sidecar_mode)
 
         # Publish provenance FIRST. A hard interruption after this point can leave a stale
         # sidecar next to the original evidence, but can never leave scrubbed evidence without
@@ -303,7 +306,9 @@ def main() -> int:
               file=sys.stderr)
         return 2
 
-    root = pathlib.Path(".").resolve()
+    # No-path mode always scans the CadBridge repository that CONTAINS this tool,
+    # never an arbitrary caller working directory or a different Git checkout.
+    root = pathlib.Path(__file__).resolve().parent.parent
     if args.paths:
         targets: list[pathlib.Path] = []
         missing: list[str] = []
@@ -356,13 +361,17 @@ def main() -> int:
         for u in undecodable[:20]:
             print(f"          {u}")
 
+    if unexpected:
+        mode = "--check" if args.check else ("--dry-run" if args.dry_run else "scrub")
+        print(
+            f"  FAIL  {len(unexpected)} file(s) failed processing during {mode}. "
+            "A redaction workflow may not report success while any intended target was "
+            "unreadable, undecodable, or failed its transactional write.",
+            file=sys.stderr,
+        )
+        return 1
+
     if args.check:
-        if unexpected:
-            print(f"  FAIL  {len(unexpected)} file(s) could not be decoded and were therefore "
-                  f"NOT scanned for the identifier. Reporting a clean result would be a false "
-                  f"clean. Decode them, add the suffix to SKIP_SUFFIXES with a reason, or scan "
-                  f"them at the byte level.", file=sys.stderr)
-            return 1
         if total:
             print(f"  FAIL  local identifier found in {len(hit_files)} tracked file(s), "
                   f"{total} occurrence(s):")

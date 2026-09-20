@@ -427,6 +427,30 @@ else
   pass=$((pass+1))
 fi
 
+HEREDOC_FIXTURE="$TMP/heredoc-nonlive.sh"
+cat > "$HEREDOC_FIXTURE" <<'OUTER_EOF'
+#!/usr/bin/env bash
+cat > /tmp/generated-live-fixture <<'INNER_EOF'
+acad.exe
+INNER_EOF
+echo offline
+OUTER_EOF
+if python - "$TOOLS/check-live-gates.py" "$HEREDOC_FIXTURE" <<'PYEOF'
+import importlib.util, pathlib, sys
+tool, fixture = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+spec = importlib.util.spec_from_file_location("gate_checker_under_test", tool)
+mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+live, why = mod._sh_live_signal(fixture)
+raise SystemExit(1 if live else 0)
+PYEOF
+then
+  echo "  PASS  shell live detection ignores heredoc fixture payload"
+  pass=$((pass+1))
+else
+  echo "  FAIL  heredoc fixture payload was misclassified as executable shell"
+  fail=$((fail+1))
+fi
+
 # Regressions for the six defects Sourcery found in the SECOND full review of this PR. Every
 # one was reproduced against the checker as it stood before being fixed.
 mutation_caught "gate function imported directly then reassigned" \
@@ -437,6 +461,8 @@ mutation_caught "gate hidden in statically dead if False branch" \
   'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    if False:\n        sp.require_safety_review_passed(\"dap-session.py\")"); p.write_text(t, encoding="utf-8")'
 mutation_caught "gate moved into an uncalled helper" \
   'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    pass"); t += "\n\ndef _unused_gate_for_mutation():\n    sp.require_safety_review_passed(\"dap-session.py\")\n"; p.write_text(t, encoding="utf-8")'
+mutation_caught "module-level gate moved after __main__ entrypoint" \
+  'p = pathlib.Path(sys.argv[1])/"dap-session.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"dap-session.py\")", "    pass"); t += "\nsp.require_safety_review_passed(\"dap-session.py\")\n"; p.write_text(t, encoding="utf-8")'
 mutation_caught "standalone COM worker gate removed" \
   'p = pathlib.Path(sys.argv[1])/"com_read_worker.py"; t = p.read_text(encoding="utf-8"); t = t.replace("    sp.require_safety_review_passed(\"com_read_worker.py\")\n\n", ""); p.write_text(t, encoding="utf-8")'
 mutation_caught "nested script reusing a registry basename" \
@@ -601,6 +627,20 @@ if [ -n "${CB_REDACT_IDENTIFIER:-}" ]; then
   expect_fail "explicit nonexistent redaction path is refused" \
     python "$TOOLS/redact-evidence.py" --check "$TMP/definitely-missing-redaction-input.txt"
 
+  check "tracked-file redaction is anchored to the CadBridge repository" \
+    bash -c "cd '$TMP' && CB_REDACT_IDENTIFIER='$CB_REDACT_IDENTIFIER' python '$TOOLS/redact-evidence.py' --check"
+
+  FAILMODE_DIR="$TMP/redaction-failmode"
+  mkdir -p "$FAILMODE_DIR"
+  python - "$FAILMODE_DIR" <<'PYEOF'
+import pathlib, sys
+pathlib.Path(sys.argv[1], "opaque.dat").write_bytes(bytes(range(256)) * 4)
+PYEOF
+  expect_fail "scrub mode fails when an intended target is unprocessable" \
+    python "$TOOLS/redact-evidence.py" "$FAILMODE_DIR"
+  expect_fail "dry-run fails when an intended target is unprocessable" \
+    python "$TOOLS/redact-evidence.py" --dry-run "$FAILMODE_DIR"
+
   # Encoding coverage: a UTF-8-only scan reports a false clean on the UTF-16 and GB18030
   # evidence this repository actually contains (accoreconsole writes UTF-16LE when stdout is
   # not a console; the host console is a Chinese Windows install). BOM-less UTF-16 cannot be
@@ -697,6 +737,21 @@ PYEOF
     pass=$((pass+1))
   else
     fail=$((fail+1))
+  fi
+
+  if python - "$OK_DIR" <<'PYEOF'
+import os, pathlib, stat, sys
+d = pathlib.Path(sys.argv[1])
+if os.name == "nt":
+    raise SystemExit(0)
+evidence = d / "ok.txt"
+sidecar = d / "ok.txt.redaction.txt"
+assert stat.S_IMODE(sidecar.stat().st_mode) == stat.S_IMODE(evidence.stat().st_mode)
+PYEOF
+  then
+    echo "  PASS  new provenance sidecar inherits evidence permissions"; pass=$((pass+1))
+  else
+    echo "  FAIL  new provenance sidecar permissions are too restrictive"; fail=$((fail+1))
   fi
 
   TX_DIR="$TMP/redaction-transaction"

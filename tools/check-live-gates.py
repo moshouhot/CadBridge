@@ -371,7 +371,25 @@ def _gate_call_on_entry_path(tree: ast.AST, call: ast.Call) -> tuple[bool, str]:
             break
 
     if enclosing is None:
-        # A module-level gate executes when the module is run and is therefore conservative.
+        # A module-level gate is only useful if it is a DIRECT statement that runs before
+        # the conventional __main__ guard invokes main(). A gate appended after
+        # `if __name__ == "__main__": main()` is too late: live work has already happened.
+        top: ast.AST = call
+        while top in parents and parents[top] is not tree:
+            top = parents[top]
+        if not (isinstance(top, ast.Expr) and top.value is call):
+            return False, (
+                f"line {call.lineno}: module-level gate is nested in another expression/"
+                "statement and is not an unconditional top-level barrier"
+            )
+        for stmt in getattr(tree, "body", []):
+            if isinstance(stmt, ast.If) and _is_main_guard(stmt.test):
+                if getattr(top, "lineno", 10**9) >= getattr(stmt, "lineno", -1):
+                    return False, (
+                        f"line {call.lineno}: module-level gate executes after the __main__ "
+                        "entrypoint and therefore cannot authorize main() in time"
+                    )
+                break
         return True, ""
     if not isinstance(enclosing, (ast.FunctionDef, ast.AsyncFunctionDef)) \
             or enclosing.name != "main":
@@ -574,9 +592,36 @@ def _py_live_signal(path: pathlib.Path) -> tuple[bool, str]:
     return False, ""
 
 
+def _shell_code_lines(path: pathlib.Path):
+    """Yield executable shell source lines while skipping heredoc payload bytes.
+
+    Heredoc bodies are DATA, not commands executed by the surrounding shell. Treating their
+    contents as source produced a false live classification when selftest.sh wrote a temporary
+    fixture containing the literal line `acad.exe`.
+    """
+    terminator: str | None = None
+    strip_tabs = False
+    for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if terminator is not None:
+            candidate = raw.lstrip("\t") if strip_tabs else raw
+            if candidate == terminator:
+                terminator = None
+                strip_tabs = False
+            continue
+
+        # Detect the first conventional heredoc on this source line. The command preceding
+        # the redirection is still executable source and is yielded; only following payload
+        # lines are skipped until the exact terminator.
+        m = re.search(r"<<(-?)\s*(['\"]?)([A-Za-z_][A-Za-z0-9_]*)\2", raw)
+        if m:
+            terminator = m.group(3)
+            strip_tabs = bool(m.group(1))
+        yield raw
+
+
 def _sh_live_signal(path: pathlib.Path) -> tuple[bool, str]:
     cad_exe = re.compile(r"(acad|accoreconsole|AutoLispDebugAdapter)\.exe$", re.I)
-    for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
+    for raw in _shell_code_lines(path):
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
@@ -585,7 +630,8 @@ def _sh_live_signal(path: pathlib.Path) -> tuple[bool, str]:
             if cad_exe.search(m.group(1).strip().strip("\"'")):
                 return True, "assigns a CAD executable path"
             continue
-        if cad_exe.search(line.split()[0].strip("\"'")):
+        first = line.split()[0].strip("\"'") if line.split() else ""
+        if cad_exe.search(first):
             return True, "executes a CAD executable"
     return False, ""
 

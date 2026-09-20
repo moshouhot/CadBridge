@@ -276,6 +276,31 @@ Codex Code Review, Codex Security Review and Sourcery remain independent closeou
 Evidence must bind each enabled review to the final SHA; otherwise that surface is reported
 **UNVERIFIED**.
 
+## Sixth online follow-up: final Codex completion findings
+
+Codex Code Review and Codex Security Review both completed against
+`c0412ea41980a6ef4a9286ceded657103daee225`. Completion was not treated as a clean pass:
+the code review added six unresolved findings, all independently reproduced and confirmed.
+
+This follow-up addresses them without authorizing any live CAD execution:
+
+- shell behavioural discovery skips heredoc payload bodies, which are data written to fixtures
+  rather than commands executed by `selftest.sh`;
+- a module-level safety gate is accepted only as a direct top-level barrier before the
+  conventional `__main__` entrypoint, so a gate appended after `main()` cannot pass review;
+- the baseline rollback guard now begins before candidate establishment, covering exceptions
+  raised after provisional fields are set but before the readiness string returns;
+- redaction returns nonzero in scrub and dry-run modes too whenever any intended target could
+  not be processed;
+- newly-created provenance sidecars inherit the evidence permission mode instead of publishing
+  the `mkstemp` default 0600 mode;
+- no-path redaction anchors tracked-file enumeration to the CadBridge repository containing
+  the tool rather than the caller's current working directory.
+
+Each defect class has a non-live regression or mutation test. Because this produces another
+candidate SHA, all Sourcery/Codex results for `c0412ea` remain historical evidence only and
+the final SHA must be reviewed again.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

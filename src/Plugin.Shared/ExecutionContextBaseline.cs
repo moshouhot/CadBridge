@@ -208,10 +208,14 @@ namespace CadBridge.Plugin.Shared
             // releasing the lock. A later startup attempt can then retry without restarting CAD.
             lock (BaselineLock)
             {
-                bool establishedThisAttempt;
-                string result = RecordBaselineUnsafe(out establishedThisAttempt);
+                bool establishedThisAttempt = false;
                 try
                 {
+                    // RecordBaselineUnsafe can itself throw after publishing the provisional
+                    // fields (for example while building the result string from AutoCAD
+                    // DocumentManager state). The rollback guard therefore starts BEFORE
+                    // candidate establishment, not only around readiness-file I/O.
+                    string result = RecordBaselineUnsafe(out establishedThisAttempt);
                     PublishReadinessUnsafe(path, result);
                 }
                 catch

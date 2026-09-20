@@ -120,6 +120,35 @@ namespace CadBridge.Tests.ExecutionBaselineRegression
             {
                 Check("baseline begins unset", !Baseline.HasBaseline);
 
+                // A production host-property failure can happen AFTER provisional fields were
+                // established but BEFORE RecordBaselineUnsafe returns its readiness string.
+                // That exception must still roll the candidate back.
+                string getterFaultPath = Path.Combine(root, "getter-fault", "idle-baseline.txt");
+                Environment.SetEnvironmentVariable("CB_BASELINE_LOG_PATH", getterFaultPath);
+                Application.DocumentManager.ThrowOnMdiActiveDocumentGet = true;
+                Exception getterFault = null;
+                try
+                {
+                    Baseline.RecordBaselineCommand();
+                }
+                catch (Exception ex)
+                {
+                    getterFault = ex;
+                }
+                finally
+                {
+                    Application.DocumentManager.ThrowOnMdiActiveDocumentGet = false;
+                }
+                Check("post-candidate host getter failure propagates",
+                      getterFault is InvalidOperationException,
+                      getterFault == null ? "no exception" : getterFault.GetType().Name);
+                Check("post-candidate host getter failure rolls baseline back",
+                      !Baseline.HasBaseline
+                      && Baseline.IdleNativeThreadId == 0
+                      && Baseline.IdleManagedThreadId == 0);
+                Check("post-candidate host getter failure publishes no readiness file",
+                      !File.Exists(getterFaultPath));
+
                 // -----------------------------------------------------------------
                 // ROLLBACK RACE: readers start before the first publication and try
                 // to read while the writer is paused on a provisional candidate.

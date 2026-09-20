@@ -23,7 +23,22 @@ namespace Autodesk.AutoCAD.ApplicationServices.Core
 
     internal sealed class StubDocumentManager
     {
+        private object _mdiActiveDocument;
+
         internal bool IsApplicationContext { get; set; }
-        internal object MdiActiveDocument { get; set; }
+        internal bool ThrowOnMdiActiveDocumentGet { get; set; }
+
+        internal object MdiActiveDocument
+        {
+            get
+            {
+                if (ThrowOnMdiActiveDocumentGet)
+                {
+                    throw new InvalidOperationException("injected MdiActiveDocument getter failure");
+                }
+                return _mdiActiveDocument;
+            }
+            set { _mdiActiveDocument = value; }
+        }
     }
 }
