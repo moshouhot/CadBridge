@@ -251,6 +251,8 @@ def main() -> int:
         bad = sum(1 for x in R["checks"] if not x["ok"])
         log(f"\nchecks: {ok} passed, {bad} failed")
         log(f"results: {args.out}")
+        if sys.exc_info()[0] is None:
+            raise SystemExit(1 if bad else 0)
 
 
 if __name__ == "__main__":
