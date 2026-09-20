@@ -96,13 +96,9 @@ namespace CadBridge.Plugin.Shared
         }
 
         /// <summary>
-        /// Records the current thread as the idle command-context baseline.
-        ///
-        /// This setter is deliberately NOT exported as a LispFunction. A paused debugger can
-        /// evaluate user-defined Lisp functions; allowing (CBBASELINE) there would let the
-        /// paused context overwrite the trusted idle reference and defeat the later check.
-        /// The only external setter is CBBRIDGEBASELINE, invoked by the startup script before
-        /// DAP attaches.
+        /// Clears a provisional baseline while <see cref="BaselineLock"/> is held.
+        /// Used when context validation or readiness publication fails before the one-shot
+        /// baseline has been externally committed.
         /// </summary>
         private static void ClearBaselineUnsafe()
         {
@@ -113,7 +109,9 @@ namespace CadBridge.Plugin.Shared
         }
 
         /// <summary>
-        /// Establishes the in-memory candidate while the caller holds <see cref="BaselineLock"/>.
+        /// Establishes the idle command-context candidate while the caller holds
+        /// <see cref="BaselineLock"/>. This path is deliberately private and is not exported as
+        /// a LispFunction; the only external setter is CBBRIDGEBASELINE before DAP attach.
         /// The caller is responsible for publishing the readiness signal before releasing the
         /// lock. If readiness publication fails, it rolls this attempt back under the same lock
         /// so Check() can never observe the transient candidate.

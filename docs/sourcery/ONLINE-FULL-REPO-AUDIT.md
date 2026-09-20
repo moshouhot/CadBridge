@@ -10,7 +10,7 @@ This audit is intentionally split from local verification. No AutoCAD, CoreConso
 
 ## Coverage ledger
 
-All 49 first-party source/config files in the audited tree are accounted for.
+All 53 first-party source/config files in the current audited tree are accounted for.
 
 ### Product/shared C# — deep online review; local build/runtime required
 - `src/Plugin.Shared/DiagnosticsCommands.cs`
@@ -29,6 +29,10 @@ All 49 first-party source/config files in the audited tree are accounted for.
 - `tests/RadiusPromptPolicyTests/PolicyTests.cs`
 - `tests/RadiusPromptPolicyTests/RadiusPromptPolicyTests.csproj`
 - `tests/run-radius-policy-tests.sh`
+- `tests/ExecutionContextBaselineTests/ExecutionContextBaselineTests.csproj`
+- `tests/ExecutionContextBaselineTests/AutodeskStubs.cs`
+- `tests/ExecutionContextBaselineTests/Program.cs`
+- `tests/run-execution-baseline-tests.sh`
 
 ### Process ownership / worker boundary — deep online review
 - `tools/safe_process.py`
@@ -194,7 +198,8 @@ Safe/non-live verification first:
 6. Build Legacy (`net48`) with the pinned local ObjectARX reference directory.
 7. Build Modern (`net8.0-windows`) with the pinned local ObjectARX 2025 reference directory.
 8. Run `tests/run-radius-policy-tests.sh`.
-9. Confirm no Autodesk reference assembly is copied into plugin output.
+9. Run `tests/run-execution-baseline-tests.sh` and require the failed-publish/retry/one-shot/concurrency regression to pass.
+10. Confirm no Autodesk reference assembly is copied into plugin output.
 
 Do **not** run live CAD/DAP/COM probes merely to close this audit. Live execution needs a separate explicit safety decision and should use ownership-preserving harnesses.
 
