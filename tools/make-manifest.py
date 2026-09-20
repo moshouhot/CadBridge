@@ -60,6 +60,16 @@ def collect_artifacts(root: Path) -> tuple[list[dict], list[str]]:
         # Never hash the manifest into itself.
         if rel == MANIFEST_NAME:
             continue
+        # Internal atomic-write staging files are NOT evidence. If cleanup after a failed
+        # publication left one behind, silently hashing it on the next run would turn a
+        # partial implementation artifact into apparently valid evidence.
+        name = p.name
+        if name.startswith(MANIFEST_NAME + ".") and name.endswith(".tmp"):
+            problems.append(
+                f"stale manifest staging file present: {rel}; remove/recover it before "
+                "publishing a new manifest"
+            )
+            continue
         try:
             size = p.stat().st_size
             digest = sha256_file(p)
@@ -181,6 +191,12 @@ def write_manifest_atomically(out: Path, manifest: dict) -> None:
     produced a whole-file diff with no content change, which makes every manifest edit
     unreviewable. The existing convention is therefore kept.
     """
+    if out.is_symlink():
+        raise RuntimeError(
+            f"refusing to replace symlink manifest destination {out}; atomic replacement "
+            "would replace the link itself instead of updating its target"
+        )
+
     payload = json.dumps(manifest, indent=2, ensure_ascii=False)
 
     newline = "\n"
@@ -257,6 +273,14 @@ def main() -> int:
     artifacts, problems = collect_artifacts(root)
 
     out = root / MANIFEST_NAME
+    if out.is_symlink():
+        print(
+            f"ERROR: manifest destination is a symlink: {out}. Refusing atomic replacement "
+            "because it would break repository structure and leave the referent unchanged.",
+            file=sys.stderr,
+        )
+        return 2
+
     # PRESERVE NON-DERIVED CONTENT.
     #
     # WHY: this tool regenerates `artifacts` (hashes) and `validation` (fresh problems). But
@@ -293,9 +317,23 @@ def main() -> int:
     tests: list[dict] = []
     if args.status_file:
         sf = Path(args.status_file)
-        if sf.is_file():
+        if not sf.is_file():
+            problems.append(
+                f"explicit --status-file does not exist or is not a readable file: {sf}"
+            )
+        else:
             try:
-                tests = json.loads(sf.read_text(encoding="utf-8")).get("tests", [])
+                status_data = json.loads(sf.read_text(encoding="utf-8"))
+                if not isinstance(status_data, dict):
+                    problems.append("status file must contain a JSON object")
+                else:
+                    raw_tests = status_data.get("tests", [])
+                    if not isinstance(raw_tests, list):
+                        problems.append("status file field 'tests' must be a JSON array")
+                    else:
+                        tests = raw_tests
+            except OSError as e:
+                problems.append(f"status file cannot be read: {e}")
             except json.JSONDecodeError as e:
                 problems.append(f"status file is not valid JSON: {e}")
     elif previous.get("tests"):

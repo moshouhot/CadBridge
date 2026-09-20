@@ -48,9 +48,9 @@ import sys
 DEFAULT_IDENTIFIER = os.environ.get("CB_REDACT_IDENTIFIER", "")
 REPLACEMENT = "<REDACTED-USER>"
 
-# Binary or non-evidence content is skipped: scrubbing it would corrupt it, and the
-# identifier cannot appear in it in a meaningful way.
-SKIP_SUFFIXES = {".dll", ".exe", ".pdb", ".png", ".jpg", ".zip", ".dwg", ".pyc"}
+# These formats are not safely editable as text. Publication checks FAIL CLOSED when any
+# intended target uses one of them: "not inspected" must never be reported as "clean".
+UNSCANNABLE_SUFFIXES = {".dll", ".exe", ".pdb", ".png", ".jpg", ".zip", ".dwg", ".pyc"}
 
 
 def _sha256(p: pathlib.Path) -> str:
@@ -255,6 +255,25 @@ def _replace_at_positions(
     return b"".join(out)
 
 
+def _remaining_identifier_representations(raw: bytes, identifier: str) -> list[str]:
+    """Return supported decodings in which the identifier still appears.
+
+    This is a publication guard, not an encoding detector. Mixed-encoding evidence is allowed
+    to be refused: successful scrub means no supported representation may still expose the
+    identifier.
+    """
+    found: list[str] = []
+    folded = identifier.casefold()
+    for enc in ("utf-16-le", "utf-16-be", "utf-8", "gb18030"):
+        try:
+            text = raw.decode(enc)
+        except UnicodeError:
+            continue
+        if folded in text.casefold():
+            found.append(enc)
+    return found
+
+
 def _stage_bytes(dest: pathlib.Path, data: bytes, mode: int | None) -> pathlib.Path:
     """Write and fsync a same-directory temporary file without publishing it."""
     fd, tmp_name = tempfile.mkstemp(
@@ -295,8 +314,11 @@ def scrub_file(
             f"refusing to process {p}: a published path component contains the private "
             "identifier; content-only scrubbing cannot make that repository path safe"
         )
-    if p.suffix.lower() in SKIP_SUFFIXES:
-        return 0
+    if p.suffix.lower() in UNSCANNABLE_SUFFIXES:
+        raise RuntimeError(
+            f"cannot verify {p}: suffix {p.suffix.lower()} is not safely scannable/redactable; "
+            "refusing to report it clean"
+        )
     try:
         raw = p.read_bytes()
     except OSError as e:
@@ -335,6 +357,12 @@ def scrub_file(
         return n
 
     scrubbed = _replace_at_positions(raw, pattern, replacement, positions)
+    remaining = _remaining_identifier_representations(scrubbed, identifier)
+    if remaining:
+        raise RuntimeError(
+            "refusing to publish a partial scrub: identifier remains visible under supported "
+            f"encoding(s): {', '.join(remaining)}"
+        )
 
     before = hashlib.sha256(raw).hexdigest()
     after = hashlib.sha256(scrubbed).hexdigest()

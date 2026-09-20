@@ -372,6 +372,32 @@ reproduced and addressed:
 Matching non-live regression and mutation coverage was added for each class. The resulting SHA
 requires another three-surface review cycle before final local verification.
 
+## Tenth online follow-up: final owner-directed remediation
+
+The three configured audit surfaces completed against
+`95d382786685e7709317940d62d06dd398a64949`. Their final completed pass produced nine
+additional open findings. All nine were independently reproduced and remediated in this
+follow-up:
+
+- an explicitly requested status file must exist and parse as the expected object/list shape;
+- conditional live authorization must not sit beneath any optional ancestor guard;
+- Python class/function/assignment-expression/exception bindings can invalidate a trusted gate
+  import and are treated as rebindings;
+- atomic manifest generation refuses a symlink destination;
+- stale `manifest.json.*.tmp` staging files are validation failures, never evidence artifacts;
+- the three T01-5 harnesses that ignored `terminate_owned()` now record cleanup as a check so
+  cleanup failure forces a non-zero final status;
+- unsupported binary/container evidence formats fail closed instead of counting as clean;
+- a successful scrub is not publishable while the identifier remains visible under another
+  supported encoding;
+- the project COM attach wrapper `com_attach_existing` is treated as a live sink by both
+  behavioural discovery and gate-order analysis.
+
+Per project-owner direction, this remediation is NOT followed by another Codex review cycle.
+The next certification step is a fresh independent local non-live verification of the exact
+post-remediation SHA. Live AutoCAD/CoreConsole/DAP/COM execution remains UNVERIFIED unless
+separately authorized.
+
 ## Important limits / not silently approved
 
 ### L1 — launch-topology DAP ownership

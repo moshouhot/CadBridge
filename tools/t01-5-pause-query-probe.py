@@ -220,7 +220,9 @@ def main() -> int:
         log(f"terminating only our CAD pid={pid}")
         # Verified-ownership termination (pid + creation time + exe path). Refuses if the
         # recorded identity no longer matches, e.g. after Windows reused the pid.
-        sp.terminate_owned(owned_token, log=log)   # token only; a dict cannot authorize a kill
+        cleanup_ok = sp.terminate_owned(owned_token, log=log)   # token only
+        check("owned CAD cleanup confirmed", cleanup_ok)
+        results["cleanup_confirmed"] = bool(cleanup_ok)
         pathlib.Path(args.out).write_text(json.dumps(results, indent=2, ensure_ascii=False),
                                           encoding="utf-8")
         log(f"results: {args.out}")

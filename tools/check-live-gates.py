@@ -166,7 +166,10 @@ NON_LIVE: dict[str, str] = {
 # ---------------------------------------------------------------------------------
 EXE_PAT = re.compile(r"(acad\.exe|accoreconsole(\.exe)?|AutoLispDebugAdapter)", re.I)
 LIVE_LAUNCH_CALLS = {"launch_and_record", "launch_job_and_record", "DapClient"}
-COM_LIVE_CALLS = {"GetActiveObject", "GetObject", "Dispatch", "DispatchEx", "CreateObject"}
+COM_LIVE_CALLS = {
+    "GetActiveObject", "GetObject", "Dispatch", "DispatchEx", "CreateObject",
+    "com_attach_existing",
+}
 SUBPROCESS_CALLS = {"Popen", "run", "call", "check_output", "check_call"}
 
 
@@ -219,16 +222,28 @@ def _rebindings(tree: ast.AST, names: set[str]) -> dict[str, list[str]]:
                     if isinstance(sub, ast.Name) and sub.id in names:
                         note(sub.id, f"deleted at line {node.lineno}")
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
+            label = getattr(node, "name", "lambda")
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in names:
+                note(node.name, f"redefined by function {node.name}() at line {node.lineno}")
             a = node.args
             params = list(a.posonlyargs) + list(a.args) + list(a.kwonlyargs)
             if a.vararg:
                 params.append(a.vararg)
             if a.kwarg:
                 params.append(a.kwarg)
-            label = getattr(node, "name", "lambda")
             for prm in params:
                 if prm.arg in names:
                     note(prm.arg, f"shadowed by parameter of {label}() at line {node.lineno}")
+        elif isinstance(node, ast.ClassDef):
+            if node.name in names:
+                note(node.name, f"redefined by class {node.name} at line {node.lineno}")
+        elif isinstance(node, ast.NamedExpr):
+            for sub in ast.walk(node.target):
+                if isinstance(sub, ast.Name) and sub.id in names:
+                    note(sub.id, f"assignment-expression target at line {node.lineno}")
+        elif isinstance(node, ast.ExceptHandler):
+            if isinstance(node.name, str) and node.name in names:
+                note(node.name, f"exception target at line {node.lineno}")
         elif isinstance(node, (ast.Global, ast.Nonlocal)):
             for n in node.names:
                 if n in names:
@@ -582,6 +597,13 @@ def _guard_mentions_live_intent(tree: ast.AST, calls: list[ast.Call]) -> tuple[b
                 "cannot prove the gate executes for every live run"
             )
 
+        main_fn = _main_function(tree)
+        if main_fn is None or node not in main_fn.body:
+            return False, (
+                f"line {node.lineno}: live-intent guard is nested under another control-flow "
+                "statement; authorization is not proven to dominate every live path"
+            )
+
         if polarity is True:
             if direct_gate(node.body) is not None:
                 return True, ""
@@ -736,7 +758,7 @@ def _py_live_signal(path: pathlib.Path) -> tuple[bool, str]:
             continue
         fn = n.func
         nm = fn.attr if isinstance(fn, ast.Attribute) else (fn.id if isinstance(fn, ast.Name) else None)
-        if nm in LIVE_LAUNCH_CALLS:
+        if nm in LIVE_LAUNCH_CALLS or nm in COM_LIVE_CALLS:
             launch.append(nm)
         if nm in SUBPROCESS_CALLS:
             for arg in list(n.args) + [k.value for k in n.keywords]:
