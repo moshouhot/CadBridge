@@ -36,11 +36,31 @@ echo "== Python static gates =="
 # pyflakes catches undefined-name classes without executing any live harness.
 check "all Python tooling compiles" env PYTHONPYCACHEPREFIX="$TMP/pycache" python -m compileall -q "$TOOLS"
 PYFLAKES_LOG="$TMP/pyflakes.log"
-if python -m pyflakes "$TOOLS"/*.py >"$PYFLAKES_LOG" 2>&1; then
-  echo "  PASS  pyflakes clean across tools/*.py"; pass=$((pass+1))
+PYFLAKES_READY=1
+if ! python -c "import pyflakes" >/dev/null 2>&1; then
+  if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+    # GitHub's base CI workflow sets up Python but does not install pyflakes. Keep the gate
+    # mandatory by bootstrapping a pinned analyzer only in the ephemeral Actions environment.
+    if ! python -m pip install --disable-pip-version-check --no-input --quiet \
+         "pyflakes==3.4.0" >"$TMP/pyflakes-install.log" 2>&1; then
+      echo "  FAIL  pyflakes dependency bootstrap failed"
+      cat "$TMP/pyflakes-install.log"
+      PYFLAKES_READY=0
+    fi
+  else
+    echo "  FAIL  pyflakes is not installed in the local verification environment"
+    PYFLAKES_READY=0
+  fi
+fi
+if [ "$PYFLAKES_READY" -eq 1 ]; then
+  if python -m pyflakes "$TOOLS"/*.py >"$PYFLAKES_LOG" 2>&1; then
+    echo "  PASS  pyflakes clean across tools/*.py"; pass=$((pass+1))
+  else
+    echo "  FAIL  pyflakes clean across tools/*.py"
+    cat "$PYFLAKES_LOG"
+    fail=$((fail+1))
+  fi
 else
-  echo "  FAIL  pyflakes clean across tools/*.py"
-  cat "$PYFLAKES_LOG"
   fail=$((fail+1))
 fi
 
