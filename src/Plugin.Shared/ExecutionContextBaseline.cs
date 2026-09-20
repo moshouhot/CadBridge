@@ -10,7 +10,7 @@
 // This type records that baseline. The intended use is:
 //
 //   1. With AutoCAD idle at the command line (no LISP running, no debugger attached), run
-//      CBBASELINE. It records the native thread id and a few context facts, and reports them.
+//      CBBRIDGEBASELINE. It records the native thread id and a few context facts, and reports them.
 //   2. The pause-state read then compares its own thread/context against that baseline and
 //      REFUSES BEFORE TOUCHING THE DOCUMENT if they disagree.
 //
@@ -52,6 +52,9 @@ namespace CadBridge.Plugin.Shared
         /// <summary>Whether the official context flag was successfully captured.</summary>
         private static bool _hasContextBaseline;
 
+        /// <summary>Serializes the one-time baseline transition.</summary>
+        private static readonly object BaselineLock = new object();
+
         /// <summary>Whether a baseline has been recorded in this session.</summary>
         public static bool HasBaseline
         {
@@ -72,11 +75,21 @@ namespace CadBridge.Plugin.Shared
         /// </summary>
         private static string RecordBaseline()
         {
-            uint native = GetCurrentThreadId();
-            int managed = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            lock (BaselineLock)
+            {
+                // A trusted baseline is a session invariant, not mutable state. Once an idle
+                // command context has established it, no later command/debugger path may
+                // replace it. Failed attempts leave the baseline unset so startup may retry.
+                if (HasBaseline)
+                {
+                    return "CBBASELINE_REFUSED status=already_recorded";
+                }
 
-            bool appContext;
-            try { appContext = Application.DocumentManager.IsApplicationContext; }
+                uint native = GetCurrentThreadId();
+                int managed = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                bool appContext;
+                try { appContext = Application.DocumentManager.IsApplicationContext; }
             catch (SysException ex)
             {
                 _idleNativeThreadId = 0;
@@ -106,8 +119,9 @@ namespace CadBridge.Plugin.Shared
             sb.Append(" is_application_context=").Append(appContext ? "true" : "false");
             sb.Append(" has_document=").Append(
                 Application.DocumentManager.MdiActiveDocument != null ? "true" : "false");
-            sb.Append(" src=CadBridge.Plugin.Shared.ExecutionContextBaseline");
-            return sb.ToString();
+                sb.Append(" src=CadBridge.Plugin.Shared.ExecutionContextBaseline");
+                return sb.ToString();
+            }
         }
 
         /// <summary>
@@ -164,7 +178,7 @@ namespace CadBridge.Plugin.Shared
 
             if (!HasBaseline)
             {
-                reason = "no baseline recorded (run CBBASELINE while AutoCAD is idle); "
+                reason = "no baseline recorded (run CBBRIDGEBASELINE while AutoCAD is idle); "
                        + "refusing because thread identity cannot be verified";
                 return false;
             }
