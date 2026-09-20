@@ -836,14 +836,24 @@ else
   echo "  FAIL  manifest line endings were rewritten"; fail=$((fail+1))
 fi
 
-# Privacy guard: the local account/machine identifier must never appear in a tracked file.
-# It leaked THREE times during this audit -- the P0/P1 artifacts, the P1 .raw evidence files,
-# and the P2 build log produced while fixing the first leak -- so it is now a checked
-# invariant, not a one-off cleanup. The identifier comes from the environment and is never
-# written into this repo (doing so would re-publish the string the check exists to remove).
+# Privacy guard: the real local account/machine identifier is scanned when supplied.
+# Fixture regressions must NOT disappear merely because a CI runner has no private identifier,
+# so GitHub Actions (and any other environment without the real value) uses a synthetic value
+# for temporary evidence only.
+SYNTHETIC_REDACT_IDENTIFIER=0
+if [ -z "${CB_REDACT_IDENTIFIER:-}" ]; then
+  CB_REDACT_IDENTIFIER="CADBRIDGE_SELFTEST_USER_9F3A2B7C"
+  export CB_REDACT_IDENTIFIER
+  SYNTHETIC_REDACT_IDENTIFIER=1
+fi
+
 if [ -n "${CB_REDACT_IDENTIFIER:-}" ]; then
-  check "no local machine identifier in tracked files" \
-    python "$TOOLS/redact-evidence.py" --check
+  if [ "$SYNTHETIC_REDACT_IDENTIFIER" -eq 0 ]; then
+    check "no local machine identifier in tracked files" \
+      python "$TOOLS/redact-evidence.py" --check
+  else
+    echo "  SKIP  real tracked-file identifier scan (synthetic identifier used for fixtures)"
+  fi
   expect_fail "explicit nonexistent redaction path is refused" \
     python "$TOOLS/redact-evidence.py" --check "$TMP/definitely-missing-redaction-input.txt"
 
@@ -1165,8 +1175,10 @@ PYEOF
     echo "  FAIL  provenance failure changed evidence or left partial state"
     fail=$((fail+1))
   fi
-else
-  echo "  SKIP  identifier check (CB_REDACT_IDENTIFIER not set in this environment)"
+fi
+
+if [ "$SYNTHETIC_REDACT_IDENTIFIER" -eq 1 ]; then
+  unset CB_REDACT_IDENTIFIER
 fi
 
 # The gate must actually refuse by default (negative test: no CAD is launched).
