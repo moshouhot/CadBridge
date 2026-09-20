@@ -770,18 +770,24 @@ PYEOF
   python - "$ALIGN_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
 import pathlib, sys
 d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
-prefix = "".join(chr((ord(ch) << 8) | 0x41) for ch in ident)
-text = prefix + "|" + ident + "|tail"
-(d / "odd-offset.txt").write_bytes(text.encode("utf-16-le"))
+pattern = ident.encode("utf-16-le")
+# The first copy starts at byte offset 1. It is a raw byte coincidence spanning unrelated
+# UTF-16 code units. The second copy is aligned and is a real decoded identifier.
+false_prefix = b"Z" + pattern + b"\x00"
+raw = false_prefix + "|".encode("utf-16-le") + pattern + "|tail".encode("utf-16-le")
+assert raw.find(pattern) == 1
+assert raw.find(pattern, 2) % 2 == 0
+(d / "odd-offset.txt").write_bytes(raw)
 PYEOF
   CB_REDACT_IDENTIFIER="$CB_REDACT_IDENTIFIER" python "$TOOLS/redact-evidence.py" \
     "$ALIGN_DIR/odd-offset.txt" >/dev/null 2>&1
   if python - "$ALIGN_DIR" "$CB_REDACT_IDENTIFIER" <<'PYEOF'
 import pathlib, sys
 d, ident = pathlib.Path(sys.argv[1]), sys.argv[2]
-text = (d / "odd-offset.txt").read_bytes().decode("utf-16-le")
-prefix = "".join(chr((ord(ch) << 8) | 0x41) for ch in ident)
-assert text.startswith(prefix + "|"), "unrelated odd-offset bytes were modified"
+raw = (d / "odd-offset.txt").read_bytes()
+text = raw.decode("utf-16-le")
+pattern = ident.encode("utf-16-le")
+assert raw.find(pattern) == 1, "odd-offset byte coincidence was modified"
 assert ident not in text, "real decoded identifier was not removed"
 assert "<REDACTED-USER>" in text
 PYEOF
