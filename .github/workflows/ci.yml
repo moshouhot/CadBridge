@@ -1,0 +1,38 @@
+name: "CI"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "ci-${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  offline-tooling:
+    name: Offline tooling tests
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Compile Python tooling
+        shell: pwsh
+        run: python -m compileall -q tools
+
+      - name: Run CadBridge offline self-tests
+        shell: bash
+        run: bash tools/selftest.sh
