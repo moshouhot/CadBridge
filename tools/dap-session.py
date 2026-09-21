@@ -170,8 +170,15 @@ def main() -> int:
         results["adapter_stderr"] = c.stderr_lines[:50]
         out = pathlib.Path(args.transcript).with_suffix(".summary.json")
         out.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+        failed = [x["step"] for x in results["steps"] if not x["ok"]]
+        results["verdict"] = "PASS" if not failed else "FAIL"
+        results["failed_steps"] = failed
+        # Rewrite after deriving the verdict so the persisted summary and process exit agree.
+        out.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
         log(f"\nsummary written: {out}")
         log(f"adapter alive at end: {results.get('adapter_alive')}")
+        if sys.exc_info()[0] is None:
+            raise SystemExit(1 if failed else 0)
 
 
 if __name__ == "__main__":

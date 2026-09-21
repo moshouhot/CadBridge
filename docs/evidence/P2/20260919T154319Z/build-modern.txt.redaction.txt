@@ -1,0 +1,7 @@
+Redaction provenance for build-modern.txt
+original_sha256=65419424d146218c6c196de29b5cd955602a59e548ff8209f04fc24457e9fb94
+stored_sha256=7f5b0c09d60825c88d5c69981f227315ccca3d261607ae8430e1b60605a89c6e
+occurrences=24
+replacement=local account/machine identifier -> <REDACTED-USER>
+scope=Only the identifier inside machine-local paths was replaced. No measurement,
+warning count, exit code or conclusion was altered.

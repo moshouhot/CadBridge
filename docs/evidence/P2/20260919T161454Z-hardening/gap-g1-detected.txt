@@ -1,0 +1,2 @@
+live-gate check FAILED with 1 problem(s)
+  FAIL  dap-probe.py: live entrypoint with no call resolving to a safely-bound safe_process.require_safety_review_passed() (binding 'sp' from `import safe_process` is not safe: assigned at line 39; line 256: calls sp.require_safety_review_passed() but 'sp' is not a safely-bound safe_process import)

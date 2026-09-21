@@ -1,0 +1,43 @@
+version: '1'
+
+# CadBridge Sourcery configuration.
+#
+# SCOPE OF THIS FILE — READ THIS FIRST
+# ------------------------------------
+# This file configures the LOCAL Sourcery CLI (`sourcery review`), which is a Python-only
+# refactoring tool. It does NOT configure the Sourcery GitHub App:
+#
+#   * Review rules, review language, review profile and path filters for the GitHub App live
+#     in the Sourcery dashboard (Review Settings), NOT in this file.
+#   * The security scanners run a fixed rule set and ignore this file entirely.
+#
+# The paste-ready dashboard settings that actually drive the PR workflow are maintained in
+# docs/sourcery/DASHBOARD-SETTINGS.md. Do not assume this file changes App behaviour.
+
+ignore:
+- .git
+- bin
+- obj
+- packages
+- .vs
+- __pycache__
+- .work
+- runtime
+- logs
+- data
+# Evidence artifacts are captured bytes referenced by SHA-256 manifests. They are not
+# refactoring targets, and rewriting them would invalidate the manifests.
+- docs/evidence
+
+rule_settings:
+  enable:
+  - default
+  disable: []
+  rule_types:
+  - refactoring
+  - suggestion
+  - comment
+  # The Python tooling under tools/ is the only Python in this repository. It is run by
+  # Python 3.11 (see docs/design/build-baseline.json), but it must stay compatible with the
+  # oldest interpreter a contributor is likely to have on Windows.
+  python_version: '3.9'

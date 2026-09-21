@@ -1,0 +1,5 @@
+exit=2
+stdout=
+stderr=ERROR: existing manifest E:\360data\TEMP\r3a\manifest.json is not valid JSON: Expecting property name enclosed in double quotes: line 1 column 3 (char 2). Refusing to overwrite it, because its non-derived blocks (tests, redactions) would be lost. Repair or remove it deliberately.
+
+file_unchanged=True

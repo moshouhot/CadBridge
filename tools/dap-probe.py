@@ -249,7 +249,7 @@ def main() -> int:
         or any("acad.exe" in sp.norm_path(str(x)) for x in args.adapter_arg)
     )
     if live_intent:
-        sp.require_safety_review_passed("dap-probe.py live mode")
+        sp.require_safety_review_passed("dap-probe.py")
 
     if not os.path.isfile(args.adapter):
         print(f"ERROR: adapter not found: {args.adapter}", file=sys.stderr)

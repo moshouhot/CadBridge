@@ -10,7 +10,8 @@
 // This type records that baseline. The intended use is:
 //
 //   1. With AutoCAD idle at the command line (no LISP running, no debugger attached), run
-//      CBBASELINE. It records the native thread id and a few context facts, and reports them.
+//      CBBRIDGEBASELINE. It records the native thread id and context facts. When a readiness
+//      path is configured, the in-memory baseline and readiness file publish transactionally.
 //   2. The pause-state read then compares its own thread/context against that baseline and
 //      REFUSES BEFORE TOUCHING THE DOCUMENT if they disagree.
 //
@@ -52,26 +53,89 @@ namespace CadBridge.Plugin.Shared
         /// <summary>Whether the official context flag was successfully captured.</summary>
         private static bool _hasContextBaseline;
 
+        /// <summary>Serializes the one-time baseline transition.</summary>
+        private static readonly object BaselineLock = new object();
+
+#if CADBRIDGE_TESTING
+        // Test-only synchronization seam. Production plugin builds never define
+        // CADBRIDGE_TESTING, so this hook is absent from shipped assemblies. The offline
+        // regression uses it to hold the writer after a provisional candidate exists but
+        // before readiness commit/rollback, making the publication lock observable.
+        internal static Action TestAfterCandidateEstablished;
+#endif
+
+        private static bool HasBaselineUnsafe()
+        {
+            return _idleNativeThreadId != 0 && _hasContextBaseline;
+        }
+
         /// <summary>Whether a baseline has been recorded in this session.</summary>
         public static bool HasBaseline
         {
-            get { return _idleNativeThreadId != 0 && _hasContextBaseline; }
+            get
+            {
+                lock (BaselineLock)
+                {
+                    return HasBaselineUnsafe();
+                }
+            }
         }
 
-        public static uint IdleNativeThreadId { get { return _idleNativeThreadId; } }
-        public static int IdleManagedThreadId { get { return _idleManagedThreadId; } }
+        public static uint IdleNativeThreadId
+        {
+            get
+            {
+                lock (BaselineLock)
+                {
+                    return _idleNativeThreadId;
+                }
+            }
+        }
+
+        public static int IdleManagedThreadId
+        {
+            get
+            {
+                lock (BaselineLock)
+                {
+                    return _idleManagedThreadId;
+                }
+            }
+        }
 
         /// <summary>
-        /// Records the current thread as the idle command-context baseline.
-        /// Lisp name: (CBBASELINE)
-        ///
-        /// Run this with AutoCAD idle. Running it while LISP is paused would record the paused
-        /// context as the baseline and defeat the check, so the result reports whether a LISP
-        /// evaluation appears to be in progress.
+        /// Clears a provisional baseline while <see cref="BaselineLock"/> is held.
+        /// Used when context validation or readiness publication fails before the one-shot
+        /// baseline has been externally committed.
         /// </summary>
-        [LispFunction("CBBASELINE")]
-        public static object RecordBaseline(ResultBuffer args)
+        private static void ClearBaselineUnsafe()
         {
+            _idleNativeThreadId = 0;
+            _idleManagedThreadId = 0;
+            _idleIsApplicationContext = false;
+            _hasContextBaseline = false;
+        }
+
+        /// <summary>
+        /// Establishes the idle command-context candidate while the caller holds
+        /// <see cref="BaselineLock"/>. This path is deliberately private and is not exported as
+        /// a LispFunction; the only external setter is CBBRIDGEBASELINE before DAP attach.
+        /// The caller is responsible for publishing the readiness signal before releasing the
+        /// lock. If readiness publication fails, it rolls this attempt back under the same lock
+        /// so Check() can never observe the transient candidate.
+        /// </summary>
+        private static string RecordBaselineUnsafe(out bool establishedThisAttempt)
+        {
+            establishedThisAttempt = false;
+
+            // A trusted baseline is a session invariant, not mutable state. Once an idle
+            // command context has established it, no later command/debugger path may
+            // replace it. Failed attempts leave the baseline unset so startup may retry.
+            if (HasBaselineUnsafe())
+            {
+                return "CBBASELINE_REFUSED status=already_recorded";
+            }
+
             uint native = GetCurrentThreadId();
             int managed = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
@@ -79,18 +143,14 @@ namespace CadBridge.Plugin.Shared
             try { appContext = Application.DocumentManager.IsApplicationContext; }
             catch (SysException ex)
             {
-                _idleNativeThreadId = 0;
-                _idleManagedThreadId = 0;
-                _hasContextBaseline = false;
+                ClearBaselineUnsafe();
                 return "CBBASELINE_REFUSED status=context_query_failed error_type="
                      + ex.GetType().Name;
             }
 
             if (appContext)
             {
-                _idleNativeThreadId = 0;
-                _idleManagedThreadId = 0;
-                _hasContextBaseline = false;
+                ClearBaselineUnsafe();
                 return "CBBASELINE_REFUSED status=application_context";
             }
 
@@ -98,6 +158,11 @@ namespace CadBridge.Plugin.Shared
             _idleManagedThreadId = managed;
             _idleIsApplicationContext = appContext;
             _hasContextBaseline = true;
+            establishedThisAttempt = true;
+
+#if CADBRIDGE_TESTING
+            TestAfterCandidateEstablished?.Invoke();
+#endif
 
             var sb = new StringBuilder();
             sb.Append("CBBASELINE_RECORDED");
@@ -110,6 +175,57 @@ namespace CadBridge.Plugin.Shared
             return sb.ToString();
         }
 
+        private static void PublishReadinessUnsafe(string path, string result)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
+            string dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrWhiteSpace(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            // Never expose the readiness path until the complete payload has been written and
+            // flushed. The startup harness treats a non-empty readiness file as committed, so
+            // a direct WriteAllText() could publish a partial/success-looking file if close or
+            // flush failed. Stage on the same filesystem, then atomically publish.
+            string fileName = Path.GetFileName(path);
+            string tempPath = Path.Combine(
+                string.IsNullOrWhiteSpace(dir) ? "." : dir,
+                "." + fileName + "." + Guid.NewGuid().ToString("N") + ".tmp");
+            byte[] payload = new UTF8Encoding(false).GetBytes(result + Environment.NewLine);
+            try
+            {
+                using (var stream = new FileStream(
+                    tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                {
+                    stream.Write(payload, 0, payload.Length);
+                    stream.Flush(true);
+                }
+
+                if (File.Exists(path))
+                {
+                    File.Replace(tempPath, path, null);
+                }
+                else
+                {
+                    File.Move(tempPath, path);
+                }
+                tempPath = null;
+            }
+            finally
+            {
+                if (!string.IsNullOrWhiteSpace(tempPath))
+                {
+                    try { File.Delete(tempPath); }
+                    catch (SysException) { }
+                }
+            }
+        }
+
         /// <summary>
         /// Records the baseline from a real AutoCAD command context BEFORE DAP attaches.
         /// The live harness sets CB_BASELINE_LOG_PATH and runs this command from its startup
@@ -120,19 +236,33 @@ namespace CadBridge.Plugin.Shared
         [CommandMethod("CBBRIDGEBASELINE")]
         public static void RecordBaselineCommand()
         {
-            string result = Convert.ToString(
-                RecordBaseline(null), CultureInfo.InvariantCulture) ?? "CBBASELINE_REFUSED";
             string path = Environment.GetEnvironmentVariable("CB_BASELINE_LOG_PATH");
-            if (string.IsNullOrWhiteSpace(path))
+
+            // The in-memory baseline and its readiness file form one publication transaction.
+            // Check() uses this same lock, so it cannot observe the provisional state below.
+            // If readiness I/O fails after the candidate was established, roll it back BEFORE
+            // releasing the lock. A later startup attempt can then retry without restarting CAD.
+            lock (BaselineLock)
             {
-                return;
+                bool establishedThisAttempt = false;
+                try
+                {
+                    // RecordBaselineUnsafe can itself throw after publishing the provisional
+                    // fields (for example while building the result string from AutoCAD
+                    // DocumentManager state). The rollback guard therefore starts BEFORE
+                    // candidate establishment, not only around readiness-file I/O.
+                    string result = RecordBaselineUnsafe(out establishedThisAttempt);
+                    PublishReadinessUnsafe(path, result);
+                }
+                catch
+                {
+                    if (establishedThisAttempt)
+                    {
+                        ClearBaselineUnsafe();
+                    }
+                    throw;
+                }
             }
-            string dir = Path.GetDirectoryName(path);
-            if (!string.IsNullOrWhiteSpace(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-            File.WriteAllText(path, result + Environment.NewLine, new UTF8Encoding(false));
         }
 
         /// <summary>
@@ -157,28 +287,41 @@ namespace CadBridge.Plugin.Shared
                 reason = "AutoCAD reports application execution context; read probe requires document context";
                 return false;
             }
-            if (appContext != _idleIsApplicationContext)
+            uint idleNative;
+            int idleManaged;
+            bool idleAppContext;
+            bool hasBaseline;
+            lock (BaselineLock)
+            {
+                // Read the four baseline fields as one published snapshot.  The setter uses
+                // this same lock, so Check can never observe a half-published baseline.
+                hasBaseline = HasBaselineUnsafe();
+                idleNative = _idleNativeThreadId;
+                idleManaged = _idleManagedThreadId;
+                idleAppContext = _idleIsApplicationContext;
+            }
+
+            if (!hasBaseline)
+            {
+                reason = "no baseline recorded (run CBBRIDGEBASELINE while AutoCAD is idle); "
+                       + "refusing because thread identity cannot be verified";
+                return false;
+            }
+            if (appContext != idleAppContext)
             {
                 reason = "AutoCAD execution context differs from idle baseline";
                 return false;
             }
-
-            if (!HasBaseline)
-            {
-                reason = "no baseline recorded (run CBBASELINE while AutoCAD is idle); "
-                       + "refusing because thread identity cannot be verified";
-                return false;
-            }
-            if (native != _idleNativeThreadId)
+            if (native != idleNative)
             {
                 reason = "native thread id " + native.ToString(CultureInfo.InvariantCulture)
-                       + " != baseline " + _idleNativeThreadId.ToString(CultureInfo.InvariantCulture);
+                       + " != baseline " + idleNative.ToString(CultureInfo.InvariantCulture);
                 return false;
             }
-            if (managed != _idleManagedThreadId)
+            if (managed != idleManaged)
             {
                 reason = "managed thread id " + managed.ToString(CultureInfo.InvariantCulture)
-                       + " != baseline " + _idleManagedThreadId.ToString(CultureInfo.InvariantCulture);
+                       + " != baseline " + idleManaged.ToString(CultureInfo.InvariantCulture);
                 return false;
             }
             reason = "AutoCAD document context and thread identity match the idle baseline";

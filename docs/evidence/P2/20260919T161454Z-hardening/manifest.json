@@ -1,0 +1,150 @@
+{
+  "phase": "P2",
+  "run_id": "20260919T161454Z-hardening",
+  "generated_at_utc": "2026-09-19T16:15:18Z",
+  "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T161454Z-hardening",
+  "artifact_count": 10,
+  "artifacts": [
+    {
+      "path": "atomic-write-negative-test.txt",
+      "bytes": 730,
+      "sha256": "782b0e193578fddf2c84b5452e89ebabc407a5ad311d778e58a4136d96e31275"
+    },
+    {
+      "path": "check-live-gates.txt",
+      "bytes": 150,
+      "sha256": "4e212be7993cd145a5c68e10cc9685ff23f8a984c2744249faf26dc4c761c4bd"
+    },
+    {
+      "path": "encoding-coverage.txt",
+      "bytes": 613,
+      "sha256": "541e522d5e9442590b95863ccadb441be3e664af6aec3416a25a24eed59dacdc"
+    },
+    {
+      "path": "gap-g1-detected.txt",
+      "bytes": 343,
+      "sha256": "831bbc968bd88800c570a1720308c4d45cc1586b9f4af39efd7701cd13c8faf5"
+    },
+    {
+      "path": "gap-g2-detected.txt",
+      "bytes": 261,
+      "sha256": "368e29b0b75effe5cf5fc082fba3cd188588441759c053cf33c31f667ed27543"
+    },
+    {
+      "path": "gap-g3-detected.txt",
+      "bytes": 257,
+      "sha256": "ac45546a9c4dcfc2b78e87f92c1fd0458259e006f1074f67e1a0599ab9718531"
+    },
+    {
+      "path": "pyflakes.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "radius-prompt-policy-tests.txt",
+      "bytes": 1073,
+      "sha256": "634dbb63dc230e53a63e3ed742ebb4a37313a8f6749aeae6c0dcfaad7e8186eb"
+    },
+    {
+      "path": "selftest.txt",
+      "bytes": 2249,
+      "sha256": "705a3f6279dd4e05fa0268bad6d425b6fc7863a49b5dcdea5604bb3147ee6486"
+    },
+    {
+      "path": "status.json",
+      "bytes": 2082,
+      "sha256": "a3e6fd6b7da6617721ed02917169cc5b0b14f9900e170859c3d6e892877c7563",
+      "json_parses": true
+    }
+  ],
+  "tests": [
+    {
+      "id": "H1",
+      "name": "selftest suite incl. 10 gate mutations, privacy guard, 5 encoding fixtures",
+      "expected": "all pass, exit 0",
+      "actual": "35 passed, 0 failed, exit 0",
+      "status": "PASS",
+      "evidence": [
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "H2",
+      "name": "Every executable script classified; live entrypoints gated",
+      "expected": "PASS",
+      "actual": "35 scripts classified (13 gated, 2 exceptions, 1 mechanism, 1 retired, 18 non-live)",
+      "status": "PASS",
+      "evidence": [
+        "check-live-gates.txt"
+      ]
+    },
+    {
+      "id": "H3",
+      "name": "Gap: gate import alias reassigned to unrelated object",
+      "expected": "detected",
+      "actual": "exit 1; binding rejected as unsafe",
+      "status": "PASS",
+      "evidence": [
+        "gap-g1-detected.txt"
+      ]
+    },
+    {
+      "id": "H4",
+      "name": "Gap: new live harness with computed exe path (invisible to discovery)",
+      "expected": "detected",
+      "actual": "exit 1; caught by the classification-manifest requirement",
+      "status": "PASS",
+      "evidence": [
+        "gap-g2-detected.txt"
+      ]
+    },
+    {
+      "id": "H5",
+      "name": "Gap: PowerShell script that starts a CAD host",
+      "expected": "detected",
+      "actual": "exit 1; unclassified script",
+      "status": "PASS",
+      "evidence": [
+        "gap-g3-detected.txt"
+      ]
+    },
+    {
+      "id": "H6",
+      "name": "Identifier detected in UTF-8, UTF-16 LE/BE (incl. BOM-less), GB18030",
+      "expected": "all detected",
+      "actual": "5/5 encodings detected",
+      "status": "PASS",
+      "evidence": [
+        "encoding-coverage.txt"
+      ]
+    },
+    {
+      "id": "H7",
+      "name": "Atomic write fails loudly when temp-file cleanup regresses",
+      "expected": "leftover temp file detected",
+      "actual": "cleanup removal leaves a .tmp file, which the test detects",
+      "status": "PASS",
+      "evidence": [
+        "atomic-write-negative-test.txt"
+      ]
+    },
+    {
+      "id": "H8",
+      "name": "Live AutoCAD behaviour re-verified",
+      "expected": "n/a",
+      "actual": "NOT RUN: no CAD session started",
+      "status": "N/A",
+      "evidence": []
+    }
+  ],
+  "validation": {
+    "problems": [],
+    "ok": true
+  },
+  "notes": [
+    "sha256 covers the stored artifact bytes, not the upstream source it describes.",
+    "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
+    "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is."
+  ]
+}

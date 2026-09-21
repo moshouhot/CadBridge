@@ -122,20 +122,31 @@ namespace CadBridge.Plugin.Shared
         {
             // Read one optional numeric argument from the command line. Used by the negative
             // tests (radius 0 / negative must be rejected without leaving a partial entity).
+            //
+            // Cancelling the prompt must create NOTHING. The original version defaulted to
+            // radius 10 for every non-OK status, so pressing Escape still drew a circle. The
+            // decision now lives in RadiusPromptPolicy (pure, testable) and every status other
+            // than OK/None is a refusal.
             var ed = Application.DocumentManager.MdiActiveDocument?.Editor;
-            double radius = 10.0;
+            double radius = RadiusPromptPolicy.DefaultRadius;
             if (ed != null)
             {
                 var opts = new Autodesk.AutoCAD.EditorInput.PromptDoubleOptions("\nRadius")
                 {
                     AllowNone = true,
-                    DefaultValue = 10.0,
+                    DefaultValue = RadiusPromptPolicy.DefaultRadius,
                 };
                 var res = ed.GetDouble(opts);
-                if (res.Status == Autodesk.AutoCAD.EditorInput.PromptStatus.OK)
+
+                double decided;
+                string reason;
+                var decision = RadiusPromptPolicy.Decide(res.Status, res.Value, out decided, out reason);
+                if (decision == RadiusPromptPolicy.Decision.Reject)
                 {
-                    radius = res.Value;
+                    WriteLine("CBBRIDGECIRCLE CANCELLED status=" + res.Status + " reason=" + reason);
+                    return;
                 }
+                radius = decided;
             }
             CreateCircle(100.0, 100.0, radius);
         }

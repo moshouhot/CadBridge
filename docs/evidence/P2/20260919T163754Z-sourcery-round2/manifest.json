@@ -1,0 +1,150 @@
+{
+  "phase": "P2",
+  "run_id": "20260919T163754Z-sourcery-round2",
+  "generated_at_utc": "2026-09-19T16:38:23Z",
+  "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T163754Z-sourcery-round2",
+  "artifact_count": 10,
+  "artifacts": [
+    {
+      "path": "check-live-gates.txt",
+      "bytes": 150,
+      "sha256": "4e212be7993cd145a5c68e10cc9685ff23f8a984c2744249faf26dc4c761c4bd"
+    },
+    {
+      "path": "pyflakes.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "selftest.txt",
+      "bytes": 2679,
+      "sha256": "0327cae5963f1a7b5c9d835c112af3f53c325da9df8d5d8f457aaad63673e712"
+    },
+    {
+      "path": "sourcery-round2-finding-1-detected.txt",
+      "bytes": 255,
+      "sha256": "f50408cb652ef46688953c04f6758da670879049bed2050569aeddb91a8d8fa7"
+    },
+    {
+      "path": "sourcery-round2-finding-2-detected.txt",
+      "bytes": 234,
+      "sha256": "7f539efed12c7a20bcd296117ba1a5fdeedb24b52ac981cc0d44ef5d2dabdfe8"
+    },
+    {
+      "path": "sourcery-round2-finding-3-detected.txt",
+      "bytes": 517,
+      "sha256": "6a7cf810fa45c6976d2ab55eb06ea9d98f822126605687c62796f152900c01d2"
+    },
+    {
+      "path": "sourcery-round2-finding-4-detected.txt",
+      "bytes": 272,
+      "sha256": "0aedbe4446fa62448d3eb0d20c5a967cca751626610a867ecce3a84d42a738b8"
+    },
+    {
+      "path": "sourcery-round2-finding-5-detected.txt",
+      "bytes": 427,
+      "sha256": "c471c3c11d99d4b54bf4345a3a93c1bf6428889faf0990926761e74db73f4296"
+    },
+    {
+      "path": "sourcery-round2-finding-6-detected.txt",
+      "bytes": 408,
+      "sha256": "e2381cc420c17fc47a0ab1777b69c4f6602b369703f741bf4d9485094f286666"
+    },
+    {
+      "path": "status.json",
+      "bytes": 2199,
+      "sha256": "5be4179db4b0bc835abca2e3970a0ed66ac5e3c6d3691a0b32f1d889876db42f",
+      "json_parses": true
+    }
+  ],
+  "tests": [
+    {
+      "id": "R2-1",
+      "name": "selftest suite incl. 15 gate mutations, privacy guard, encoding + false-clean fixtures",
+      "expected": "all pass, exit 0",
+      "actual": "41 passed, 0 failed, exit 0",
+      "status": "PASS",
+      "evidence": [
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "R2-2",
+      "name": "Sourcery round-2 finding 1: direct gate import reassigned",
+      "expected": "detected",
+      "actual": "exit 1",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-round2-finding-1-detected.txt"
+      ]
+    },
+    {
+      "id": "R2-3",
+      "name": "Sourcery round-2 finding 2: live-intent guard polarity inverted",
+      "expected": "detected",
+      "actual": "exit 1; gate is not on the live path",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-round2-finding-2-detected.txt"
+      ]
+    },
+    {
+      "id": "R2-4",
+      "name": "Sourcery round-2 finding 3: nested script reusing a registry basename",
+      "expected": "detected",
+      "actual": "exit 1; basename collision + unclassified path",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-round2-finding-3-detected.txt"
+      ]
+    },
+    {
+      "id": "R2-5",
+      "name": "Sourcery round-2 finding 4: extensionless executable with a shebang",
+      "expected": "detected",
+      "actual": "exit 1; shebang detection puts it in scope",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-round2-finding-4-detected.txt"
+      ]
+    },
+    {
+      "id": "R2-6",
+      "name": "Sourcery round-2 finding 5: undecodable file reported as a false clean",
+      "expected": "--check fails",
+      "actual": "exit 1; unscanned files no longer yield PASS",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-round2-finding-5-detected.txt"
+      ]
+    },
+    {
+      "id": "R2-7",
+      "name": "Sourcery round-2 finding 6: environment read via an aliased environ mapping",
+      "expected": "detected",
+      "actual": "exit 1",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-round2-finding-6-detected.txt"
+      ]
+    },
+    {
+      "id": "R2-8",
+      "name": "Live AutoCAD behaviour re-verified",
+      "expected": "n/a",
+      "actual": "NOT RUN: no CAD session started",
+      "status": "N/A",
+      "evidence": []
+    }
+  ],
+  "validation": {
+    "problems": [],
+    "ok": true
+  },
+  "notes": [
+    "sha256 covers the stored artifact bytes, not the upstream source it describes.",
+    "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
+    "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is."
+  ]
+}

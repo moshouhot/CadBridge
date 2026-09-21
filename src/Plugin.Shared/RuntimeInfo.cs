@@ -68,12 +68,12 @@ namespace CadBridge.Plugin.Shared
             {
                 try
                 {
-                    // On .NET 5+ this type lives in System.Runtime; on .NET Framework it is
-                    // absent from the runtime assembly set.
-                    return Type.GetType("System.Runtime.InteropServices.RuntimeInformation")
-                           != null
-                           && RuntimeInformation.FrameworkDescription.StartsWith(
-                                  ".NET Framework", StringComparison.OrdinalIgnoreCase);
+                    // The type is already a compile-time dependency of both target
+                    // frameworks.  Do not use an unqualified Type.GetType probe here: on
+                    // .NET Framework it can return null for a type that lives outside
+                    // mscorlib and turn a measured framework runtime into a false negative.
+                    return RuntimeInformation.FrameworkDescription.StartsWith(
+                        ".NET Framework", StringComparison.OrdinalIgnoreCase);
                 }
                 catch
                 {

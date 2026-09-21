@@ -1,0 +1,60 @@
+== pathconv ==
+  PASS  to-win converts /f/a/b
+  PASS  to-msys converts F:\a\b
+  PASS  to-win-slash converts /f/a/b
+  PASS  unknown mode fails
+== decoder ==
+  PASS  decodes UTF-16LE
+  PASS  decodes UTF-8
+  PASS  missing input fails
+== accoreconsole harness: argument validation ==
+  PASS  missing --plugin rejected
+  PASS  missing accoreconsole rejected
+  PASS  missing plugin rejected
+== script generation: last line must be newline-terminated ==
+  PASS  script has 4 newline-terminated lines
+== manifest validation ==
+  PASS  valid manifest accepted
+  PASS  non-vocabulary status rejected
+  PASS  missing evidence path rejected
+  PASS  empty JSON artifact rejected
+  PASS  regeneration preserves tests and redaction provenance
+  PASS  failed os.replace preserves the previous manifest byte-for-byte (atomic)
+  PASS  a failed temp-file cleanup is reported, not swallowed
+== safety: no unverified process termination in tooling ==
+  PASS  no unverified termination or COM Dispatch fallback in tooling
+  PASS  safe_process self-test passes
+  PASS  repl probe offline tests pass (fakes, no CAD)
+  PASS  no unguarded SystemExit inside finally blocks
+  PASS  no directory-scan PID adoption in tooling
+  PASS  no caller-built ownership records
+  PASS  every live CAD entrypoint is gated (AST-checked)
+  PASS  mutation detected: dap-probe gate call deleted
+  PASS  mutation detected: t01-5 harness gate replaced by comment
+  PASS  mutation detected: retired GUI harness gate removed
+  PASS  mutation detected: gate replaced by a same-named method on an unrelated object
+  PASS  mutation detected: new ungated live harness with an unlisted filename
+  PASS  mutation detected: gate import alias reassigned to an unrelated object
+  PASS  mutation detected: gate import shadowed by a function parameter
+  PASS  mutation detected: new live harness with a computed exe path (invisible to discovery)
+  PASS  mutation detected: PowerShell script that really starts a CAD host
+  PASS  mutation detected: gate function imported directly then reassigned
+  PASS  mutation detected: live-intent guard polarity inverted
+  PASS  mutation detected: nested script reusing a registry basename
+  PASS  mutation detected: extensionless executable with a shebang
+  PASS  mutation detected: environment read through an aliased environ mapping
+  PASS  corrupt manifest refused and left byte-identical
+  PASS  contradicting artifact_count is rejected and the manifest stays consistent
+  PASS  manifest line endings are preserved (CRLF stays CRLF)
+  PASS  no local machine identifier in tracked files
+  PASS  identifier detected in be-bomless.txt
+  PASS  identifier detected in bom.txt
+  PASS  identifier detected in gbk.txt
+  PASS  identifier detected in le-bomless.txt
+  PASS  identifier detected in utf8.txt
+  PASS  an unscannable file fails --check instead of reporting a false clean
+  PASS  malformed-but-identified UTF-16 is refused rather than silently rewritten
+  PASS  byte-level scrub removes only the identifier and preserves the rest
+  PASS  safety gate refuses live harnesses by default
+
+self-tests: 47 passed, 0 failed

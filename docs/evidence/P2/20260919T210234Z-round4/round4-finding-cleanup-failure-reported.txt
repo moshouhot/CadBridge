@@ -1,0 +1,4 @@
+stderr=ERROR: could not remove temporary file E:\360data\TEMP\r4a\manifest.json.gufzd_la.tmp: unlink failed. The write failed AND its cleanup failed, so a stale temp file remains.
+
+reported=True
+previous_manifest_intact=True

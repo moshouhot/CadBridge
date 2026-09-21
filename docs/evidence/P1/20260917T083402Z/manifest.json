@@ -173,8 +173,8 @@
     },
     {
       "path": "T01-1/matrix/2016-legacy.raw",
-      "bytes": 1224,
-      "sha256": "418d07f8b8344d5f77b27ed4dc39cf1bd0d0f1cc98944c90cd1489ead452a3d6"
+      "bytes": 1198,
+      "sha256": "abb35ec0d8d69018e0d23c1a353bd1b8825f27cb7d6233f2cf4d412609c8ee72"
     },
     {
       "path": "T01-1/matrix/2016-legacy.scr",
@@ -188,8 +188,8 @@
     },
     {
       "path": "T01-1/matrix/2016-modern.raw",
-      "bytes": 1224,
-      "sha256": "c41042ceecde8aae53f35a357f52dc36e551a92c6c833018c169f596fef46a42"
+      "bytes": 1198,
+      "sha256": "5c0a9353c00c501519e13667864a1fbf9722896f000ed3ea08c4b37e5bb43217"
     },
     {
       "path": "T01-1/matrix/2016-modern.scr",
@@ -983,6 +983,20 @@
         "original_bytes": 667,
         "stored_sha256": "50a1d0d5bcaaa47377dc11ac4fe9436a1f8b86619b0e7bf4a18c2a451f1b341f",
         "stored_bytes": 653,
+        "replacement": "local account name -> <REDACTED-USER>"
+      },
+      {
+        "path": "T01-1/matrix/2016-legacy.raw",
+        "original_sha256": "418d07f8b8344d5f77b27ed4dc39cf1bd0d0f1cc98944c90cd1489ead452a3d6",
+        "stored_sha256": "abb35ec0d8d69018e0d23c1a353bd1b8825f27cb7d6233f2cf4d412609c8ee72",
+        "occurrences": 1,
+        "replacement": "local account name -> <REDACTED-USER>"
+      },
+      {
+        "path": "T01-1/matrix/2016-modern.raw",
+        "original_sha256": "c41042ceecde8aae53f35a357f52dc36e551a92c6c833018c169f596fef46a42",
+        "stored_sha256": "5c0a9353c00c501519e13667864a1fbf9722896f000ed3ea08c4b37e5bb43217",
+        "occurrences": 1,
         "replacement": "local account name -> <REDACTED-USER>"
       }
     ],

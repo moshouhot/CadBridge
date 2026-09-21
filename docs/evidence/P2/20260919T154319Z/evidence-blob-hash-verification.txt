@@ -1,0 +1,4 @@
+blob-hash ok=145
+excluded (intentionally not published): 2
+  - docs/evidence/P0/20260917T083402Z/raw/autocad-inventory.json
+  - docs/evidence/P0/20260917T083402Z/raw/running-cad-processes.json

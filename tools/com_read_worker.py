@@ -21,6 +21,11 @@ def emit(obj: dict) -> int:
 
 
 def main() -> int:
+    # Standalone invocation can attach to a user-owned AutoCAD instance when supplied with
+    # matching scalar identity fields. Identity verification is necessary but is not ownership
+    # or authorization, so this worker is a live entrypoint and must fail closed too.
+    sp.require_safety_review_passed("com_read_worker.py")
+
     started = time.monotonic()
     try:
         req = json.loads(sys.stdin.readline())

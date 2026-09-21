@@ -1,0 +1,2 @@
+live-gate check FAILED with 1 problem(s)
+  FAIL  dap-probe.py: gate is not on the live-intent path, so a real CAD run could skip it (line 251: gate runs when live intent is FALSE (`if not live_intent:`), so a live CAD run skips it)

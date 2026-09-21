@@ -1,0 +1,2 @@
+live-gate check FAILED with 1 problem(s)
+  FAIL  dap-probe.py: no actual call to require_safety_review_passed() for its live mode

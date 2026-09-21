@@ -1,0 +1,19 @@
+Negative test: the privacy guard must FAIL when the local identifier reappears.
+
+Method: append a line containing the identifier to a tracked evidence file, run the guard
+and the full suite, then restore the file with git checkout. No AutoCAD involved.
+
+$ CB_REDACT_IDENTIFIER=<set> python tools/redact-evidence.py --check
+  FAIL  local identifier found in 1 tracked file(s), 1 occurrence(s):
+          docs/evidence/P2/20260919T154319Z/selftest.txt
+  exit=1
+
+$ CB_REDACT_IDENTIFIER=<set> bash tools/selftest.sh
+  FAIL  no local machine identifier in tracked files
+  self-tests: 25 passed, 1 failed   (exit 1)
+
+After restoring the file: 26 passed, 0 failed (exit 0).
+
+Note: without CB_REDACT_IDENTIFIER the check reports SKIP, not PASS, so an unconfigured
+environment cannot be mistaken for a verified clean state. The identifier is passed via
+the environment and is never written into the repository.

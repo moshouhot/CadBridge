@@ -1,0 +1,260 @@
+{
+  "phase": "P2",
+  "run_id": "20260919T154319Z",
+  "generated_at_utc": "2026-09-19T21:04:48Z",
+  "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T154319Z",
+  "artifact_count": 16,
+  "artifacts": [
+    {
+      "path": "build-legacy.txt",
+      "bytes": 555,
+      "sha256": "8b78dd1d0661019dab9a35c3221f51e5625ac96ab09a6cf04c79e28a694b221a"
+    },
+    {
+      "path": "build-modern.txt",
+      "bytes": 28416,
+      "sha256": "7f5b0c09d60825c88d5c69981f227315ccca3d261607ae8430e1b60605a89c6e"
+    },
+    {
+      "path": "build-modern.txt.redaction.txt",
+      "bytes": 423,
+      "sha256": "f5ce5a58000a51bbb058bf98f9ce1fd8c96e47d7bc9b4aa5909256606609fcc9"
+    },
+    {
+      "path": "check-live-gates.txt",
+      "bytes": 504,
+      "sha256": "326079e832937614767d9bcb76316ea602b6c7c5d5d6f39096420cd0bd7c867d"
+    },
+    {
+      "path": "evidence-blob-hash-verification.txt",
+      "bytes": 197,
+      "sha256": "1de494ad57c29e2bc18d8fec2a1f3d40f93dec6e37b2246a369a80eb66206b5f"
+    },
+    {
+      "path": "mutation-gate-comment.txt",
+      "bytes": 209,
+      "sha256": "dae1b77faf8914d1a12d73128515dc2e01d4893f9c710df87be3b4f315ee3bf4"
+    },
+    {
+      "path": "mutation-gate-removed.txt",
+      "bytes": 132,
+      "sha256": "77efa0aa1095a617b2e45d0926accfddf5f39b57d5380a8e2841a132773065dc"
+    },
+    {
+      "path": "privacy-guard-negative-test.txt",
+      "bytes": 921,
+      "sha256": "76dcc99cf4d6b4c76cbe8a9440e88fbd85acdcaa1cd0d96195380795ed1e397d"
+    },
+    {
+      "path": "pyflakes.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "radius-prompt-policy-tests.txt",
+      "bytes": 1073,
+      "sha256": "634dbb63dc230e53a63e3ed742ebb4a37313a8f6749aeae6c0dcfaad7e8186eb"
+    },
+    {
+      "path": "redact-build-log.txt",
+      "bytes": 114,
+      "sha256": "760971b179028dcca5a0c5cb7fc8132da1ef189190b5eb13f8b39207c3ff3e3a"
+    },
+    {
+      "path": "selftest.txt",
+      "bytes": 1709,
+      "sha256": "4a86fd68d87785d651361ef103f25b20b7858b295eb52887ff08bc24f0f18583"
+    },
+    {
+      "path": "sourcery-finding1-shadowed-gate-detected.txt",
+      "bytes": 230,
+      "sha256": "d276954c24e617405fb5bc8e2a98fdc116740707490dc48d8a520d36aaeb8af2"
+    },
+    {
+      "path": "sourcery-finding2-new-ungated-harness-detected.txt",
+      "bytes": 238,
+      "sha256": "362d95b89ce375ccf660ad675c9f2bdb243338d6ae7cee9c5e357fba518ffbf1"
+    },
+    {
+      "path": "sourcery-pr-review-evidence.md",
+      "bytes": 7126,
+      "sha256": "a04904529ba24d0c308bcea7c44e52521126c9f9e3ccd4672e6d2aaaaa2018c6"
+    },
+    {
+      "path": "status.json",
+      "bytes": 5784,
+      "sha256": "5d64277cf076fd7d97904646b7db072034621ca64f16ac08f4a6d79fd59f11d7",
+      "json_parses": true
+    }
+  ],
+  "tests": [
+    {
+      "id": "P2-1",
+      "name": "selftest suite incl. gate mutation tests",
+      "expected": "all pass, exit 0",
+      "actual": "25 passed, 0 failed, exit 0 (5 gate mutation tests included)",
+      "status": "PASS",
+      "evidence": [
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "P2-2",
+      "name": "RadiusPromptPolicy regression tests (real PromptStatus enum)",
+      "expected": "all pass, exit 0",
+      "actual": "14 passed, 0 failed, exit 0",
+      "status": "PASS",
+      "evidence": [
+        "radius-prompt-policy-tests.txt"
+      ]
+    },
+    {
+      "id": "P2-5",
+      "name": "Legacy (net48) plugin builds",
+      "expected": "0 errors",
+      "actual": "0 warnings, 0 errors",
+      "status": "PASS",
+      "evidence": [
+        "build-legacy.txt"
+      ]
+    },
+    {
+      "id": "P2-6",
+      "name": "Modern (net8.0-windows) plugin builds",
+      "expected": "0 errors",
+      "actual": "0 errors; 3 pre-existing documented MSB3277 warnings",
+      "status": "PASS",
+      "evidence": [
+        "build-modern.txt"
+      ]
+    },
+    {
+      "id": "P2-7",
+      "name": "Evidence SHA-256 matches committed blobs",
+      "expected": "all published artifacts match",
+      "actual": "145/145 match; 2 artifacts intentionally excluded from publication (documented in PUBLICATION.md 2.4)",
+      "status": "PASS",
+      "evidence": [
+        "evidence-blob-hash-verification.txt"
+      ]
+    },
+    {
+      "id": "P2-8",
+      "name": "Static check (pyflakes) clean",
+      "expected": "no findings",
+      "actual": "clean (empty output)",
+      "status": "PASS",
+      "evidence": [
+        "pyflakes.txt"
+      ]
+    },
+    {
+      "id": "P2-9",
+      "name": "Live-gate AST check on real tree",
+      "expected": "all entrypoints gated",
+      "actual": "PASS",
+      "status": "PASS",
+      "evidence": [
+        "check-live-gates.txt"
+      ]
+    },
+    {
+      "id": "P2-10",
+      "name": "Live AutoCAD / CoreConsole behaviour re-verified",
+      "expected": "n/a for this audit",
+      "actual": "NOT RUN: no CAD session was started. D4's cancellation fix is covered by pure-logic tests only; live cancellation remains unverified and is NOT claimed.",
+      "status": "N/A",
+      "evidence": [
+        "radius-prompt-policy-tests.txt"
+      ]
+    },
+    {
+      "id": "P2-3",
+      "name": "Mutation: gate call deleted must be detected",
+      "expected": "non-zero exit",
+      "actual": "exit 1, reported no resolving call",
+      "status": "PASS",
+      "evidence": [
+        "mutation-gate-removed.txt"
+      ]
+    },
+    {
+      "id": "P2-4",
+      "name": "Mutation: gate replaced by comment must be detected",
+      "expected": "non-zero exit",
+      "actual": "exit 1, comment does not satisfy the AST check",
+      "status": "PASS",
+      "evidence": [
+        "mutation-gate-comment.txt"
+      ]
+    },
+    {
+      "id": "P2-11",
+      "name": "Sourcery finding 1: same-named method on an unrelated object must NOT count as the gate",
+      "expected": "non-zero exit (attack detected)",
+      "actual": "exit 1; receiver must resolve to the imported safe_process module",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-finding1-shadowed-gate-detected.txt"
+      ]
+    },
+    {
+      "id": "P2-12",
+      "name": "Sourcery finding 2: a new ungated live harness with an unlisted filename must be detected",
+      "expected": "non-zero exit (attack detected)",
+      "actual": "exit 1; entrypoints are discovered from live-CAD behaviour, not a filename list",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-finding2-new-ungated-harness-detected.txt"
+      ]
+    },
+    {
+      "id": "P2-14",
+      "name": "Privacy guard: local machine identifier must not appear in tracked files",
+      "expected": "guard fails when the identifier is reintroduced; suite exits 1",
+      "actual": "negative test performed: injecting the identifier into a tracked file made the guard and the suite fail (25 passed, 1 failed, exit 1); after restoring, 26 passed, 0 failed. Without CB_REDACT_IDENTIFIER the check reports SKIP, not PASS.",
+      "status": "PASS",
+      "evidence": [
+        "privacy-guard-negative-test.txt",
+        "redact-build-log.txt",
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "P2-13",
+      "name": "Sourcery PR reviews across five rounds: every real finding fixed, 0 unresolved threads",
+      "expected": "review runs; every real finding fixed; 0 unresolved threads",
+      "actual": "Rounds: 2 findings (1925b68), 6 (c7654e5), 2 (9da5471), 2 (ab493af), 0 (2b32c66). All 12 real and fixed. Threads total=12, unresolved=0.",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-pr-review-evidence.md"
+      ]
+    }
+  ],
+  "validation": {
+    "problems": [],
+    "ok": true
+  },
+  "notes": [
+    "sha256 covers the stored artifact bytes, not the upstream source it describes.",
+    "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
+    "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is.",
+    "REDACTION: preserved from the previous manifest; some artifact hashes cover bytes that differ from the originally captured ones."
+  ],
+  "redactions": {
+    "applied_at_utc": "2026-09-19T00:00:00Z",
+    "reason": "Remove local machine/username path from artifacts before public release.",
+    "scope": "Only the account name inside machine-local paths was replaced. No build warning, error count or conclusion was altered.",
+    "replacement": "local account name -> <REDACTED-USER>",
+    "artifacts": [
+      {
+        "path": "build-modern.txt",
+        "original_sha256": "65419424d146218c6c196de29b5cd955602a59e548ff8209f04fc24457e9fb94",
+        "stored_sha256": "7f5b0c09d60825c88d5c69981f227315ccca3d261607ae8430e1b60605a89c6e",
+        "occurrences": 24,
+        "replacement": "local account name -> <REDACTED-USER>"
+      }
+    ]
+  }
+}

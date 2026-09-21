@@ -1,0 +1,90 @@
+{
+  "phase": "P2",
+  "run_id": "20260919T165702Z-round3",
+  "generated_at_utc": "2026-09-19T16:57:31Z",
+  "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T165702Z-round3",
+  "artifact_count": 6,
+  "artifacts": [
+    {
+      "path": "check-live-gates.txt",
+      "bytes": 150,
+      "sha256": "4e212be7993cd145a5c68e10cc9685ff23f8a984c2744249faf26dc4c761c4bd"
+    },
+    {
+      "path": "pyflakes.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "round3-finding-artifact-count-rejected.txt",
+      "bytes": 211,
+      "sha256": "7d3a597fa5d141f7ee5c2223ae0d437240a697f3b241a76f77ea61ffc45aedd2"
+    },
+    {
+      "path": "round3-finding-corrupt-manifest-rejected.txt",
+      "bytes": 329,
+      "sha256": "c74698bd65cb335d548d8ea59683a1b02891a743a54d293aa07de2f1fdd1747e"
+    },
+    {
+      "path": "selftest.txt",
+      "bytes": 2881,
+      "sha256": "85039775791f0243a520c87d70ecc8765dfee0b08a43ef8dc243e81ac61b61f0"
+    },
+    {
+      "path": "status.json",
+      "bytes": 1411,
+      "sha256": "c3fa4064a500fc282779f08a5c2676eb9e2f12f9fa4db80511ab59b61dd8a163",
+      "json_parses": true
+    }
+  ],
+  "tests": [
+    {
+      "id": "R3-1",
+      "name": "selftest suite incl. 15 gate mutations + privacy/encoding/manifest fixtures",
+      "expected": "all pass, exit 0",
+      "actual": "44 passed, 0 failed, exit 0",
+      "status": "PASS",
+      "evidence": [
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "R3-2",
+      "name": "Sourcery round-3 finding: existing but unparseable manifest must be refused, not overwritten",
+      "expected": "non-zero exit; file byte-identical",
+      "actual": "exit 2; file unchanged",
+      "status": "PASS",
+      "evidence": [
+        "round3-finding-corrupt-manifest-rejected.txt"
+      ]
+    },
+    {
+      "id": "R3-3",
+      "name": "Sourcery round-3 finding: artifact_count must match the artifacts array",
+      "expected": "tampered count rejected; written manifest self-consistent",
+      "actual": "rejected; derived count wins; validation.ok=false",
+      "status": "PASS",
+      "evidence": [
+        "round3-finding-artifact-count-rejected.txt"
+      ]
+    },
+    {
+      "id": "R3-4",
+      "name": "Live AutoCAD behaviour re-verified",
+      "expected": "n/a",
+      "actual": "NOT RUN: no CAD session started",
+      "status": "N/A",
+      "evidence": []
+    }
+  ],
+  "validation": {
+    "problems": [],
+    "ok": true
+  },
+  "notes": [
+    "sha256 covers the stored artifact bytes, not the upstream source it describes.",
+    "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
+    "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is."
+  ]
+}

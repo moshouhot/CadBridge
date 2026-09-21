@@ -188,7 +188,8 @@ def main() -> int:
             entry["adapter_stderr"] = client.stderr_lines[:20]
             log(f"  terminating our CAD pid={pid}")
             # Verified-ownership termination only (pid + creation time + exe path).
-            sp.terminate_owned(owned_token, log=log)   # token only; a dict cannot authorize a kill
+            cleanup_ok = sp.terminate_owned(owned_token, log=log)
+            entry["cleanup_confirmed"] = bool(cleanup_ok)
         return entry
 
     try:
@@ -199,7 +200,7 @@ def main() -> int:
         pathlib.Path(args.out).write_text(json.dumps(results, indent=2, ensure_ascii=False),
                                           encoding="utf-8")
         log(f"\nresults: {args.out}")
-    return 0
+    return 1 if any(not x.get("cleanup_confirmed", False) for x in results["cases"]) else 0
 
 
 if __name__ == "__main__":

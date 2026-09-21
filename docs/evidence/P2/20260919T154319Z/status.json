@@ -1,0 +1,154 @@
+{
+  "tests": [
+    {
+      "id": "P2-1",
+      "name": "selftest suite incl. gate mutation tests",
+      "expected": "all pass, exit 0",
+      "actual": "25 passed, 0 failed, exit 0 (5 gate mutation tests included)",
+      "status": "PASS",
+      "evidence": [
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "P2-2",
+      "name": "RadiusPromptPolicy regression tests (real PromptStatus enum)",
+      "expected": "all pass, exit 0",
+      "actual": "14 passed, 0 failed, exit 0",
+      "status": "PASS",
+      "evidence": [
+        "radius-prompt-policy-tests.txt"
+      ]
+    },
+    {
+      "id": "P2-5",
+      "name": "Legacy (net48) plugin builds",
+      "expected": "0 errors",
+      "actual": "0 warnings, 0 errors",
+      "status": "PASS",
+      "evidence": [
+        "build-legacy.txt"
+      ]
+    },
+    {
+      "id": "P2-6",
+      "name": "Modern (net8.0-windows) plugin builds",
+      "expected": "0 errors",
+      "actual": "0 errors; 3 pre-existing documented MSB3277 warnings",
+      "status": "PASS",
+      "evidence": [
+        "build-modern.txt"
+      ]
+    },
+    {
+      "id": "P2-7",
+      "name": "Evidence SHA-256 matches committed blobs",
+      "expected": "all published artifacts match",
+      "actual": "145/145 match; 2 artifacts intentionally excluded from publication (documented in PUBLICATION.md 2.4)",
+      "status": "PASS",
+      "evidence": [
+        "evidence-blob-hash-verification.txt"
+      ]
+    },
+    {
+      "id": "P2-8",
+      "name": "Static check (pyflakes) clean",
+      "expected": "no findings",
+      "actual": "clean (empty output)",
+      "status": "PASS",
+      "evidence": [
+        "pyflakes.txt"
+      ]
+    },
+    {
+      "id": "P2-9",
+      "name": "Live-gate AST check on real tree",
+      "expected": "all entrypoints gated",
+      "actual": "PASS",
+      "status": "PASS",
+      "evidence": [
+        "check-live-gates.txt"
+      ]
+    },
+    {
+      "id": "P2-10",
+      "name": "Live AutoCAD / CoreConsole behaviour re-verified",
+      "expected": "n/a for this audit",
+      "actual": "NOT RUN: no CAD session was started. D4's cancellation fix is covered by pure-logic tests only; live cancellation remains unverified and is NOT claimed.",
+      "status": "N/A",
+      "evidence": [
+        "radius-prompt-policy-tests.txt"
+      ]
+    },
+    {
+      "id": "P2-3",
+      "name": "Mutation: gate call deleted must be detected",
+      "expected": "non-zero exit",
+      "actual": "exit 1, reported no resolving call",
+      "status": "PASS",
+      "evidence": [
+        "mutation-gate-removed.txt"
+      ]
+    },
+    {
+      "id": "P2-4",
+      "name": "Mutation: gate replaced by comment must be detected",
+      "expected": "non-zero exit",
+      "actual": "exit 1, comment does not satisfy the AST check",
+      "status": "PASS",
+      "evidence": [
+        "mutation-gate-comment.txt"
+      ]
+    },
+    {
+      "id": "P2-11",
+      "name": "Sourcery finding 1: same-named method on an unrelated object must NOT count as the gate",
+      "expected": "non-zero exit (attack detected)",
+      "actual": "exit 1; receiver must resolve to the imported safe_process module",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-finding1-shadowed-gate-detected.txt"
+      ]
+    },
+    {
+      "id": "P2-12",
+      "name": "Sourcery finding 2: a new ungated live harness with an unlisted filename must be detected",
+      "expected": "non-zero exit (attack detected)",
+      "actual": "exit 1; entrypoints are discovered from live-CAD behaviour, not a filename list",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-finding2-new-ungated-harness-detected.txt"
+      ]
+    },
+    {
+      "id": "P2-14",
+      "name": "Privacy guard: local machine identifier must not appear in tracked files",
+      "expected": "guard fails when the identifier is reintroduced; suite exits 1",
+      "actual": "negative test performed: injecting the identifier into a tracked file made the guard and the suite fail (25 passed, 1 failed, exit 1); after restoring, 26 passed, 0 failed. Without CB_REDACT_IDENTIFIER the check reports SKIP, not PASS.",
+      "status": "PASS",
+      "evidence": [
+        "privacy-guard-negative-test.txt",
+        "redact-build-log.txt",
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "P2-13",
+      "name": "Sourcery PR reviews across five rounds: every real finding fixed, 0 unresolved threads",
+      "expected": "review runs; every real finding fixed; 0 unresolved threads",
+      "actual": "Rounds: 2 findings (1925b68), 6 (c7654e5), 2 (9da5471), 2 (ab493af), 0 (2b32c66). All 12 real and fixed. Threads total=12, unresolved=0.",
+      "status": "PASS",
+      "evidence": [
+        "sourcery-pr-review-evidence.md"
+      ]
+    }
+  ],
+  "notes": [
+    "No AutoCAD, CoreConsole or debug adapter process was started during this audit.",
+    "The Sourcery GitHub App is NOT installed; no Sourcery review or security scan has run. This audit was performed manually with local tooling.",
+    "sourcery-cli is Python-only and cannot substitute for Sourcery App/IDE review of this C# repository.",
+    "P2-11/P2-12 are regressions for the two defects Sourcery found in the first version of tools/check-live-gates.py on PR #1. Both attacks were reproduced against that version before the fix.",
+    "Sourcery App is installed on this repository only. Dashboard Review Rules, Review profile and Security Scan are still unset by the owner.",
+    "The local identifier leaked THREE times during this audit (P0/P1 artifacts, P1 .raw files, P2 build log). It is now a checked invariant in selftest.sh, not a manual cleanup."
+  ]
+}

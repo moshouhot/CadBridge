@@ -1,0 +1,3 @@
+  PASS  all live CAD entrypoints are gated or explicitly excepted (tools)
+        discovered 14 live entrypoint(s): dap-a14-sequence.py, dap-attach-a14.py, dap-attach-matrix.py, dap-attach-ordering.py, dap-probe.py, dap-session.py, live-job-ownership-smoke.py, run-accoreconsole-test.sh, t01-5-definitive.py, t01-5-pause-live-query.py, t01-5-pause-query-probe.py, t01-5-plugin-pause-read.py, t01-5-repl-plugin-read.py, t01-5-sync-read-forms.py
+        documented exceptions: run-accoreconsole-test.sh

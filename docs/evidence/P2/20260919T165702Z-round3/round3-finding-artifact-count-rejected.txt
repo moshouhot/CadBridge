@@ -1,0 +1,5 @@
+exit=1
+stderr=VALIDATION FAILED with 1 problem(s):
+  - artifact_count 999 does not match the artifacts array length 2; using the derived value
+
+written artifact_count=2 len(artifacts)=2 validation_ok=False

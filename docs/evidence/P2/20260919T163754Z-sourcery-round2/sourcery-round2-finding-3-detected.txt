@@ -1,0 +1,3 @@
+live-gate check FAILED with 2 problem(s)
+  FAIL  subdir/safe_process.py: UNCLASSIFIED executable script (detected by suffix). Every script must be declared in GATED, LIVE_EXCEPTIONS, GATE_MECHANISM, RETIRED_HARNESSES or NON_LIVE, so a new live harness cannot slip in unexamined.
+  FAIL  basename collision for 'safe_process.py': ['safe_process.py', 'subdir/safe_process.py']. The registry is keyed by basename, so a nested file would inherit another file's classification. Rename one, or key the registry by path.

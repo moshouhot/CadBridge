@@ -1,0 +1,90 @@
+{
+  "phase": "P2",
+  "run_id": "20260919T210234Z-round4",
+  "generated_at_utc": "2026-09-19T21:03:11Z",
+  "run_dir": "F:\\Nextcloud\\project\\CadBridge\\docs\\evidence\\P2\\20260919T210234Z-round4",
+  "artifact_count": 6,
+  "artifacts": [
+    {
+      "path": "check-live-gates.txt",
+      "bytes": 150,
+      "sha256": "4e212be7993cd145a5c68e10cc9685ff23f8a984c2744249faf26dc4c761c4bd"
+    },
+    {
+      "path": "pyflakes.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "round4-finding-cleanup-failure-reported.txt",
+      "bytes": 229,
+      "sha256": "3486c83c043caced6114713e8e3ff84a7e4ca261dd798ca22cfdb4a9c95e6677"
+    },
+    {
+      "path": "round4-finding-malformed-utf16-refused.txt",
+      "bytes": 276,
+      "sha256": "c31f9ea6475ae08b32a3cdd3273708225e634b7f6d721775e5e07411630f1f16"
+    },
+    {
+      "path": "selftest.txt",
+      "bytes": 3101,
+      "sha256": "eae9d9429ba99dd1b4eb4fac5e61feb34afbab9016838f667c956d77008a8493"
+    },
+    {
+      "path": "status.json",
+      "bytes": 1622,
+      "sha256": "b58a1349c9bcf0f652265a61da8f064fc75ca59462d3e8ff31b0d0c1332f81e6",
+      "json_parses": true
+    }
+  ],
+  "tests": [
+    {
+      "id": "R4-1",
+      "name": "selftest suite incl. 15 gate mutations + privacy/encoding/manifest fixtures",
+      "expected": "all pass, exit 0",
+      "actual": "47 passed, 0 failed, exit 0",
+      "status": "PASS",
+      "evidence": [
+        "selftest.txt"
+      ]
+    },
+    {
+      "id": "R4-2",
+      "name": "Sourcery round-4 finding: failed temp-file cleanup must be reported, not swallowed",
+      "expected": "cleanup failure printed; previous manifest intact",
+      "actual": "reported to stderr; manifest unchanged",
+      "status": "PASS",
+      "evidence": [
+        "round4-finding-cleanup-failure-reported.txt"
+      ]
+    },
+    {
+      "id": "R4-3",
+      "name": "Sourcery round-4 finding: malformed UTF-16 must be refused, not silently rewritten",
+      "expected": "--check non-zero; file bytes unchanged",
+      "actual": "refused; bytes unchanged",
+      "status": "PASS",
+      "evidence": [
+        "round4-finding-malformed-utf16-refused.txt"
+      ]
+    },
+    {
+      "id": "R4-4",
+      "name": "Live AutoCAD behaviour re-verified",
+      "expected": "n/a",
+      "actual": "NOT RUN: no CAD session started",
+      "status": "N/A",
+      "evidence": []
+    }
+  ],
+  "validation": {
+    "problems": [],
+    "ok": true
+  },
+  "notes": [
+    "sha256 covers the stored artifact bytes, not the upstream source it describes.",
+    "Status vocabulary: PASS | FAIL | BLOCKED | NOT_RUN | N/A (ACCEPTANCE.md §1).",
+    "Compilation success, Fake backends and tool self-reported success never substitute for real-CAD evidence.",
+    "A process exit code of 0 is not evidence of success; the parsed CAD output is."
+  ]
+}

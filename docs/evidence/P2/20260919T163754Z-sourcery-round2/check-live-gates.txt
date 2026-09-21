@@ -1,0 +1,2 @@
+  PASS  all 35 executable script(s) classified; live entrypoints gated
+        gated: 13 | exceptions: 2 | mechanism: 1 | retired: 1 | non-live: 18

@@ -1,0 +1,10 @@
+{"tests":[
+ {"id":"R3-1","name":"selftest suite incl. 15 gate mutations + privacy/encoding/manifest fixtures","expected":"all pass, exit 0","actual":"44 passed, 0 failed, exit 0","status":"PASS","evidence":["selftest.txt"]},
+ {"id":"R3-2","name":"Sourcery round-3 finding: existing but unparseable manifest must be refused, not overwritten","expected":"non-zero exit; file byte-identical","actual":"exit 2; file unchanged","status":"PASS","evidence":["round3-finding-corrupt-manifest-rejected.txt"]},
+ {"id":"R3-3","name":"Sourcery round-3 finding: artifact_count must match the artifacts array","expected":"tampered count rejected; written manifest self-consistent","actual":"rejected; derived count wins; validation.ok=false","status":"PASS","evidence":["round3-finding-artifact-count-rejected.txt"]},
+ {"id":"R3-4","name":"Live AutoCAD behaviour re-verified","expected":"n/a","actual":"NOT RUN: no CAD session started","status":"N/A","evidence":[]}
+],"notes":[
+ "Round-3 findings were raised by Sourcery against the round-2 fix commit and are fixed here; both are now permanent selftest checks.",
+ "A third issue was found and fixed while addressing them: write_manifest_atomically rewrote CRLF manifests as LF, producing whole-file diffs with no content change (docs/evidence is -text in .gitattributes). Line endings are now preserved.",
+ "No AutoCAD, CoreConsole or debug adapter process was started."
+]}
